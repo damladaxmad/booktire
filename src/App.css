@@ -1,0 +1,13 @@
+body {
+    background-color: #F8F2FE;
+    overflow-x: hidden;
+}
+
+.MuiTableRow-root:hover { 
+    /* background: #dedede !important; */
+}
+
+.sweet-warning{
+    background-color: #2F49D1;
+}
+   

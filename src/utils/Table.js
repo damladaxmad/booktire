@@ -1,0 +1,112 @@
+import React, { useState } from "react";
+import MaterialTable from "material-table";
+import FirstPage from '@material-ui/icons/FirstPage';
+import LastPage from '@material-ui/icons/LastPage';
+import ChevronLeft from '@material-ui/icons/ChevronLeft';
+import ChevronRight from '@material-ui/icons/ChevronRight';
+import { forwardRef } from 'react';
+import { BiDotsHorizontalRounded } from "react-icons/bi";
+import { MenuItem, Menu } from "@material-ui/core";
+
+const Table = ({ data, columns, state, onUpdate, onDelete }) => {
+  const tableIcons = {
+    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+  };
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const [instance, setInstance] = useState("");
+
+  const handleClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    instance
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setInstance(instance);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <div style={{ width: "100%", margin: "auto" }}>
+
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          "aria-labelledby": "basic-button",
+        }}
+        style={{ marginTop: "25px" }}
+      >
+
+        <MenuItem
+          onClick={() => {
+            handleClose()
+            onUpdate(instance)
+          }}
+        >
+          Update Customer
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            handleClose()
+            onDelete(instance)
+          }}
+        >
+          Delete Customer
+        </MenuItem>
+
+      </Menu>
+
+      <MaterialTable
+        icons={tableIcons}
+        columns={columns}
+        data={data || []}
+        localization={{
+          body: {
+            emptyDataSourceMessage: state,
+          },
+        }}
+        options={{
+          rowStyle: {},
+          showTitle: false,
+          exportButton: true,
+          sorting: false,
+          showTextRowsSelected: false,
+          toolbar: false,
+          pageSizeOptions: [2, 5, 8, 10, 20, 25, 50, 100],
+          pageSize: 10,
+          draggable: false,
+          actionsColumnIndex: -1,
+          headerStyle: { background: "#EFF0F6", fontSize: "13px" },
+        }}
+        actions={[
+          {
+            icon: () => (
+              <BiDotsHorizontalRounded
+                id="basic-button"
+                aria-controls={open ? "basic-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? "true" : undefined}
+              />
+            ),
+            tooltip: "Save User",
+            onClick: (event, rowData) => {
+              handleClick(event, rowData);
+            },
+            position: "row",
+          },
+        ]}
+        style={{ borderRadius: "10px", boxShadow: "none", }}
+      />
+    </div>
+  );
+};
+
+export default Table;
