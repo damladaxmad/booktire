@@ -62,7 +62,6 @@ const AppBar = styled(MuiAppBar, {
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
-    marginRight: "0px"
   }),
   ...(open && {
     marginLeft: drawerWidth,
@@ -71,7 +70,6 @@ const AppBar = styled(MuiAppBar, {
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
-      marginRight: "0px"
     }),
   }),
 }));
@@ -224,7 +222,7 @@ export default function NewLayout({ children, props }) {
 
       </Drawer>
       <div style={{
-        width: "90%", margin: "100px auto",
+        width: "90%", margin: "85px auto",
         marginTop: "100px", background:"#F8F2FE"
       }}>
         {children}

@@ -7,7 +7,6 @@ export const customerSlice = createSlice({
   },
   reducers: {
     setCustomers: (state, action) => {
-      console.log(action.payload)
       state.customers = action.payload;
     },
     addCustomer: (state, action) => {

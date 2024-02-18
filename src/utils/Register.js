@@ -43,7 +43,6 @@ hideModal, onUpdate}) => {
             "authorization": token
           }
         }).then((res) => {
-          alert("Successfully Updated")
           hideModal()
           onUpdate(res?.data?.data)
         }).catch((err) => {
@@ -91,16 +90,19 @@ hideModal, onUpdate}) => {
       >
         {fields?.map((a, index) => (
           <div>
-            <TextField
-              variant="outlined"
+            <input
+              // variant="outlined"
               label={a.label}
+              placeholder={a.label}
               id={a.name}
               name={a.name}
               type={a.type}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values[a.name]}
-              style={{ width: "290px", color: "black" }}
+              style={{ width: "290px", color: "black",
+              padding: "10px", borderRadius: "5px", height: "40px",
+              border: "1px solid lightGrey", }}
               key={index}
             />
             {formik.touched[a.name] && formik.errors[a.name] ? (

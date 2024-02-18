@@ -14,19 +14,19 @@ const CustomRibbon = ({ query, setQuery }) => {
                 width: "100%",
                 margin: "auto",
                 marginTop: "20px",
-                borderRadius: "8px 8px 0px 0px",
+                borderRadius: "5px 5px 0px 0px",
             }}
         >
             <input
                 type="text"
                 placeholder="Search"
                 style={{
-                    width: "400px",
-                    height: "40px",
-                    padding: "10px",
-                    fontSize: "16px",
-                    borderRadius: "8px",
+                    width: "300px",
+                    height: "35px",
+                    fontSize: "14px",
+                    borderRadius: "5px",
                     background: "#EFF0F6",
+                    padding: "10px",
                     border: "none",
                 }}
                 value={query}

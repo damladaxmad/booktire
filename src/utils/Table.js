@@ -8,7 +8,7 @@ import { forwardRef } from 'react';
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { MenuItem, Menu } from "@material-ui/core";
 
-const Table = ({ data, columns, state, onUpdate, onDelete }) => {
+const Table = ({ data, columns, state, onUpdate, onDelete, onSeeTransactions, name }) => {
   const tableIcons = {
     FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
     LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
@@ -20,7 +20,7 @@ const Table = ({ data, columns, state, onUpdate, onDelete }) => {
   const [instance, setInstance] = useState("");
 
   const handleClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
+    event,
     instance
   ) => {
     setAnchorEl(event.currentTarget);
@@ -50,7 +50,16 @@ const Table = ({ data, columns, state, onUpdate, onDelete }) => {
             onUpdate(instance)
           }}
         >
-          Update Customer
+          Update {name}
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            handleClose()
+            onSeeTransactions(instance)
+          }}
+        >
+          See Transactions
         </MenuItem>
 
         <MenuItem
@@ -59,7 +68,7 @@ const Table = ({ data, columns, state, onUpdate, onDelete }) => {
             onDelete(instance)
           }}
         >
-          Delete Customer
+          Delete {name}
         </MenuItem>
 
       </Menu>
@@ -75,6 +84,7 @@ const Table = ({ data, columns, state, onUpdate, onDelete }) => {
         }}
         options={{
           rowStyle: {},
+          padding: "20px",
           showTitle: false,
           exportButton: true,
           sorting: false,
@@ -84,7 +94,8 @@ const Table = ({ data, columns, state, onUpdate, onDelete }) => {
           pageSize: 10,
           draggable: false,
           actionsColumnIndex: -1,
-          headerStyle: { background: "#EFF0F6", fontSize: "13px" },
+          headerStyle: { background: "#EFF0F6", fontSize: "13px", 
+        padding: "0px", fontWeight: "bold" },
         }}
         actions={[
           {

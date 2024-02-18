@@ -2,15 +2,17 @@
 import { Button } from '@mui/material';
 import React from 'react';
 
-const CustomButton = ({ bgColor, width, fontSize, startIcon, text, type = "", onClick }) => {
+const CustomButton = ({ bgColor, color, width, height, fontSize,
+  disabled, startIcon, text, type = "", onClick }) => {
   return (
     <Button
+      disabled = {disabled || false}
       variant="contained"
       type = {type}
       style={{
-        backgroundColor: bgColor,
-        color: "white",
-        height: "45px",
+        backgroundColor: disabled ? "lightgray" : bgColor,
+        color: color || "white",
+        height: height || "40px",
         fontSize: fontSize || "16px",
         width: width,
         fontWeight: "bold",

@@ -4,5 +4,6 @@ export const constants = {
     pColor: "#6A03B6",
     sColor: "#E90139",
     pTextColor: "#CCBED6",
-    subColor: "#979797"
+    subColor: "#979797",
+    backdropColor: "#F8F2FE"
 }
