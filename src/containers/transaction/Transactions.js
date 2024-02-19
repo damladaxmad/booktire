@@ -7,10 +7,11 @@ import { BiArrowBack } from "react-icons/bi";
 import CustomButton from "../../reusables/CustomButton";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { addTransaction, deleteTransaction, setTransactions } from "../transaction/transactionSlice";
-import TransactionForm from "../transaction/TransactionForm";
+import { addTransaction, deleteTransaction, setTransactions, updateTransaction } from "./transactionSlice";
+import TransactionForm from "./TransactionForm";
+import io from 'socket.io-client';
 
-const Transactions = ({ customer, hideTransactions, }) => {
+const Transactions = ({ instance, url, hideTransactions, }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [type, setType] = useState(null)
@@ -18,8 +19,19 @@ const Transactions = ({ customer, hideTransactions, }) => {
     const [showForm, setShowForm] = useState(false)
     const [transaction, setTransaction] = useState(null)
     const token = useSelector(state => state.login.token)
+    const { business } = useSelector(state => state?.login?.activeUser)
+    const mySocketId = useSelector(state => state?.login?.mySocketId)
     const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions)))
-    const url = `${constants.baseUrl}/transactions/get-customer-transactions/${customer?._id}`
+
+    const calculateBalance = (transactions, currentTransaction) => {
+        let balance = 0;
+        transactions.forEach(transaction => {
+            if (transaction.id <= currentTransaction.id) {
+                balance += transaction.debit - transaction.credit;
+            }
+        });
+        return balance;
+    };
 
     const dispatch = useDispatch()
 
@@ -53,9 +65,9 @@ const Transactions = ({ customer, hideTransactions, }) => {
 
     useEffect(() => {
         return () => {
-          dispatch(setTransactions([]));
+            dispatch(setTransactions([]));
         };
-      }, [dispatch]);
+    }, [dispatch]);
 
     const materialOptions = {
         showTitle: false,
@@ -89,16 +101,6 @@ const Transactions = ({ customer, hideTransactions, }) => {
         balance += transaction?.debit - transaction?.credit
     })
 
-    const calculateBalance = (transactions, currentTransaction) => {
-        let balance = 0;
-        transactions.forEach(transaction => {
-          if (transaction.id <= currentTransaction.id) {
-            balance += transaction.debit - transaction.credit;
-          }
-        });
-        return balance;
-      };
-      
 
     const columns = [
         {
@@ -132,25 +134,57 @@ const Transactions = ({ customer, hideTransactions, }) => {
             title: "Balance",
             cellStyle: { border: "none" },
             render: rowData => (
-              <>
-                {calculateBalance(transactions, rowData)}
-              </>
+                <>
+                    {calculateBalance(transactions, rowData)}
+                </>
             )
-          },
+        },
 
 
     ];
+
+    useEffect(() => {
+
+        const socket = io.connect('https://booktire-api.onrender.com');
+        socket.on('transactionEvent', (data) => {
+            handleTransactionEvent(data)
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
+
+
+    const handleTransactionEvent = (data) => {
+
+        const { socketId, businessId, transaction, eventType } = data;
+        if (mySocketId == socketId) return
+        if (business?._id !== businessId) return
+        if (eventType === 'add') {
+            alert("add")
+            dispatch(addTransaction(transaction))
+        } else if (eventType === 'delete') {
+            dispatch(deleteTransaction(transaction?._id))
+        } else if (eventType === 'update') {
+            dispatch(updateTransaction({
+                id: transaction._id,
+                updatedTransaction: transaction
+            }));
+        }
+
+    };
 
 
     return (
         <>
 
-        {showForm && <TransactionForm type = {type} instance={customer}
-        update = {update} transaction={transaction}
-        hideModal = {()=> {
-            setShowForm(false)
-            setUpdate(false)
-        }}/>}
+            {showForm && <TransactionForm type={type} instance={instance}
+                update={update} transaction={transaction}
+                hideModal={() => {
+                    setShowForm(false)
+                    setUpdate(false)
+                }} />}
 
             <div style={{
                 display: "flex",
@@ -163,7 +197,7 @@ const Transactions = ({ customer, hideTransactions, }) => {
 
                     <CustomButton bgColor="white"
                         color="black" width="150px"
-                        text="Bixin" 
+                        text="Bixin"
                         onClick={() => {
                             setType("bixin")
                             setShowForm(true)
@@ -172,8 +206,8 @@ const Transactions = ({ customer, hideTransactions, }) => {
                     <CustomButton bgColor={constants.pColor}
                         text="Deen Cusub" width="150px"
                         onClick={() => {
-                       setType("deen")
-                       setShowForm(true)
+                            setType("deen")
+                            setShowForm(true)
                         }} />
 
                 </div>
@@ -189,10 +223,10 @@ const Transactions = ({ customer, hideTransactions, }) => {
                             }}
                         />
                     }
-                onClick={()=> {
-                dispatch(setTransactions([]))
-                hideTransactions()
-            }}
+                    onClick={() => {
+                        dispatch(setTransactions([]))
+                        hideTransactions()
+                    }}
                 />
 
             </div>
@@ -212,13 +246,13 @@ const Transactions = ({ customer, hideTransactions, }) => {
                     <Typography style={{
                         fontSize: "18px", fontWeight: "bold"
                     }}>
-                        {customer.name}
+                        {instance.name}
                     </Typography>
                     <Typography style={{
                         color: "#7F7F7F",
                         fontSize: "18px"
                     }}>
-                        {customer.phone}
+                        {instance.phone}
                     </Typography>
                 </div>
 
@@ -241,9 +275,9 @@ const Transactions = ({ customer, hideTransactions, }) => {
                 data={transactions}
                 localization={{
                     body: {
-                      emptyDataSourceMessage: loading ? "loading.." : error ? error : "no data to display",
+                        emptyDataSourceMessage: loading ? "loading.." : error ? error : "no data to display",
                     },
-                  }}
+                }}
                 options={materialOptions}
                 style={{
                     borderRadius: "5px",

@@ -5,7 +5,8 @@ export const loginSlice = createSlice({
   initialState: {
     isLogin: false,
     activeUser: "",
-    token: ""
+    token: "",
+    mySocketId: ""
   },
   reducers: {
     setIsLogin: (state, action) => {
@@ -17,9 +18,12 @@ export const loginSlice = createSlice({
     setToken: (state, action) => {
       state.token = action.payload;
     },
+    setSocketId: (state, action) => {
+      state.mySocketId = action.payload;
+    },
   },
 });
 
-export const { setIsLogin, setActiveUser, setToken } = loginSlice.actions;
+export const { setIsLogin, setActiveUser, setToken, setSocketId } = loginSlice.actions;
 
 export default loginSlice.reducer;

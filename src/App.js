@@ -10,7 +10,9 @@ import "./App.css";
 import { useSelector } from "react-redux";
 import NewLayout from "./Layout/Layout.js";
 import Billing from "./containers/Billing.js";
+import io from 'socket.io-client';
 import {pages} from "./RoutesData.js";
+import { setSocketId } from "./SignupAndLogin/loginSlice.js";
 
 function App() {
   const isLogin = useSelector((state) => state.login.isLogin);
@@ -18,6 +20,8 @@ function App() {
   const activeUser = useSelector((state) => state?.login?.activeUser);
   const [active, setActive] = useState();
   const [lacagtaBillah, setLacagtaBillaha] = useState(false)
+
+  const dispatch = useDispatch()
 
   const showHandler = (user) => {
     setTimeout(() => {
@@ -32,6 +36,22 @@ function App() {
   useEffect(() => {
     setShowLayout(isLogin);
   }, [isLogin]);
+
+  useEffect(() => {
+    const socket = io.connect('https://booktire-api.onrender.com');
+
+    socket.on('connect', () => {
+      console.log('Connected to server');
+      dispatch(setSocketId(socket?.id))
+    });
+    socket.on('disconnect', () => {
+      console.log('Disconnected from server');
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   
   return (

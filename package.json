@@ -33,6 +33,7 @@
     "react-to-print": "^2.14.7",
     "react-toastify": "^8.1.0",
     "recharts": "^2.1.15",
+    "socket.io-client": "^4.7.2",
     "redux": "^4.0.5",
     "semantic-ui-css": "^2.5.0",
     "sweetalert": "^2.1.2",

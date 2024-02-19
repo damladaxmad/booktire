@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import Table from "../utils/Table";
 import { useDispatch, useSelector } from "react-redux";
-import { addCustomer, deleteCustomer, setCustomers, updateCustomer } from "../containers/customer/customerSlice";
+import { addCustomer, deleteCustomer, updateCustomer } from "../containers/customer/customerSlice";
 import { constants } from "../Helpers/constantsFile";
-import useApiHook from "../hooks/useApiHook";
 import Register from "../utils/Register";
 import { deleteFunction } from "../funcrions/deleteStuff";
 import useRegisterForm from "../hooks/useRegister";
@@ -11,9 +10,12 @@ import CustomRibbon from "../reusables/CustomRibbon";
 import { fields } from "../containers/customer/customerModal";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Transactions from "../containers/customer/Transactions";
+import Transactions from "../containers/transaction/Transactions";
 import TitleComponent from "../reusables/TitleComponent.";
-import axios from "axios";
+import io from 'socket.io-client';
+import useReadData from "../hooks/useReadData";
+import useEventHandler from "../hooks/useEventHandler";
+import { handleAddCustomerBalance, handleDeleteCustomerBalance, handleUpdateCustomerBalance } from "../containers/customer/customerUtils";
 
 const parentDivStyle = {
   display: "flex",
@@ -26,51 +28,27 @@ const parentDivStyle = {
 
 export default function Customers() {
   const [query, setQuery] = useState("")
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [showTransactions, setShowTransactions] = useState(false)
   const [instance, setInstance] = useState(null)
-  const activeUser = useSelector(state => state.login.activeUser)
+  const { business } = useSelector(state => state.login.activeUser)
+  const mySocketId = useSelector(state => state?.login?.mySocketId)
   const token = useSelector(state => state.login.token)
-  const url =  `${constants.baseUrl}/customers/get-business-customers/${activeUser?.business?._id}`
+  const url = `${constants.baseUrl}/customers/get-business-customers/${business?._id}`
   const customers = JSON.parse(JSON.stringify(useSelector(state => state.customers?.customers || [])))
+  const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions)))
+
+  const dispatch = useDispatch()
+  console.log("Rendered")
 
   const { showRegister, update, toBeUpdatedCustomer,
     handleUpdate, handleHide, handleShowRegister } = useRegisterForm()
 
-  const dispatch = useDispatch()
+  const { loading, error } = useReadData(url, "customer");
 
-  useEffect(() => {
-      let source = axios.CancelToken.source();
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(url, {
-          headers: {
-            'authorization': token
-          },
-          cancelToken: source.token
-        });
-        setLoading(false);
-        dispatch(setCustomers(response?.data?.data?.customers))
-      } catch (error) {
-        if (!axios.isCancel(error)) {
-          setError("Error getting the data");
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      source.cancel();
-    };
-  }, [dispatch]);
-  
   const notify = (message) => toast(message, {
-    autoClose: 2000,
-    theme: "dark",
+    autoClose: 2700,
+    hideProgressBar: true,
+    theme: "light",
     position: "top-center"
   });
 
@@ -110,36 +88,69 @@ export default function Customers() {
     }
   };
 
-  // const { loading, error } = useApiHook(
-    // `${constants.baseUrl}/customers/get-business-customers/${activeUser?.business?._id}`,
-  //   (data) => {
-      // console.log("fetched data")
-      // dispatch(setCustomers(data?.customers))
-  //   }
-  // )
-
   const handleSearchChange = (value) => {
     setQuery(value);
   };
 
+  const calculateBalanceForCustomer = (transactions) => {
+    let balance = 0;
+    transactions.forEach(transaction => {
+        balance += transaction.debit - transaction.credit;
+    });
+    return balance;
+};
+
+  const { handleEvent } = useEventHandler();
+
+  useEffect(() => {
+    const socket = io.connect('https://booktire-api.onrender.com');
+    socket.on('customerEvent', (data) => {
+      handleEvent(data, mySocketId, business?._id, "customerEvent");
+    });
+
+    socket.on('transactionEvent', (data) => {
+      handleTransactionEvent(data)
+  });
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  const handleTransactionEvent = (data) => {
+
+    const { socketId, businessId, transaction, eventType } = data;
+    if (mySocketId == socketId) return
+    if (business?._id !== businessId) return
+    if (eventType === 'add') {
+        alert("add")
+        handleAddCustomerBalance(dispatch, transactions, calculateBalanceForCustomer, transaction);
+    } else if (eventType === 'delete') {
+        handleDeleteCustomerBalance(dispatch, transactions, calculateBalanceForCustomer, transaction)
+    } else if (eventType === 'update') {
+        handleUpdateCustomerBalance(dispatch, transactions, calculateBalanceForCustomer, transaction);
+    }
+
+};
+
+
   return (
     <div style={parentDivStyle}>
 
-      {!showTransactions && <TitleComponent title = "Customers"
-      btnName = "Create Customers" onClick = {handleShowRegister}/>}
+      {!showTransactions && <TitleComponent title="Customers"
+        btnName="Create Customers" onClick={handleShowRegister} />}
 
-      {!showTransactions && <CustomRibbon query={query} 
-      setQuery={handleSearchChange} /> }
+      {!showTransactions && <CustomRibbon query={query}
+        setQuery={handleSearchChange} />}
 
       {!showTransactions && <Table
         data={handler(customers)} columns={columns}
-        name = "Customer"
+        name="Customer"
         state={loading ? "loading.." : error ? error : "no data to display"}
         onUpdate={(data) => {
           handleUpdate(data)
         }}
 
-        onSeeTransactions={(data)=> {
+        onSeeTransactions={(data) => {
           setInstance(data)
           setShowTransactions(true)
         }}
@@ -158,7 +169,7 @@ export default function Customers() {
         name="Customer"
         fields={fields}
         url="customers"
-        business={activeUser?.business?._id}
+        business={business?._id}
         hideModal={() => { handleHide() }}
         store={(data) => {
           dispatch(addCustomer(data?.customer))
@@ -174,11 +185,12 @@ export default function Customers() {
           }
         } />}
 
-        {showTransactions && <Transactions 
-        customer = {instance}
-        hideTransactions={()=> setShowTransactions(false)}/>}
+      {showTransactions && <Transactions
+        instance={instance}
+        url={`${constants.baseUrl}/transactions/get-customer-transactions/${instance?._id}`}
+        hideTransactions={() => setShowTransactions(false)} />}
 
-        <ToastContainer />
+      <ToastContainer />
 
     </div>
   )

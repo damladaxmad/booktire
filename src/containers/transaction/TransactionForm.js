@@ -8,16 +8,28 @@ import { Button, Typography } from "@material-ui/core";
 import moment from "moment";
 import { deleteFunction } from "../../funcrions/deleteStuff";
 import CustomButton from "../../reusables/CustomButton";
-import { addTransaction, updateTransaction } from "./transactionSlice";
+import { addTransaction, deleteTransaction, updateTransaction } from "./transactionSlice";
+import { updateCustomerBalance } from "../customer/customerSlice";
+import { handleAddCustomerBalance, handleDeleteCustomerBalance, handleUpdateCustomerBalance } from "../customer/customerUtils";
 
 const TransactionForm = ({ type, update, instance, transaction, hideModal }) => {
 
-    const token = useSelector(state => state.login.token)
-    const {name} = useSelector(state => state.login.activeUser)
     const [disabled, setDisabled] = useState(false)
+    const token = useSelector(state => state.login.token)
+    const mySocketId = useSelector(state => state?.login?.mySocketId)
+    const { name } = useSelector(state => state.login.activeUser)
     const today = new Date();
-
+    const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions)))
     const dispatch = useDispatch()
+
+    const calculateBalance = (transactions) => {
+        let balance = 0;
+        transactions.forEach(transaction => {
+            balance += transaction.debit - transaction.credit;
+        });
+        return balance;
+    };
+
 
     const arr = type == "bixin" ? [
         { label: "Geli Lacagta", type: "number", name: "credit" },
@@ -30,17 +42,19 @@ const TransactionForm = ({ type, update, instance, transaction, hideModal }) => 
             { label: "", type: "date", name: "date" },
         ];
 
-    const deleteTransaction = async () => {
-        await deleteFunction(
+    const deleteTransactionFun = () => {
+        deleteFunction(
             `Delete Transaction`,
             transaction?.description,
             `${constants.baseUrl}/transactions/${transaction?._id}`,
             token,
-            () => { 
+            (res) => {
+                handleDeleteCustomerBalance(dispatch, transactions, calculateBalance, res);
                 dispatch(deleteTransaction(transaction?._id))
                 hideModal()
-             },
-        );
+
+            }
+        )
     };
 
     const errorStyle = { color: "red", marginLeft: "27px", fontSize: "16px" }
@@ -75,6 +89,7 @@ const TransactionForm = ({ type, update, instance, transaction, hideModal }) => 
             values.description = values.description || "Payment";
             values.customer = instance?._id
             values.user = name
+            values.socketId = mySocketId
             setDisabled(true)
 
             if (update) {
@@ -84,13 +99,13 @@ const TransactionForm = ({ type, update, instance, transaction, hideModal }) => 
                             "authorization": token
                         }
                     }).then((res) => {
-                        console.log(transaction)
-                        console.log(res?.data?.data)
                         dispatch(updateTransaction({
                             id: transaction._id,
                             updatedTransaction: res?.data?.data?.transaction
-                          }));
-                        hideModal()
+                        }));
+                        let response = res?.data?.data?.transaction
+                        handleUpdateCustomerBalance(dispatch, transactions, calculateBalance, response);
+                        hideModal();
                     }
                     ).catch((err) => {
                         alert(err.response.data.message);
@@ -106,12 +121,14 @@ const TransactionForm = ({ type, update, instance, transaction, hideModal }) => 
                             "authorization": token
                         }
                     }).then((res) => {
-                        setDisabled(false)
-                        dispatch(addTransaction(res?.data?.response?.data?.transaction[0]))
-                        hideModal()
+                        setDisabled(false);
+                        dispatch(addTransaction(res?.data?.data?.transaction));
+                        let response = res?.data?.data?.transaction
+                        handleAddCustomerBalance(dispatch, transactions, calculateBalance, response);
+                        hideModal();
                     }
                     ).catch((err) => {
-                        alert(err.response.data.message);
+                        alert(err.response?.data?.message);
                         setDisabled(false)
                     }
                     )
@@ -142,7 +159,8 @@ const TransactionForm = ({ type, update, instance, transaction, hideModal }) => 
                     }}>
 
                         <Button style={{
-                            width: "100px",
+                            width: "120px",
+                            padding: "0px 5px",
                             fontSize: "16px",
                             backgroundColor: "#F03E06",
                             fontWeight: "600",
@@ -154,13 +172,13 @@ const TransactionForm = ({ type, update, instance, transaction, hideModal }) => 
                             borderRadius: "6px",
                             cursor: "pointer",
                         }}
-                            onClick={() => deleteTransaction()}>
-                            DELETE
+                            onClick={() => deleteTransactionFun()}>
+                            Delete
                         </Button>
                     </div>}
 
                 {arr.map((a, index) => (
-                    <div>
+                    <div key={index}>
                         <input
                             placeholder={a.label}
                             id={a.name}
@@ -171,7 +189,7 @@ const TransactionForm = ({ type, update, instance, transaction, hideModal }) => 
                             value={formik.values[a.name]}
                             style={{
                                 width: "300px",
-                                height: "40px",
+                                height: "45px",
                                 padding: "15px",
                                 fontSize: "16px",
                                 border: "1px solid grey",
@@ -185,7 +203,7 @@ const TransactionForm = ({ type, update, instance, transaction, hideModal }) => 
                     </div>
                 ))}
                 <CustomButton bgColor={constants.pColor}
-                    disabled = {disabled}
+                    disabled={disabled}
                     text={update ? "UPDATE" : "XAREY"}
                     type="submit" width="300px"
                 />

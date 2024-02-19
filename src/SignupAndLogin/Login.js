@@ -105,7 +105,7 @@ const Login = (props) => {
             value={formik.values[a.name]}
             style={{
               width: "290px",
-              height: "50px",
+              height: "45px",
               padding: "15px",
               fontSize: "16px",
               border: "1.5px solid grey",

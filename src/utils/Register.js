@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import axios from "axios";
-import { TextField, Button, FormControl, MenuItem } from "@mui/material";
-import {AiOutlinePlus} from "react-icons/ai"
 import Modal from "../Modal/Modal";
 import { constants } from "../Helpers/constantsFile";
 import { useSelector } from "react-redux";
@@ -11,8 +9,9 @@ import CustomButton from "../reusables/CustomButton";
 const Register = ({instance, store, name, fields, update, url, business,
 hideModal, onUpdate}) => {
 
+  const [disabled, setDisabled] = useState(false)
   const token = useSelector(state => state.login.token)
-
+  const mySocketId = useSelector(state => state?.login?.mySocketId)
   const validate = (values) => {
     const errors = {};
 
@@ -34,8 +33,10 @@ hideModal, onUpdate}) => {
         district: update ? instance?.district : "",
     },
     validate,
-    onSubmit: (values, { resetForm }) => {
+    onSubmit: (values,  ) => {
+      setDisabled(true)
       values.business = business
+      values.socketId = mySocketId
       if (update){
         axios.patch(`${constants.baseUrl}/${url}/${instance._id}`, values,
         {
@@ -43,9 +44,11 @@ hideModal, onUpdate}) => {
             "authorization": token
           }
         }).then((res) => {
+          setDisabled(false)
           hideModal()
           onUpdate(res?.data?.data)
         }).catch((err) => {
+          setDisabled(false)
           alert(err.response?.data?.message);
         });
       } else {
@@ -56,9 +59,11 @@ hideModal, onUpdate}) => {
             "authorization": token
           }
         }).then((res) => {
+          setDisabled(false)
           hideModal()
           store(res?.data?.data)
         }).catch((err) => {
+          setDisabled(false)
           alert(err.response.data.message);
         });
       }    
@@ -89,7 +94,7 @@ hideModal, onUpdate}) => {
     flexWrap: name == "Expense" ? "wrap" : "nowrap" }}
       >
         {fields?.map((a, index) => (
-          <div>
+          <div key = {index}>
             <input
               // variant="outlined"
               label={a.label}
@@ -112,6 +117,7 @@ hideModal, onUpdate}) => {
         ))}
 
        <CustomButton 
+       disabled={disabled}
        type = "submit"
        width = "290px"
        bgColor={constants.pColor}
