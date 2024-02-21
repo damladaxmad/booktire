@@ -6,6 +6,7 @@ import Sales from "./Pages/Sales";
 import Reports from "./Pages/Reports"
 import Purchases from "./Pages/Purchases"
 import Adminstration from "./Pages/Adminstration"
+import Products from "./Pages/Products";
 
 export const pages = [
         <Route path="/dashboard" element={<Dashboard />} />,
@@ -15,4 +16,5 @@ export const pages = [
         <Route path="/purchases" element={<Purchases />} />,
         <Route path="/reports" element={<Reports />} />,
         <Route path="/adminstration" element={<Adminstration />} />,
+        <Route path="/products" element={<Products />} />,
 ]

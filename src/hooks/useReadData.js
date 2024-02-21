@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { setCustomerDataFetched, setCustomers } from "../containers/customer/customerSlice";
+import { setProducts } from "../containers/products/productSlice";
 
 
 const useReadData = (url, type) => {
@@ -24,7 +25,9 @@ const useReadData = (url, type) => {
                     cancelToken: source.token
                 });
                 setLoading(false);
+                console.log(response?.data?.data)
                 type == "customer" && dispatch(setCustomers(response?.data?.data?.customers));
+                type == "product" && dispatch(setProducts(response?.data?.data?.products));
                 type == "customer" && dispatch(setCustomerDataFetched(true));
             } catch (error) {
                 if (!axios.isCancel(error)) {

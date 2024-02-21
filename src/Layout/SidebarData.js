@@ -31,6 +31,11 @@ export const SidebarData = [
     path: "/vendors",
   },
   {
+    text: "Products",
+    icon: <VscPerson style={{fontSize: "20px",}} />,
+    path: "/products",
+  },
+  {
     text: "Purchases",
     icon: <VscPerson style={{fontSize: "20px",}} />,
     path: "/purchases",

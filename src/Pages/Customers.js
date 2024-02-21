@@ -38,8 +38,7 @@ export default function Customers() {
   const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions)))
 
   const dispatch = useDispatch()
-  console.log("Rendered")
-
+  
   const { showRegister, update, toBeUpdatedCustomer,
     handleUpdate, handleHide, handleShowRegister } = useRegisterForm()
 

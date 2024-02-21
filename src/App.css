@@ -10,4 +10,11 @@ body {
 .sweet-warning{
     background-color: #2F49D1;
 }
-   
+body input:enabled:focus{
+    box-shadow: unset !important;
+    border-color: unset !important;
+  }
+
+input:focus {
+    outline: none;
+}
