@@ -31,7 +31,6 @@ const data = {
 }
   
   const createSale = (data) => {
-    alert("Sale called")
     axios.post(`${constants.baseUrl}/sales`, data,
     {
       headers: {

@@ -1,19 +1,147 @@
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import Table from "../utils/Table";
+import { useDispatch, useSelector } from "react-redux";
+import { addCustomer, deleteCustomer, updateCustomer } from "../containers/customer/customerSlice";
 import { constants } from "../Helpers/constantsFile";
+import Register from "../utils/Register";
+import { deleteFunction } from "../funcrions/deleteStuff";
+import useRegisterForm from "../hooks/useRegister";
+import CustomRibbon from "../reusables/CustomRibbon";
+import { fields } from "../containers/products/productModal";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Transactions from "../containers/transaction/Transactions";
+import TitleComponent from "../reusables/TitleComponent.";
+import io from 'socket.io-client';
 import useReadData from "../hooks/useReadData";
+import useEventHandler from "../hooks/useEventHandler";
+import { handleAddCustomerBalance, handleDeleteCustomerBalance, handleUpdateCustomerBalance } from "../containers/customer/customerUtils";
+import { addProduct, updateProduct } from "../containers/products/productSlice";
+import CreateProduct from "../containers/products/CreateProduct";
+
+const parentDivStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  flexDirection: "column",
+  alignItems: "center",
+  width: "95%",
+  margin: "auto"
+}
 
 export default function Products() {
+  const [query, setQuery] = useState("")
+  const [showTransactions, setShowTransactions] = useState(false)
+  const [instance, setInstance] = useState(null)
   const { business } = useSelector(state => state.login.activeUser)
+  const mySocketId = useSelector(state => state?.login?.mySocketId)
+  const token = useSelector(state => state.login.token)
+  const url = `${constants.baseUrl}/products/get-business-products/${business?._id}`
   const products = JSON.parse(JSON.stringify(useSelector(state => state.products?.products || [])))
-  const url = `${constants.baseUrl}/products/get-business-products/65cb22c6d728425e0f1ee777`
+  const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions)))
+
+  const dispatch = useDispatch()
+  console.log(products)
+  const { showRegister, update, toBeUpdatedCustomer,
+    handleUpdate, handleHide, handleShowRegister } = useRegisterForm()
 
   const { loading, error } = useReadData(url, "product");
 
-  console.log(products)
+  const notify = (message) => toast(message, {
+    autoClose: 2700,
+    hideProgressBar: true,
+    theme: "light",
+    position: "top-center"
+  });
 
-    return (
-      <div style={{width: "95%", margin: "auto"}}>
-        <h2> Products</h2>
-      </div>
-    )
-  }
+  const columns = [
+    { title: "Full Name", field: "name", width: "24%" },
+    { title: "Category", field: "category" },
+    { title: "Quantity", field: "quantity" },
+    { title: "Unit Price", field: "unitPrice" },
+    { title: "Sale Price", field: "salePrice" },
+  ];
+
+  const handler = (data) => {
+    if (data?.length > 0) {
+      if (query == "") {
+        return data
+          .filter((std) => {
+            if (std?.status == "closed") return
+              return std;
+          })
+      } else {
+        return data?.filter(
+          (std) => {
+            if (std?.status == "closed") return
+              return (std?.name.toLowerCase().includes(query) ||
+                std.category.toLowerCase().includes(query))
+          }
+        );
+      }
+    } else {
+      return;
+    }
+  };
+
+  const handleSearchChange = (value) => {
+    setQuery(value);
+  };
+
+  return (
+    <div style={parentDivStyle}>
+
+      {!showTransactions && <TitleComponent title="Products"
+        btnName="Create Products" onClick={handleShowRegister} />}
+
+      {!showTransactions && <CustomRibbon query={query}
+        setQuery={handleSearchChange} />}
+
+      {!showTransactions && <Table
+        data={handler(products)} columns={columns}
+        name="Product"
+        state={loading ? "loading.." : error ? error : "no data to display"}
+        onUpdate={(data) => {
+          handleUpdate(data)
+        }}
+
+        onSeeTransactions={(data) => {
+          setInstance(data)
+          setShowTransactions(true)
+        }}
+
+        onDelete={(data) => {
+          deleteFunction("Delete Product",
+            data.name,
+            `${constants.baseUrl}/products/${data?._id}`,
+            token,
+            () => { dispatch(deleteCustomer(data)) })
+        }} />}
+
+      {showRegister && <CreateProduct
+        instance={toBeUpdatedCustomer}
+        update={update}
+        name="Product"
+        fields={fields}
+        url="products"
+        business={business?._id}
+        hideModal={() => { handleHide() }}
+        store={(data) => {
+          console.log(data)
+          dispatch(addProduct(data?.createdProduct))
+          notify("Product created successfully")
+        }}
+        onUpdate={
+          (data) => {
+            dispatch(updateProduct({
+              _id: data?.product?._id,
+              updatedProduct: data?.product
+            }));
+            notify("Product updated successfully")
+          }
+        } />}
+
+      <ToastContainer />
+
+    </div>
+  )
+}

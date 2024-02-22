@@ -3,7 +3,7 @@ import { Button } from '@mui/material';
 import React from 'react';
 
 const CustomButton = ({ bgColor, color, width, height, fontSize,
-  disabled, startIcon, text, type, onClick }) => {
+  disabled, startIcon, text, type, style, onClick }) => {
   return (
     <Button
       disabled = {disabled || false}
@@ -16,6 +16,7 @@ const CustomButton = ({ bgColor, color, width, height, fontSize,
         fontSize: fontSize || "16px",
         width: width,
         fontWeight: "bold",
+        ...style
       }}
       onClick={onClick}
       startIcon={startIcon}

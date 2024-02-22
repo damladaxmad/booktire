@@ -107,7 +107,7 @@ const Table = ({ data, columns, state, onUpdate, onDelete, onSeeTransactions, na
                 aria-expanded={open ? "true" : undefined}
               />
             ),
-            tooltip: "Save User",
+            tooltip: "Actions",
             onClick: (event, rowData) => {
               handleClick(event, rowData);
             },

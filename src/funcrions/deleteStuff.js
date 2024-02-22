@@ -14,7 +14,7 @@ export const deleteFunction = (title, name, url, token, fun) => {
 
     }).then((response) => {
       if (response) {
-        if (title == "Delete Transaction"){
+        if (title == "Delete Transaction" || title == "Delete Product"){
          return axios.delete(url, {
             headers: {
               "authorization": token
