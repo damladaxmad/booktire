@@ -11,7 +11,7 @@ import { addTransaction, deleteTransaction, setTransactions, updateTransaction }
 import TransactionForm from "./TransactionForm";
 import io from 'socket.io-client';
 
-const Transactions = ({ instance, url, hideTransactions, }) => {
+const Transactions = ({ instance, client, url, hideTransactions, }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [type, setType] = useState(null)
@@ -180,6 +180,7 @@ const Transactions = ({ instance, url, hideTransactions, }) => {
         <>
 
             {showForm && <TransactionForm type={type} instance={instance}
+             client={client}
                 update={update} transaction={transaction}
                 hideModal={() => {
                     setShowForm(false)

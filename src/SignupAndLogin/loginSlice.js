@@ -21,9 +21,17 @@ export const loginSlice = createSlice({
     setSocketId: (state, action) => {
       state.mySocketId = action.payload;
     },
+    logout: (state, action) => {
+      return {
+        isLogin: false,
+        activeUser: "",
+        token: "",
+        mySocketId: ""
+      }; 
+    },
   },
 });
 
-export const { setIsLogin, setActiveUser, setToken, setSocketId } = loginSlice.actions;
+export const { setIsLogin, setActiveUser, setToken, setSocketId, logout } = loginSlice.actions;
 
 export default loginSlice.reducer;

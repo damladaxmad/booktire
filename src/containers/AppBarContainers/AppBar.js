@@ -6,8 +6,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { FiLogOut } from "react-icons/fi";  
 import { AiOutlineEdit } from "react-icons/ai";  
 import EditProfile from "./EditProfile";
-import { setIsLogin } from "../../SignupAndLogin/loginSlice";
+import { logout } from "../../SignupAndLogin/loginSlice";
 import { constants } from "../../Helpers/constantsFile";
+import { logoutCustomers } from "../customer/customerSlice";
+import { logoutProducts } from "../products/productSlice";
+import ChangePassword from "./ChangePassword";
+import { IoMdUnlock } from "react-icons/io";
+
 const drawerWidth = 225;
 const useStyles = makeStyles((theme) => {
   return {
@@ -32,13 +37,14 @@ const useStyles = makeStyles((theme) => {
 const AppBarFile = (props) => {
   const dispatch = useDispatch()
   const activeUser = useSelector((state) => state.login.activeUser);
+  const [showChangePassword, setShowChangePasswrd] = useState(false)
   const [show, setShow] = useState(false)
   
   const classes = useStyles();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
@@ -46,7 +52,9 @@ const AppBarFile = (props) => {
   };
 
   const logoutHandler = () => {
-    dispatch(setIsLogin(false))
+    dispatch(logout(false))
+    dispatch(logoutCustomers())
+    dispatch(logoutProducts())
     props.setNavigation()
   }
 
@@ -56,12 +64,15 @@ const AppBarFile = (props) => {
 
   const hideModal = () => {
     setShow(false)
+    setShowChangePasswrd(false)
   }
 
   return (
 
     <>
-      {show && <EditProfile user = {activeUser} hideModal = {hideModal}/>}
+      {show && <EditProfile user = {activeUser} hideModal = {hideModal} logoutHandler = {logoutHandler}/>}
+      {showChangePassword && <ChangePassword user = {activeUser} hideModal = {hideModal}
+      logoutHandler = {logoutHandler}/>}
       <div style = {{
         marginRight: "2%", display: "flex",
         alignItems: "center",}}>
@@ -128,6 +139,14 @@ const AppBarFile = (props) => {
           </ListItemIcon>
           Edit Profile
         </MenuItem>
+
+        <MenuItem onClick={()=> setShowChangePasswrd(true)}>
+          <ListItemIcon>
+            <IoMdUnlock  fontSize="medium" style={{color: "black"}}/>
+          </ListItemIcon>
+          Bedel Pin-ka
+        </MenuItem>
+
         <MenuItem onClick = {logoutHandler}>
           <ListItemIcon>
             <FiLogOut fontSize="medium" style={{color: "black"}} />

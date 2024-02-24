@@ -1,11 +1,14 @@
+// src/containers/customer/customerSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 
+const initialState = {
+  customers: [],
+  isCustomerDataFetched: false
+};
+
 export const customerSlice = createSlice({
-  name: 'login',
-  initialState: {
-    customers: [],
-    isCustomerDataFetched: false
-  },
+  name: 'customer',
+  initialState,
   reducers: {
     setCustomers: (state, action) => {
       state.customers = action.payload;
@@ -34,9 +37,16 @@ export const customerSlice = createSlice({
     setCustomerDataFetched: (state, action) => {
       state.isCustomerDataFetched = action.payload;
     },
+    logoutCustomers: (state, action) => {
+      return {
+        customers: [],
+        isCustomerDataFetched: false
+      }; // Reset state to initial state
+    },
   },
 });
 
-export const { setCustomers, addCustomer, deleteCustomer, updateCustomer, updateCustomerBalance, setCustomerDataFetched } = customerSlice.actions;
+export const { setCustomers, addCustomer, deleteCustomer, updateCustomer, updateCustomerBalance, 
+  setCustomerDataFetched, logoutCustomers } = customerSlice.actions;
 
 export default customerSlice.reducer;

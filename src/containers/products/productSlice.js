@@ -26,9 +26,16 @@ export const productSlice = createSlice({
     setProductDataFetched: (state, action) => {
       state.isProductsDataFetched = action.payload;
     },
+    logoutProducts: (state, action) => {
+      return {
+        products: [],
+        isProductsDataFetched: false
+      }; 
+    },
   },
 });
 
-export const { setProducts, addProduct, deleteProduct, updateProduct, setProductDataFetched } = productSlice.actions;
+export const { setProducts, addProduct, deleteProduct, updateProduct, setProductDataFetched,
+logoutProducts } = productSlice.actions;
 
 export default productSlice.reducer;

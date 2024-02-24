@@ -6,27 +6,27 @@ import { constants } from '../../Helpers/constantsFile';
 import { MdAdd, MdDelete } from 'react-icons/md';
 import { Typography } from '@material-ui/core';
 
-const ItemsForm = ({ handleAddProduct, handleFinish }) => {
-  const initialProductState = { products: '', quantity: '', salePrice: '', subtotal: 0 };
+const ItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
+  const initialProductState = { product: '', quantity: 1, salePrice: '', subtotal: 0 }; // Changed 'customer' to 'product'
   const headers = ["Name", "Qty", "Price", "Amount"];
 
   const [products, setProducts] = useState([initialProductState]);
   const [discount, setDiscount] = useState(0);
   const [total, setTotal] = useState(0);
   const sliceProducts = useSelector(state => state?.products.products);
-  const [filteredCustomers, setFilteredCustomers] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]); // Changed 'customers' to 'products'
 
   useEffect(() => {
     const newTotal = products.reduce((acc, curr) => acc + (isNaN(curr.subtotal) ? 0 : curr.subtotal), 0);
     setTotal(newTotal - discount);
   }, [products, discount]);
 
-  const searchCustomers = (event) => {
+  const searchProducts = (event) => { // Changed 'searchCustomers' to 'searchProducts'
     const query = event.query;
-    const filteredCustomers = sliceProducts?.filter(customer =>
-      customer.name.toLowerCase().includes(query.toLowerCase())
+    const filteredProducts = sliceProducts?.filter(product => // Changed 'customer' to 'product'
+      product.name.toLowerCase().includes(query.toLowerCase())
     );
-    setFilteredCustomers(filteredCustomers);
+    setFilteredProducts(filteredProducts);
   };
 
   const handleInputChange = (index, event) => {
@@ -34,10 +34,10 @@ const ItemsForm = ({ handleAddProduct, handleFinish }) => {
     const updatedProducts = [...products];
     updatedProducts[index][name] = value;
 
-    if (name === 'quantity' || name === 'salePrice') { // Updated 'price' to 'salePrice'
+    if (name === 'quantity' || name === 'salePrice') {
       const quantity = parseFloat(updatedProducts[index].quantity);
-      const salePrice = parseFloat(updatedProducts[index].salePrice); // Updated 'price' to 'salePrice'
-      updatedProducts[index].subtotal = isNaN(quantity) || isNaN(salePrice) ? 0 : quantity * salePrice; // Updated 'price' to 'salePrice'
+      const salePrice = parseFloat(updatedProducts[index].salePrice);
+      updatedProducts[index].subtotal = isNaN(quantity) || isNaN(salePrice) ? 0 : quantity * salePrice;
     }
 
     setProducts(updatedProducts);
@@ -56,7 +56,7 @@ const ItemsForm = ({ handleAddProduct, handleFinish }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const isAnyFieldEmpty = products.some(product => !product.customer || !product.quantity || !product.salePrice);
+    const isAnyFieldEmpty = products.some(product => !product.product || !product.quantity || !product.salePrice); // Changed 'customer' to 'product'
     if (isAnyFieldEmpty) {
       alert('Please fill in all fields before finishing.');
       return;
@@ -71,9 +71,6 @@ const ItemsForm = ({ handleAddProduct, handleFinish }) => {
   return (
     <div style={{ width: "100%", }}>
       <form onSubmit={handleSubmit}>
-        {/* <div style={{ display: "flex", flexDirection: "column", width: "100%", justifyContent: "space-between" }}>
-          {headers?.map(header => <p style={{ width: "20%" }}>{header}</p>)}
-        </div> */}
         <div style={{
           display: "flex", flexDirection: "column", gap: "10px",
           margin: "20px 0px", width: "70%"
@@ -84,16 +81,24 @@ const ItemsForm = ({ handleAddProduct, handleFinish }) => {
                 display: "flex", width: "100%", gap: "20px",
               }}>
               <AutoComplete
-                placeholder='Select customer'
+                placeholder='Select product'
                 style={{ border: "1px solid lightGrey", height: "36px", borderRadius: "5px" }}
-                value={product.customer}
-                suggestions={filteredCustomers}
-                completeMethod={searchCustomers}
+                value={product.product}
+                suggestions={filteredProducts}
+                completeMethod={searchProducts}
                 field="name"
-                onChange={(e) => handleInputChange(index, { target: { name: 'customer', value: e.value } })}
-                onSelect={(e) => handleInputChange(index, { target: { name: 'customer', value: e.value } })}
-              // dropdown
+                onChange={(e) => handleInputChange(index, { target: { name: 'product', value: e.value } })}
+                onSelect={(e) => {
+                  const selectedProduct = filteredProducts.find(item => item.name === e.value);
+                  if (selectedProduct) {
+                    handleInputChange(index, { target: { name: 'product', value: selectedProduct.name } });
+                    handleInputChange(index, { target: { name: 'quantity', value: selectedProduct.quantity } });
+                  }
+                }}
+                dropdown
               />
+
+
               <input
                 style={{ width: "100px", border: "1px solid lightGrey", borderRadius: "5px", padding: "5px 10px" }}
                 type="number"
@@ -119,10 +124,10 @@ const ItemsForm = ({ handleAddProduct, handleFinish }) => {
               <div style={{
                 display: "flex", alignItems: "center", justifyContent: "center",
                 padding: "10px", border: "1px solid lightGrey", borderRadius: "50%",
-                cursor: "pointer", background: constants?.backdropColor
+                cursor: "pointer", background: "white"
               }}
                 onClick={() => handleRemoveItem(index)}>
-                <MdDelete style={{ color: constants?.sColor, fontSize: "16px" }}
+                <MdDelete style={{ color: "black", fontSize: "16px" }}
                 />
               </div>
             </div>
@@ -179,6 +184,7 @@ const ItemsForm = ({ handleAddProduct, handleFinish }) => {
               }}
             />
             <CustomButton
+              disabled={disabled}
               text="Finish"
               width="120px"
               bgColor={constants.pColor}

@@ -9,6 +9,7 @@ import CustomButton from "../reusables/CustomButton";
 const Register = ({instance, store, name, fields, update, url, business,
 hideModal, onUpdate}) => {
 
+  const filteredFields = fields.filter(field => !(update && name === "User" && field.name === "password"));
   const [disabled, setDisabled] = useState(false)
   const token = useSelector(state => state.login.token)
   const mySocketId = useSelector(state => state?.login?.mySocketId)
@@ -18,7 +19,7 @@ hideModal, onUpdate}) => {
      if (!values.name) {
        errors.name = "Field is Required";
      }
-     if (!values.phone) {
+     if ( name !== "User" && !values.phone) {
        errors.phone = "Field is Required";
      }
   
@@ -27,16 +28,20 @@ hideModal, onUpdate}) => {
   };
 
   const formik = useFormik({
-    initialValues:{
+    initialValues: {
         name: update ? instance?.name : "",
         phone: update ? instance?.phone : "",
         district: update ? instance?.district : "",
+        username: update && name == "User" ? instance?.username : "",
+        role: update && name == "User" ? instance?.role : ""
     },
     validate,
     onSubmit: (values,  ) => {
       setDisabled(true)
       values.business = business
       values.socketId = mySocketId
+      if (name === "User") values.passwordConfirm = values.password
+
       if (update){
         axios.patch(`${constants.baseUrl}/${url}/${instance._id}`, values,
         {
@@ -93,7 +98,7 @@ hideModal, onUpdate}) => {
       flexDirection: name == "Expense" ? "row" : "column", alignItems: "center",
     flexWrap: name == "Expense" ? "wrap" : "nowrap" }}
       >
-        {fields?.map((a, index) => (
+        {filteredFields?.map((a, index) => (
           <div key = {index}>
             <input
               // variant="outlined"

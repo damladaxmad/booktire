@@ -10,13 +10,10 @@ import CustomRibbon from "../reusables/CustomRibbon";
 import { fields } from "../containers/products/productModal";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Transactions from "../containers/transaction/Transactions";
 import TitleComponent from "../reusables/TitleComponent.";
 import io from 'socket.io-client';
 import useReadData from "../hooks/useReadData";
-import useEventHandler from "../hooks/useEventHandler";
-import { handleAddCustomerBalance, handleDeleteCustomerBalance, handleUpdateCustomerBalance } from "../containers/customer/customerUtils";
-import { addProduct, updateProduct } from "../containers/products/productSlice";
+import { addProduct, deleteProduct, updateProduct } from "../containers/products/productSlice";
 import CreateProduct from "../containers/products/CreateProduct";
 
 const parentDivStyle = {
@@ -30,12 +27,11 @@ const parentDivStyle = {
 
 export default function Products() {
   const [query, setQuery] = useState("")
-  const [showTransactions, setShowTransactions] = useState(false)
   const [instance, setInstance] = useState(null)
   const { business } = useSelector(state => state.login.activeUser)
+  const url = `${constants.baseUrl}/products/get-business-products/${business?._id}`
   const mySocketId = useSelector(state => state?.login?.mySocketId)
   const token = useSelector(state => state.login.token)
-  const url = `${constants.baseUrl}/products/get-business-products/${business?._id}`
   const products = JSON.parse(JSON.stringify(useSelector(state => state.products?.products || [])))
   const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions)))
 
@@ -66,15 +62,14 @@ export default function Products() {
       if (query == "") {
         return data
           .filter((std) => {
-            if (std?.status == "closed") return
+            if (std?.status == "deleted") return
               return std;
           })
       } else {
         return data?.filter(
           (std) => {
             if (std?.status == "closed") return
-              return (std?.name.toLowerCase().includes(query) ||
-                std.category.toLowerCase().includes(query))
+              return (std?.name?.toLowerCase().includes(query))
           }
         );
       }
@@ -90,13 +85,13 @@ export default function Products() {
   return (
     <div style={parentDivStyle}>
 
-      {!showTransactions && <TitleComponent title="Products"
+      {<TitleComponent title="Products"
         btnName="Create Products" onClick={handleShowRegister} />}
 
-      {!showTransactions && <CustomRibbon query={query}
+      {<CustomRibbon query={query}
         setQuery={handleSearchChange} />}
 
-      {!showTransactions && <Table
+      { <Table
         data={handler(products)} columns={columns}
         name="Product"
         state={loading ? "loading.." : error ? error : "no data to display"}
@@ -104,17 +99,12 @@ export default function Products() {
           handleUpdate(data)
         }}
 
-        onSeeTransactions={(data) => {
-          setInstance(data)
-          setShowTransactions(true)
-        }}
-
         onDelete={(data) => {
-          deleteFunction("Delete Product",
+          deleteFunction(true, "Delete Product",
             data.name,
             `${constants.baseUrl}/products/${data?._id}`,
             token,
-            () => { dispatch(deleteCustomer(data)) })
+            () => { dispatch(deleteProduct(data)) })
         }} />}
 
       {showRegister && <CreateProduct

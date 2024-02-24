@@ -8,7 +8,7 @@ import { forwardRef } from 'react';
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { MenuItem, Menu } from "@material-ui/core";
 
-const Table = ({ data, columns, state, onUpdate, onDelete, onSeeTransactions, name }) => {
+const Table = ({ name, data, columns, state, onUpdate, onDelete, onSeeTransactions, onResetUser }) => {
   const tableIcons = {
     FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
     LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
@@ -53,14 +53,23 @@ const Table = ({ data, columns, state, onUpdate, onDelete, onSeeTransactions, na
           Update {name}
         </MenuItem>
 
-        <MenuItem
+        {(name == "Customer" || name == "Vendor") && (<MenuItem
           onClick={() => {
             handleClose()
             onSeeTransactions(instance)
           }}
         >
           See Transactions
-        </MenuItem>
+        </MenuItem>)}
+
+        {(name == "User" ) && (<MenuItem
+          onClick={() => {
+            handleClose()
+            onResetUser(instance)
+          }}
+        >
+          Reset User
+        </MenuItem>)}
 
         <MenuItem
           onClick={() => {

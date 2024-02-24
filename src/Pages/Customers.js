@@ -67,18 +67,18 @@ export default function Customers() {
     if (data?.length > 0) {
       if (query == "") {
         return data
-          .filter((std) => {
-            if (std?.status == "closed") return
-            if (!std?.type || std?.type == "deynle")
-              return std.balance >= 0 || std.balance <= 0;
+          .filter((instance) => {
+            if (instance?.status == "closed") return
+            if (!instance?.type || instance?.type == "deynle")
+              return instance.balance >= 0 || instance.balance <= 0;
           })
       } else {
         return data?.filter(
-          (std) => {
-            if (std?.status == "closed") return
-            if (!std?.type || std.type == "deynle")
-              return (std?.name.toLowerCase().includes(query) ||
-                std.phone.toLowerCase().includes(query))
+          (instance) => {
+            if (instance?.status == "closed") return
+            if (!instance?.type || instance.type == "deynle")
+              return (instance?.name.toLowerCase().includes(query.toLocaleLowerCase()) ||
+              instance.phone.toLowerCase().includes(query?.toLocaleLowerCase()))
           }
         );
       }
@@ -155,7 +155,7 @@ export default function Customers() {
         }}
 
         onDelete={(data) => {
-          deleteFunction("Customer Deletion",
+          deleteFunction(false, "Customer Deletion",
             data.name,
             `${constants.baseUrl}/customers/close-customer-statement/${data?._id}`,
             token,
@@ -186,6 +186,7 @@ export default function Customers() {
 
       {showTransactions && <Transactions
         instance={instance}
+        client= "customer"
         url={`${constants.baseUrl}/transactions/get-customer-transactions/${instance?._id}`}
         hideTransactions={() => setShowTransactions(false)} />}
 

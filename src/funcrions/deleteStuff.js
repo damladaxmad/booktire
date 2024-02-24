@@ -2,7 +2,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import swal from "sweetalert";
 
-export const deleteFunction = (title, name, url, token, fun) => {
+export const deleteFunction = (deleteDirectly = false, title, name, url, token, fun) => {
     swal({
       title: title,
       text: `Are you sure to delete ${name}?`,
@@ -14,7 +14,7 @@ export const deleteFunction = (title, name, url, token, fun) => {
 
     }).then((response) => {
       if (response) {
-        if (title == "Delete Transaction" || title == "Delete Product"){
+        if (deleteDirectly){
          return axios.delete(url, {
             headers: {
               "authorization": token

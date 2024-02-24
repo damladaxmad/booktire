@@ -4,31 +4,20 @@ import Selectors from '../containers/sales/Selectors';
 import axios from 'axios';
 import { constants } from '../Helpers/constantsFile';
 import { useSelector } from 'react-redux';
+import useReadData from '../hooks/useReadData';
 
 const Sales = () => {
+  const [disabled, setDisabled] = useState(false)
   const [saleType, setSaleType] = useState('cash');
   const [customer, setCustomer] = useState('');
   const [date, setDate] = useState('');
   const token = useSelector(state => state?.login?.token)
+  const { business, name } = useSelector(state => state.login.activeUser)
+  const urlProduct = `${constants.baseUrl}/products/get-business-products/${business?._id}`
+  const urlCustomer = `${constants.baseUrl}/customers/get-business-customers/${business?._id}`
 
-  
-const data = {
-  products: [
-      {
-          "name": "Iphone 12 Pro Max", 
-          "refProduct": "65cb2955d728425e0f1ee7ac",
-          "unitPrice": 100,
-          "category": "Apple Phones", 
-          "quantity": 1,
-          "salePrice": 150
-      }
-  ],
-  discount: 10, 
-  paymentType: "invoice",
-  business: "65cb22c6d728425e0f1ee777", 
-  customer: "65cb2367d728425e0f1ee77a", 
-  user: "Damlad Axmad" 
-}
+  useReadData(urlProduct, "product");
+  useReadData(urlCustomer, "customer");
   
   const createSale = (data) => {
     axios.post(`${constants.baseUrl}/sales`, data,
@@ -37,32 +26,35 @@ const data = {
         "authorization": token
       }
     }).then((res) => {
+      setDisabled(false)
       alert("Sucessfully created sale!")
     }).catch((err) => {
+      setDisabled(false)
       alert(err.response?.data?.message);
     });
   }
   const handleAddProduct = ({ products, discount, total }) => {
-    // Handle the submission logic here, e.g., sending the data to backend
+    setDisabled(true)
+
     console.log('Submitted data:', { products, discount, total });
     products?.map(product => {
-      console.log(product.customer.name)
       console.log(product.salePrice)
     })
     const transformedData = {
       products: products.map(product => ({
-        refProduct: product?.customer?._id,
-        name: product.customer.name,
-        category: product.customer.category,
-        unitPrice: product.customer.unitPrice,
+        refProduct: product?.product?._id,
+        name: product.product.name,
+        category: product.product.category,
+        unitPrice: product.product.unitPrice,
         quantity: product.quantity,
         salePrice: product.salePrice
       })),
       discount: discount,
-      paymentType: "invoice",
-      business: "65cb22c6d728425e0f1ee777", 
-      customer: "65cb2367d728425e0f1ee77a", 
-      user: "Damlad Axmad" 
+      paymentType: saleType,
+      business: business?._id, 
+      customer: customer?._id, 
+      date: date,
+      user: name
     };
     
     createSale(transformedData);
@@ -73,7 +65,6 @@ const data = {
       alert('Please select a date before finishing.');
       return;
     }
-    createSale(data)
     handleAddProduct();
   };
 
@@ -81,7 +72,7 @@ const data = {
     <div style={{width: "95%", margin: "auto"}}>
 
       <div style={{width: "100%", margin: "auto", background: "white", borderRadius: "10px",
-    padding: "30px"}}>
+    padding: "30px", display: "flex", flexDirection: "column"}}>
 
       <Selectors
         saleType={saleType}
@@ -91,29 +82,12 @@ const data = {
         date={date}
         setDate={setDate}
       />
-      {/* Pass handleAddProduct and handleFinish functions to ItemsForm */}
-      <ItemsForm handleAddProduct={handleAddProduct} handleFinish={handleFinish} />
+
+      <ItemsForm handleAddProduct={handleAddProduct} handleFinish={handleFinish} 
+      disabled = {disabled}/>
       </div>
     </div>
   );
 };
 
 export default Sales;
-
-const data = {
-  products: [
-      {
-          "name": "Iphone 12 Pro Max", // get it from the product
-          "refProduct": "65cb2955d728425e0f1ee7ac", // get it from the product
-          "unitPrice": 100, // get it from the product
-          "category": "Apple Phones", // get it from the product
-          "quantity": 1,  //given
-          "salePrice": 150  // given
-      }
-  ],
-  discount: 10, // given
-  paymentType: "invoice", // get it from selectors
-  business: "65cb22c6d728425e0f1ee777", // hard coded
-  customer: "65cb2367d728425e0f1ee77a", // get it from selectors
-  user: "Damlad Axmad" // hard coded
-}

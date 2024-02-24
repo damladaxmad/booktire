@@ -10,6 +10,11 @@ body {
 .sweet-warning{
     background-color: #2F49D1;
 }
+.p-autocomplete-dropdown {
+  background: gray;
+  border: none;
+}
+
 body input:enabled:focus{
     box-shadow: unset !important;
     border-color: unset !important;

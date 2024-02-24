@@ -18,9 +18,6 @@ hideModal, onUpdate}) => {
      if (!values.name) {
        errors.name = "Field is Required";
      }
-     if (!values.quantity) {
-       errors.quantity = "Field is Required";
-     }
      if (!values.unitPrice) {
        errors.unitPrice = "Field is Required";
      }
@@ -107,7 +104,7 @@ hideModal, onUpdate}) => {
         {fields?.map((a, index) => (
           <div key = {index} style={{display: "flex", flexDirection: "column",
           gap: "5px"}}>
-            <label style={{fontWeight: "bold"}}>{a.label}:</label>
+            <label style={{fontWeight: "bold", fontSize: "12px"}}>{a.title}:</label>
             <input
             //   label={a.label}
               placeholder={a.label}

@@ -12,7 +12,7 @@ import { addTransaction, deleteTransaction, updateTransaction } from "./transact
 import { updateCustomerBalance } from "../customer/customerSlice";
 import { handleAddCustomerBalance, handleDeleteCustomerBalance, handleUpdateCustomerBalance } from "../customer/customerUtils";
 
-const TransactionForm = ({ type, update, instance, transaction, hideModal }) => {
+const TransactionForm = ({ type, update, instance, transaction, client, hideModal }) => {
 
     const [disabled, setDisabled] = useState(false)
     const token = useSelector(state => state.login.token)
@@ -44,6 +44,7 @@ const TransactionForm = ({ type, update, instance, transaction, hideModal }) => 
 
     const deleteTransactionFun = () => {
         deleteFunction(
+            true,
             `Delete Transaction`,
             transaction?.description,
             `${constants.baseUrl}/transactions/${transaction?._id}`,
@@ -87,7 +88,7 @@ const TransactionForm = ({ type, update, instance, transaction, hideModal }) => 
             //    values.socketId = socket
             type == "bixin" ? values.debit = 0 : values.credit = 0
             values.description = values.description || "Payment";
-            values.customer = instance?._id
+            values[client] = instance?._id
             values.user = name
             values.socketId = mySocketId
             setDisabled(true)
