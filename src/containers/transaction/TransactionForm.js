@@ -11,6 +11,8 @@ import CustomButton from "../../reusables/CustomButton";
 import { addTransaction, deleteTransaction, updateTransaction } from "./transactionSlice";
 import { updateCustomerBalance } from "../customer/customerSlice";
 import { handleAddCustomerBalance, handleDeleteCustomerBalance, handleUpdateCustomerBalance } from "../customer/customerUtils";
+import { handleAddVendorBalance, handleDeleteVendorBalance, handleUpdateVendorBalance } from "../vendor/vendorUtils";
+import { updateVendorBalance } from "../vendor/vendorSlice";
 
 const TransactionForm = ({ type, update, instance, transaction, client, hideModal }) => {
 
@@ -23,10 +25,12 @@ const TransactionForm = ({ type, update, instance, transaction, client, hideModa
     const dispatch = useDispatch()
 
     const calculateBalance = (transactions) => {
+        console.log(transactions)
         let balance = 0;
-        transactions.forEach(transaction => {
+        transactions?.forEach(transaction => {
             balance += transaction.debit - transaction.credit;
         });
+        console.log(balance)
         return balance;
     };
 
@@ -49,8 +53,19 @@ const TransactionForm = ({ type, update, instance, transaction, client, hideModa
             transaction?.description,
             `${constants.baseUrl}/transactions/${transaction?._id}`,
             token,
-            (res) => {
-                handleDeleteCustomerBalance(dispatch, transactions, calculateBalance, res);
+            async (res) => {
+                if (client == "customer") {
+                    const updatedTransactions = transactions.filter(transaction => transaction?._id !== res?._id);
+                    const newBalance = await calculateBalance(updatedTransactions);
+                    const customerId = res?.customer;
+                    await dispatch(updateCustomerBalance({ _id: customerId, newBalance }));
+                }
+                if (client == "vendor") {
+                    const updatedTransactions = transactions.filter(transaction => transaction?._id !== res?._id);
+                    const newBalance = calculateBalance(updatedTransactions);
+                    const vendorId = res?.vendor;
+                    await dispatch(updateVendorBalance({ _id: vendorId, newBalance }));
+                }
                 dispatch(deleteTransaction(transaction?._id))
                 hideModal()
 
@@ -105,7 +120,8 @@ const TransactionForm = ({ type, update, instance, transaction, client, hideModa
                             updatedTransaction: res?.data?.data?.transaction
                         }));
                         let response = res?.data?.data?.transaction
-                        handleUpdateCustomerBalance(dispatch, transactions, calculateBalance, response);
+                        client == "customer" && handleUpdateCustomerBalance(dispatch, transactions, calculateBalance, response);
+                        client == "vendor" && handleUpdateVendorBalance(dispatch, transactions, calculateBalance, response);
                         hideModal();
                     }
                     ).catch((err) => {
@@ -125,7 +141,8 @@ const TransactionForm = ({ type, update, instance, transaction, client, hideModa
                         setDisabled(false);
                         dispatch(addTransaction(res?.data?.data?.transaction));
                         let response = res?.data?.data?.transaction
-                        handleAddCustomerBalance(dispatch, transactions, calculateBalance, response);
+                        client == "customer" && handleAddCustomerBalance(dispatch, transactions, calculateBalance, response);
+                        client == "vendor" && handleAddVendorBalance(dispatch, transactions, calculateBalance, response);
                         hideModal();
                     }
                     ).catch((err) => {

@@ -1,5 +1,6 @@
 import { useDispatch } from 'react-redux';
 import { addCustomer, deleteCustomer, updateCustomer } from "../containers/customer/customerSlice";
+import { addVendor, deleteVendor, updateVendor } from '../containers/vendor/vendorSlice';
 // import { addVendor, deleteVendor, updateVendor } from "../containers/vendor/vendorSlice";
 
 const useEventHandler = () => {
@@ -48,16 +49,16 @@ const useEventHandler = () => {
 
     switch (eventType) {
       case 'add':
-        // dispatch(addVendor(vendor));
+        dispatch(addVendor(vendor));
         break;
       case 'delete':
-        // dispatch(deleteVendor(vendor)); 
+        dispatch(deleteVendor(vendor)); 
         break;
       case 'update':
-        // dispatch(updateVendor({
-        //     _id: vendor?._id,
-        //     updatedVendor: vendor
-        //   }));
+        dispatch(updateVendor({
+            _id: vendor?._id,
+            updatedVendor: vendor
+          }));
         break;
       default:
         break;

@@ -12,6 +12,8 @@ import { logoutCustomers } from "../customer/customerSlice";
 import { logoutProducts } from "../products/productSlice";
 import ChangePassword from "./ChangePassword";
 import { IoMdUnlock } from "react-icons/io";
+import { logoutUsers } from "../user/userSlice";
+import { logoutVendors } from "../vendor/vendorSlice";
 
 const drawerWidth = 225;
 const useStyles = makeStyles((theme) => {
@@ -55,6 +57,8 @@ const AppBarFile = (props) => {
     dispatch(logout(false))
     dispatch(logoutCustomers())
     dispatch(logoutProducts())
+    dispatch(logoutVendors())
+    dispatch(logoutUsers())
     props.setNavigation()
   }
 
@@ -83,7 +87,7 @@ const AppBarFile = (props) => {
         <Avatar
           className={classes.avatar}
           style={{ backgroundColor: "#041E42", 
-        border: `2px solid ${constants.pColor}` }}
+        }}
           onClick={handleClick}
         >
           <img
@@ -103,32 +107,6 @@ const AppBarFile = (props) => {
         open={open}
         onClose={handleClose}
         onClick={handleClose}
-        PaperProps={{
-          elevation: 0,
-          sx: {
-            overflow: 'visible',
-            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-            mt: 1.5,
-            '& .MuiAvatar-root': {
-              width: 32,
-              height: 32,
-              ml: -0.5,
-              mr: 1,
-            },
-            '&:before': {
-              content: '""',
-              display: 'block',
-              position: 'absolute',
-              top: 0,
-              right: 14,
-              width: 10,
-              height: 10,
-              bgcolor: 'background.paper',
-              transform: 'translateY(-50%) rotate(45deg)',
-              zIndex: 0,
-            },
-          },
-        }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >

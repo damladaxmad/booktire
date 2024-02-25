@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Table from "../utils/Table";
 import { useDispatch, useSelector } from "react-redux";
-import { addCustomer, deleteCustomer, updateCustomer } from "../containers/customer/customerSlice";
+import { addCustomer, deleteCustomer, updateCustomer, updateCustomerSocketBalance } from "../containers/customer/customerSlice";
 import { constants } from "../Helpers/constantsFile";
 import Register from "../utils/Register";
 import { deleteFunction } from "../funcrions/deleteStuff";
@@ -121,12 +121,13 @@ export default function Customers() {
     if (mySocketId == socketId) return
     if (business?._id !== businessId) return
     if (eventType === 'add') {
-        alert("add")
-        handleAddCustomerBalance(dispatch, transactions, calculateBalanceForCustomer, transaction);
+      let newTransaction = transaction?.debit == 0 ? -transaction?.credit : transaction?.debit
+      dispatch(updateCustomerSocketBalance({_id: transaction?.customer, transaction: newTransaction}))
     } else if (eventType === 'delete') {
-        handleDeleteCustomerBalance(dispatch, transactions, calculateBalanceForCustomer, transaction)
+      let newTransaction = transaction?.debit == 0 ? transaction?.credit : -transaction?.debit
+      dispatch(updateCustomerSocketBalance({_id: transaction?.customer, transaction: newTransaction}))
     } else if (eventType === 'update') {
-        handleUpdateCustomerBalance(dispatch, transactions, calculateBalanceForCustomer, transaction);
+      console.log(transaction)
     }
 
 };
@@ -160,7 +161,13 @@ export default function Customers() {
             `${constants.baseUrl}/customers/close-customer-statement/${data?._id}`,
             token,
             () => { dispatch(deleteCustomer(data)) })
-        }} />}
+        }} 
+        
+        onClickRow={(data) => {
+          setInstance(data)
+          setShowTransactions(true)
+        }}
+        />}
 
       {showRegister && <Register
         instance={toBeUpdatedCustomer}

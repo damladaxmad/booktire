@@ -16,6 +16,7 @@ import io from 'socket.io-client';
 import useReadData from "../hooks/useReadData";
 import useEventHandler from "../hooks/useEventHandler";
 import axios from "axios";
+import Privillages from "../containers/adminstration/Privillages";
 
 const parentDivStyle = {
   display: "flex",
@@ -29,14 +30,14 @@ const parentDivStyle = {
 export default function Users() { // Change component name
   const [query, setQuery] = useState("")
   const [showTransactions, setShowTransactions] = useState(false)
+  const [showPrivillages, setShowPrivillages] = useState(false)
   const [instance, setInstance] = useState(null)
   const { business } = useSelector(state => state.login.activeUser)
   const mySocketId = useSelector(state => state?.login?.mySocketId)
   const token = useSelector(state => state.login.token)
   const url = `${constants.baseUrl}/users/get-business-users/${business?._id}` // Update URL
   const users = JSON.parse(JSON.stringify(useSelector(state => state.users?.users || []))) // Update Redux slice name
-  const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions))) // Update Redux slice name
-
+  
   const dispatch = useDispatch()
   
   const { showRegister, update, toBeUpdatedCustomer: toBeUpdatedUser, // Update variable names
@@ -123,13 +124,15 @@ export default function Users() { // Change component name
   return (
     <div style={parentDivStyle}>
 
-      {!showTransactions && <TitleComponent title="Users" // Update title
+      {showPrivillages && <Privillages user = {instance} hide = {()=> setShowPrivillages(false)}/>}
+
+      {!showPrivillages && <TitleComponent title="Users" // Update title
         btnName="Create Users" onClick={handleShowRegister} />}
 
-      {!showTransactions && <CustomRibbon query={query}
+      {!showPrivillages && <CustomRibbon query={query}
         setQuery={handleSearchChange} />}
 
-      {!showTransactions && <Table
+      {!showPrivillages && <Table
         data={handler(users)} columns={columns} // Update variable name
         name="User" // Update name
         state={loading ? "loading.." : error ? error : "no data to display"}
@@ -147,6 +150,10 @@ export default function Users() { // Change component name
         }} 
         onResetUser = {(data)=> {
           resetUser(data)
+        }}
+        onGiveAccess = {(data)=> {
+          setInstance(data)
+          setShowPrivillages(true)
         }}
         />}
 

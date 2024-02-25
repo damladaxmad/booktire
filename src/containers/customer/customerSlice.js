@@ -34,6 +34,16 @@ export const customerSlice = createSlice({
         state.customers[index].balance = newBalance;
       }
     },
+
+    updateCustomerSocketBalance: (state, action) => {
+      const { _id, transaction } = action.payload;
+      console.log(transaction)
+      const index = state.customers.findIndex(customer => customer._id === _id);
+      if (index !== -1) {
+        state.customers[index].balance += transaction;
+      }
+    },
+    
     setCustomerDataFetched: (state, action) => {
       state.isCustomerDataFetched = action.payload;
     },
@@ -47,6 +57,6 @@ export const customerSlice = createSlice({
 });
 
 export const { setCustomers, addCustomer, deleteCustomer, updateCustomer, updateCustomerBalance, 
-  setCustomerDataFetched, logoutCustomers } = customerSlice.actions;
+  updateCustomerSocketBalance, setCustomerDataFetched, logoutCustomers } = customerSlice.actions;
 
 export default customerSlice.reducer;

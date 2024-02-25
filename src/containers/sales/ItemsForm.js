@@ -7,7 +7,7 @@ import { MdAdd, MdDelete } from 'react-icons/md';
 import { Typography } from '@material-ui/core';
 
 const ItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
-  const initialProductState = { product: '', quantity: 1, salePrice: '', subtotal: 0 }; // Changed 'customer' to 'product'
+  const initialProductState = { product: '', quantity: '', salePrice: '', subtotal: 0 }; // Changed 'customer' to 'product'
   const headers = ["Name", "Qty", "Price", "Amount"];
 
   const [products, setProducts] = useState([initialProductState]);
@@ -71,68 +71,75 @@ const ItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
   return (
     <div style={{ width: "100%", }}>
       <form onSubmit={handleSubmit}>
-        <div style={{
-          display: "flex", flexDirection: "column", gap: "10px",
-          margin: "20px 0px", width: "70%"
-        }}>
-          {products.map((product, index) => (
-            <div key={index}
-              style={{
-                display: "flex", width: "100%", gap: "20px",
-              }}>
-              <AutoComplete
-                placeholder='Select product'
-                style={{ border: "1px solid lightGrey", height: "36px", borderRadius: "5px" }}
-                value={product.product}
-                suggestions={filteredProducts}
-                completeMethod={searchProducts}
-                field="name"
-                onChange={(e) => handleInputChange(index, { target: { name: 'product', value: e.value } })}
-                onSelect={(e) => {
-                  const selectedProduct = filteredProducts.find(item => item.name === e.value);
-                  if (selectedProduct) {
-                    handleInputChange(index, { target: { name: 'product', value: selectedProduct.name } });
-                    handleInputChange(index, { target: { name: 'quantity', value: selectedProduct.quantity } });
-                  }
-                }}
-                dropdown
-              />
+      <div style={{
+  display: "flex", flexDirection: "column", gap: "10px",
+  margin: "20px 0px", width: "70%"
+}}>
+  <div style={{
+    display: "flex", width: "100%", gap: "20px",
+  }}>
+    <Typography style={{ flex: "1.2", color: "#999999" }}>Name</Typography>
+    <Typography style={{ flex: "0.73", color: "#999999" }}>quantity</Typography>
+    <Typography style={{ flex: "0.73", color: "#999999" }}>price</Typography>
+    <Typography style={{ flex: "0.73", color: "#999999" }}>subtotal</Typography>
+    <Typography style={{ flex: "0.2", color: "#999999" }}>action</Typography>
+  </div>
+  {products.map((product, index) => (
+    <div key={index}
+      style={{
+        display: "flex", width: "100%", gap: "20px",
+      }}>
+      <AutoComplete
+        placeholder='Select product'
+        style={{
+          flex: "2", minWidth: "0", border: "1px solid lightGrey", height: "36px", borderRadius: "5px",
+        }}
+        value={product.product}
+        suggestions={filteredProducts}
+        completeMethod={searchProducts}
+        field="name"
+        onChange={(e) => handleInputChange(index, { target: { name: 'product', value: e.value } })}
+        onSelect={(e) => {
+          handleInputChange(index, { target: { name: 'quantity', value: 1 } });
+          handleInputChange(index, { target: { name: 'salePrice', value: e.value.salePrice } });
+        }}
+        dropdown
+      />
 
+      <input
+        style={{ flex: "1", minWidth: "0", width: "100px", border: "1px solid lightGrey", borderRadius: "5px", padding: "5px 10px" }}
+        type="number"
+        name="quantity"
+        value={product.quantity}
+        onChange={(event) => handleInputChange(index, event)}
+        placeholder="quantity"
+      />
+      <input
+        style={{ flex: "1", minWidth: "0", width: "100px", border: "1px solid lightGrey", borderRadius: "5px", padding: "5px 10px" }}
+        type="number"
+        name="salePrice"
+        value={product?.salePrice}
+        onChange={(event) => handleInputChange(index, event)}
+        placeholder="price"
+      />
+      <p style={{
+        flex: "1", minWidth: "0", width: "100px", margin: "0px", display: "flex", alignItems: "center",
+        border: "1px solid lightGrey", padding: "5px 10px", fontWeight: "bold", borderRadius: "5px"
+      }}> {`$${product?.subtotal}`}</p>
 
-              <input
-                style={{ width: "100px", border: "1px solid lightGrey", borderRadius: "5px", padding: "5px 10px" }}
-                type="number"
-                name="quantity"
-                value={product.quantity}
-                onChange={(event) => handleInputChange(index, event)}
-                placeholder="quantity"
-              />
-              <input
-                style={{ width: "100px", border: "1px solid lightGrey", borderRadius: "5px", padding: "5px 10px" }}
-                type="number"
-                name="salePrice"
-                value={product?.salePrice}
-                onChange={(event) => handleInputChange(index, event)}
-                placeholder="price"
-              />
-              <p style={{
-                margin: "0px", display: "flex", alignItems: "center",
-                width: "100px", border: "1px solid lightGrey", padding: "5px 10px",
-                fontWeight: "bold", borderRadius: "5px"
-              }}> {`$${product?.subtotal}`}</p>
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "10px", border: "1px solid lightGrey", borderRadius: "50%",
+        cursor: "pointer", background: "white"
+      }}
+        onClick={() => handleRemoveItem(index)}>
+        <MdDelete style={{ color: "black", fontSize: "16px" }}
+        />
+      </div>
+    </div>
+  ))}
+</div>
 
-              <div style={{
-                display: "flex", alignItems: "center", justifyContent: "center",
-                padding: "10px", border: "1px solid lightGrey", borderRadius: "50%",
-                cursor: "pointer", background: "white"
-              }}
-                onClick={() => handleRemoveItem(index)}>
-                <MdDelete style={{ color: "black", fontSize: "16px" }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
 
         <CustomButton
           text="Add item"

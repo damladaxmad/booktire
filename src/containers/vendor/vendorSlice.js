@@ -28,6 +28,7 @@ export const vendorSlice = createSlice({
     },
     updateVendorBalance: (state, action) => { // Change function name and state property
       const { _id, newBalance } = action.payload;
+      console.log(newBalance)
       const index = state.vendors.findIndex(vendor => vendor._id === _id);
       if (index !== -1) {
         state.vendors[index].balance = newBalance;

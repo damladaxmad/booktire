@@ -26,21 +26,21 @@ const parentDivStyle = {
   margin: "auto"
 }
 
-export default function Vendors() { // Change component name
+export default function Vendors() { 
   const [query, setQuery] = useState("")
   const [showTransactions, setShowTransactions] = useState(false)
   const [instance, setInstance] = useState(null)
   const { business } = useSelector(state => state.login.activeUser)
   const mySocketId = useSelector(state => state?.login?.mySocketId)
   const token = useSelector(state => state.login.token)
-  const url = `${constants.baseUrl}/vendors/get-business-vendors/${business?._id}` // Update URL
-  const vendors = JSON.parse(JSON.stringify(useSelector(state => state.vendors?.vendors || []))) // Update Redux slice name
-  const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions))) // Update Redux slice name
+  const url = `${constants.baseUrl}/vendors/get-business-vendors/${business?._id}` 
+  const vendors = JSON.parse(JSON.stringify(useSelector(state => state.vendors?.vendors || []))) 
+  const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions))) 
 
   const dispatch = useDispatch()
   
-  const { showRegister, update, toBeUpdatedCustomer: toBeUpdatedVendor, // Update variable names
-    handleUpdate, handleHide, handleShowRegister } = useRegisterForm() // Update hook
+  const { showRegister, update, toBeUpdatedCustomer: toBeUpdatedVendor, 
+    handleUpdate, handleHide, handleShowRegister } = useRegisterForm() 
 
   const { loading, error } = useReadData(url, "vendor");
   console.log(vendors)
@@ -92,7 +92,7 @@ export default function Vendors() { // Change component name
     setQuery(value);
   };
 
-  const calculateBalanceForVendor = (transactions) => { // Update function name
+  const calculateBalanceForVendor = (transactions) => { 
     let balance = 0;
     transactions.forEach(transaction => {
         balance += transaction.debit - transaction.credit;
@@ -104,8 +104,8 @@ export default function Vendors() { // Change component name
 
   useEffect(() => {
     const socket = io.connect('https://booktire-api.onrender.com');
-    socket.on('vendorEvent', (data) => { // Update event name
-      handleEvent(data, mySocketId, business?._id, "vendorEvent"); // Update event name
+    socket.on('vendorEvent', (data) => { 
+      handleEvent(data, mySocketId, business?._id, "vendorEvent"); 
     });
 
     socket.on('transactionEvent', (data) => {
@@ -123,11 +123,11 @@ export default function Vendors() { // Change component name
     if (business?._id !== businessId) return
     if (eventType === 'add') {
         alert("add")
-        handleAddVendorBalance(dispatch, transactions, calculateBalanceForVendor, transaction); // Update utility function
+        handleAddVendorBalance(dispatch, transactions, calculateBalanceForVendor, transaction); 
     } else if (eventType === 'delete') {
-        handleDeleteVendorBalance(dispatch, transactions, calculateBalanceForVendor, transaction) // Update utility function
+        handleDeleteVendorBalance(dispatch, transactions, calculateBalanceForVendor, transaction) 
     } else if (eventType === 'update') {
-        handleUpdateVendorBalance(dispatch, transactions, calculateBalanceForVendor, transaction); // Update utility function
+        handleUpdateVendorBalance(dispatch, transactions, calculateBalanceForVendor, transaction); 
     }
 
 };
@@ -156,12 +156,19 @@ export default function Vendors() { // Change component name
         }}
 
         onDelete={(data) => {
-          deleteFunction(false,"Vendor Deletion", // Update title
+          deleteFunction(false,"Vendor Deletion", 
             data.name,
-            `${constants.baseUrl}/vendors/close-vendor-statement/${data?._id}`, // Update URL
+            `${constants.baseUrl}/vendors/close-vendor-statement/${data?._id}`, 
             token,
-            () => { dispatch(deleteVendor(data)) }) // Update Redux action
-        }} />}
+            () => { dispatch(deleteVendor(data)) }) 
+        }} 
+
+        onClickRow={(data) => {
+          setInstance(data)
+          setShowTransactions(true)
+        }}
+        
+        />}
 
       {showRegister && <Register
         instance={toBeUpdatedVendor} // Update variable name

@@ -15,6 +15,7 @@ import logo from "../assets/images/logo.png"
 import { Avatar } from '@mui/material';
 import { SidebarData } from './SidebarData';
 import BusinessSection from "./BusinessSection";
+import { useSelector } from "react-redux";
 
 const drawerWidth = 260;
 
@@ -98,12 +99,14 @@ export default function NewLayout({ children, props }) {
   const location = useLocation();
   const [show, setShow] = useState(false)
   const [open, setOpen] = React.useState(true);
+  const activeUser = useSelector(state => state.login?.activeUser)
 
   const handleDrawerOpen = () => {
     setOpen(true);
   };
 
   useEffect(() => {
+    if (activeUser?.privileges?.includes("Dashboard"))
     navigate("/dashboard")
   }, [navigate])
 
@@ -214,6 +217,7 @@ export default function NewLayout({ children, props }) {
       
         <List>
           {SidebarData.map((item, index) => {
+            if (activeUser?.privileges?.includes(item.text) || activeUser?.username == "abc")
             return <SubMenu item={item} key={index} onTabClick/>
           })}
         </List>
@@ -225,6 +229,8 @@ export default function NewLayout({ children, props }) {
         width: "90%", margin: "85px auto",
         marginTop: "100px", background:"#F8F2FE"
       }}>
+        {location?.path == "/" && <Typography style = {{marginLeft:"20px",
+      fontSize: "18px"}}> Hello {activeUser?.name}, welcome back!</Typography>}
         {children}
       </div>
     </div>

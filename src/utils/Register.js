@@ -86,7 +86,7 @@ hideModal, onUpdate}) => {
           justifyContent: "center",
           alignItems: "center",
           flexDirection: "column",
-          gap: "15px"
+          gap: "5px"
         }}
       >
         <h2>{update ? `${name} Update` : `${name} Creation`}</h2>
@@ -126,7 +126,9 @@ hideModal, onUpdate}) => {
        type = "submit"
        width = "290px"
        bgColor={constants.pColor}
-       text = {update ? `Update ${name}` : `Create ${name}`}/>
+       text = {update ? `Update ${name}` : `Create ${name}`}
+       style = {{marginBottom: "8px"}}
+       />
       </form>
 
       </div>
