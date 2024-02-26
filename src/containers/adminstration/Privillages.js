@@ -12,7 +12,7 @@ export default function Privileges({ user, hide }) {
     const token = useSelector(state => state.login?.token);
 
     // List of tab names
-    const tabNames = ['Dashboard', 'Customers', 'Vendors', 'Products', 'Sales', 'Purchases', 'Reports', 'Administration'];
+    const tabNames = ['Dashboard', 'Customers', 'Vendors', 'Products', 'Sales', 'Purchases', 'Reports', 'Adminstration'];
 
     // Function to handle tab selection
     const handleTabSelect = (tabName) => {
@@ -102,9 +102,9 @@ export default function Privileges({ user, hide }) {
                         checked={selectedTabs.includes(tabName)}
                         onChange={() => handleTabSelect(tabName)}
                         style={{
-                            color: '#6A03B6', // Change the color to your custom color when checked
+                            color: '#6A03B6', 
                             '&.Mui-checked': {
-                                color: '#6A03B6' // Change the color to your custom color when checked
+                                color: '#6A03B6' 
                             },
                         }}
                     />

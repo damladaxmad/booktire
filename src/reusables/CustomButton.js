@@ -1,9 +1,10 @@
 // CustomButton.js
 import { Button } from '@mui/material';
 import React from 'react';
+import { constants } from '../Helpers/constantsFile';
 
-const CustomButton = ({ bgColor, color, width, height, fontSize,
-  disabled, startIcon, text, type, style, onClick }) => {
+const CustomButton = ({ bgColor = constants.pColor, color, width, height, fontSize,
+  disabled, startIcon, text = "Click", type, style, onClick }) => {
   return (
     <Button
       disabled = {disabled || false}
