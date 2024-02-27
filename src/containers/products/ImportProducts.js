@@ -1,18 +1,15 @@
 import { Typography } from "@material-ui/core";
 import * as XLSX from 'xlsx'
-import { useSelector } from "react-redux";
 import { useState } from "react";
-import StoreCustomers from "../containers/customer/StoreCustomers";
-import CustomButton from "../reusables/CustomButton";
+import CustomButton from "../../reusables/CustomButton";
+import StoreProducts from "./StoreProducts";
 
-export default function ImportCustomers() {
+export default function ImportProducts({showProducts}) {
     const [excelFile, setExcelFile] = useState(null);
     const [excelFileError, setExcelFileError] = useState(null);
     const [excelData, setExcelData] = useState(null);
-    const [showStoreCustomers, setShowStoreCustomers] = useState(false)
+    const [showStoreProducts, setShowStoreProducts] = useState(false)
     const fileType = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"];
-    const token = useSelector(state => state.login.token)
-
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -30,7 +27,8 @@ export default function ImportCustomers() {
                     const worksheet = workbook.Sheets[sheetName];
                     const data = XLSX.utils.sheet_to_json(worksheet);
                     setExcelData(data);
-                    setShowStoreCustomers(true)
+                    showProducts(true)
+                    setShowStoreProducts(true)
                 }
             } catch (error) {
                 console.error('Error reading Excel file:', error);
@@ -72,36 +70,39 @@ export default function ImportCustomers() {
 
     return (
         <>
-            {showStoreCustomers && <StoreCustomers customers = {excelData} 
-            hide = {()=> setShowStoreCustomers(false)}/>}
+            {showStoreProducts && <StoreProducts products={excelData}
+                hide={() => {
+                    setShowStoreProducts(false)
+                    showProducts(false)
+                }} />}
 
-       {!showStoreCustomers && <div style={{
-            background: "white", width: "50%", margin: "auto", borderRadius: "10px",
-            display: "flex", flexDirection: "column", gap: "20px", alignItems: "center",
-            padding: "30px"
-        }}>
+            {!showStoreProducts && <div style={{
+                background: "white", width: "50%", margin: "auto", borderRadius: "10px",
+                display: "flex", flexDirection: "column", gap: "20px", alignItems: "center",
+                padding: "30px"
+            }}>
 
-            <form autoComplete="off"
-                onSubmit={handleSubmit}>
-                <Typography style={{ fontWeight: "bold", fontSize: "18px" }}> Updload From Excel</Typography>
-                <br></br>
+                <form autoComplete="off"
+                    onSubmit={handleSubmit}>
+                    <Typography style={{ fontWeight: "bold", fontSize: "18px" }}> Get Products From Excel</Typography>
+                    <br></br>
 
-                <input type='file'
-                    onChange={handleFile} required></input>
+                    <input type='file'
+                        onChange={handleFile} required></input>
 
-                {excelFileError && <div className='text-danger'
-                    style={{ marginTop: 5 + 'px' }}>{excelFileError}</div>}
+                    {excelFileError && <div className='text-danger'
+                        style={{ marginTop: 5 + 'px' }}>{excelFileError}</div>}
 
-               <CustomButton
-               type = "submit"
-               text = "Submit"
-               height= "30px"
-               fontSize= "12px"
-               />
+                    <CustomButton
+                        type="submit"
+                        text="Submit"
+                        height="30px"
+                        fontSize="12px"
+                    />
 
-            </form>
+                </form>
 
-        </div>}
+            </div>}
         </>
     )
 }

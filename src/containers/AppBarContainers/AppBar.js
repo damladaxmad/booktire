@@ -81,7 +81,7 @@ const AppBarFile = (props) => {
         marginRight: "2%", display: "flex",
         alignItems: "center",}}>
 
-        <Typography style = {{fontWeight: "500", marginRight: "10px"}}>
+        <Typography style = {{fontWeight: "500", marginRight: "5px"}}>
        {activeUser ? activeUser.name : "Ahmed Ali"}
         </Typography>
         <Avatar

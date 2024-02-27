@@ -22,6 +22,7 @@ const drawerWidth = 260;
 const openedMixin = (theme) => ({
   width: drawerWidth,
   background: "#6A03B6",
+  // background: "#3A3A3A",
   border: "none",
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
@@ -31,7 +32,7 @@ const openedMixin = (theme) => ({
 });
 
 const closedMixin = (theme) => ({
-  background: "#6A03B6",
+  // background: "#6A03B6",
   border: "none",
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
@@ -78,7 +79,6 @@ const AppBar = styled(MuiAppBar, {
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     width: drawerWidth,
-    background: "#6A03B6",
     flexShrink: 0,
     whiteSpace: 'nowrap',
     boxSizing: 'border-box',
@@ -199,8 +199,10 @@ export default function NewLayout({ children, props }) {
                 BOOKTIRE SYSTEM
               </Typography>
               <Typography style={{
-                fontSize: "14px",
-                color: "#CCBED6", fontWeight: "500", marginLeft: "5px"
+                fontSize: "13px",
+                color: "#CCBED6",
+                // color: "#A8A8A8",
+                 fontWeight: "500", marginLeft: "5px"
               }}>
                 BY TACABTIRE ICT
               </Typography>
@@ -222,7 +224,7 @@ export default function NewLayout({ children, props }) {
           })}
         </List>
 
-          <BusinessSection/>
+          {/* <BusinessSection/> */}
 
       </Drawer>
       <div style={{
