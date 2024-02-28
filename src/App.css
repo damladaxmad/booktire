@@ -10,10 +10,10 @@ body {
 .sweet-warning{
     background-color: #2F49D1;
 }
-.p-autocomplete-dropdown {
+/* .p-autocomplete-dropdown {
   background: gray;
   border: none;
-}
+} */
 
 body input:enabled:focus{
     box-shadow: unset !important;
@@ -22,4 +22,22 @@ body input:enabled:focus{
 
 input:focus {
     outline: none;
+}
+
+/* Global scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color of the scrollbar track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* Color of the scrollbar thumb */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color of the scrollbar thumb on hover */
 }

@@ -11,7 +11,7 @@ export default function Dashboard() {
     {title: "products", value: 150},
     {title: "sample", value: 200},
     {title: "products", value: 150},
-    {title: "sample", value: 200},
+    {title: "low stock", value: 15},
   ]
 
   return (

@@ -16,6 +16,7 @@ import { Avatar } from '@mui/material';
 import { SidebarData } from './SidebarData';
 import BusinessSection from "./BusinessSection";
 import { useSelector } from "react-redux";
+import "../App.css"
 
 const drawerWidth = 260;
 
@@ -217,14 +218,15 @@ export default function NewLayout({ children, props }) {
           </div>
         </DrawerHeader>
       
+        <div style={{ overflowY: "auto", height: "calc(100% - 120px)" }}> 
         <List>
           {SidebarData.map((item, index) => {
             if (activeUser?.privileges?.includes(item.text) || activeUser?.username == "abc")
             return <SubMenu item={item} key={index} onTabClick/>
           })}
         </List>
-
-          {/* <BusinessSection/> */}
+         </div>
+          <BusinessSection/>
 
       </Drawer>
       <div style={{

@@ -1,32 +1,36 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AutoComplete } from 'primereact/autocomplete';
 import moment from 'moment';
+import Select from 'react-select';
 
 const Selectors = ({ saleType, setSaleType, customer, setCustomer, date, setDate }) => {
-  const [value, setValue] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const customers = useSelector(state => state?.customers.customers)
-  const [filteredCustomers, setFilteredCustomers] = useState([]);
-
+  const [value, setValue] = useState(''); // Define value state
+  const customers = useSelector(state => state?.customers.customers);
 
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
     setDate(e.target.value)
   };
 
-  const searchCustomers = (event) => {
-    const query = event.query;
-    const filteredCustomers = customers.filter(customer =>
-      customer.name.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredCustomers(filteredCustomers);
+  const searchCustomers = () => {
+    return customers
+      .filter(customer =>
+        customer?.name?.toLowerCase().includes(value.toLowerCase())
+      )
+      .map(customer => ({ value: customer, label: customer?.name }));
   };
 
-  
-  const handleCustomerSelect = (event) => {
-    setCustomer(event.value);
+  const handleCustomerSelect = (selectedOption) => {
+    if (selectedOption) {
+      setValue(selectedOption?.value?.name || ''); // Set the value state
+      setCustomer(selectedOption.value);
+    } else {
+      setValue(''); // Clear the value state
+      setCustomer(null); // Clear the customer state
+    }
   };
+  
 
   return (
     <div style={{ display: "flex", gap: "20px" }}>
@@ -40,19 +44,25 @@ const Selectors = ({ saleType, setSaleType, customer, setCustomer, date, setDate
         <option value="invoice">Invoice</option>
       </select>
 
-        <AutoComplete
-          placeholder='Select customer'
-          style={{ border: "1px solid lightGrey", height: "36px", borderRadius: "5px",
-        width: "183px" }}
-          value={value}
-          suggestions={filteredCustomers}
-          completeMethod={searchCustomers}
-          onChange={(e) => setValue(e.value)}
-          onSelect={handleCustomerSelect}
-          field="name" // Specify which property to display in the dropdown
-          dropdown
-          disabled={saleType == "cash"} 
-        />
+      <Select
+        placeholder='Select customer'
+        styles={{
+          control: (styles, { isDisabled }) => ({
+            ...styles,
+            border: "1px solid lightGrey",
+            height: "36px",
+            borderRadius: "5px",
+            width: "183px",
+            minHeight: "28px", // Add minHeight property for better compatibility
+            ...(isDisabled && { cursor: "not-allowed" }), // Optional: style for disabled state
+          })
+        }}
+        value={customer ? { value: customer, label: customer.name } : null}
+        options={searchCustomers()}
+        onChange={handleCustomerSelect}
+        isClearable={true} // Make the Select clearable
+        isDisabled={saleType === "cash"}
+      />
 
       <input
         type="date"
@@ -64,28 +74,10 @@ const Selectors = ({ saleType, setSaleType, customer, setCustomer, date, setDate
           borderRadius: "5px",
           background: "white",
           border: "1px solid lightGrey",
-      
         }}
         value={moment(selectedDate).format("YYYY-MM-DD")}
         onChange={handleDateChange}
       />
-
-      {/* <input
-        type="text"
-        style={{
-          width: "180px",
-          height: "36px",
-          padding: "10px",
-          fontSize: "16px",
-          borderRadius: "5px",
-          background: "white",
-          border: "1px solid lightGrey",
-      
-        }}
-        placeholder='Enter invoice'
-        onChange={(e) => props.date(e.target.value)}
-      /> */}
-      
     </div>
   );
 };

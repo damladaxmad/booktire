@@ -31,7 +31,7 @@ function createWindow() {
       : `file://${path.join(__dirname, '../build/index.html')}`
   )
   win.maximize()
-  win.removeMenu(true)
+  // win.removeMenu(true)
 
 }
 
