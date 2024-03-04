@@ -2,6 +2,7 @@ import { useState } from "react"
 import { constants } from "../Helpers/constantsFile";
 import { Typography } from "@material-ui/core";
 import PersonalReport from "../containers/reports/PersonalReports";
+import StockSummary from "../containers/reports/StockSummary";
 
 export default function Reports() {
   const [currentTab, setCurrentTab] = useState(0)
@@ -53,10 +54,28 @@ export default function Reports() {
           }}>
           Vendors
         </div>
+        <div
+          onClick={() => handleTabChange(2)}
+          style={{
+           padding: '5px 0px',
+            width: "100px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: '10px',
+            cursor: 'pointer',
+            backgroundColor: currentTab === 2 ? constants.pColor : 'transparent',
+            color: currentTab === 2 ? 'white' : 'black',
+            borderRadius: '50px',
+            border: `1px solid ${constants.pColor}`
+          }}>
+          Products
+        </div>
       </div>
 
       {currentTab == 0 && <PersonalReport name = "customers" type = "Customers"/>}
       {currentTab == 1 && <PersonalReport name = "vendors" type = "Vendors"/>}
+      {currentTab == 2 && <StockSummary />}
       </div>
     )
   }

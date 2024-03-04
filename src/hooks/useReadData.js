@@ -1,24 +1,17 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { setCustomerDataFetched, setCustomers } from "../containers/customer/customerSlice";
-import { setProducts } from "../containers/products/productSlice";
-import { setVendorDataFetched, setVendors } from "../containers/vendor/vendorSlice";
-import { setUserDataFetched, setUsers } from "../containers/user/userSlice";
 
-
-const useReadData = (url, type) => {
+const useReadData = (url, fetchDataAction, setDataFetchedAction, isDataFetchedSelector, dataKey) => {
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const token = useSelector(state => state?.login?.token)
-    const { isCustomerDataFetched } = useSelector(state => state?.customers)
-    const {isProductDataFetched} = useSelector(state => state.products)
-    const {isUserDataFetched} = useSelector(state => state.users)
+    const token = useSelector(state => state?.login?.token);
+    const isDataFetched = useSelector(isDataFetchedSelector);
+
     useEffect(() => {
-        if (type == "customer" && isCustomerDataFetched) return
-        if (type == "product" && isProductDataFetched) return
-        if (type == "user" && isUserDataFetched) return
+        if (isDataFetched) return;
+
         let source = axios.CancelToken.source();
 
         const fetchData = async () => {
@@ -31,14 +24,9 @@ const useReadData = (url, type) => {
                     cancelToken: source.token
                 });
                 setLoading(false);
-                console.log(response?.data?.data)
-                type == "customer" && dispatch(setCustomers(response?.data?.data?.customers));
-                type == "customer" && dispatch(setCustomerDataFetched(true));
-                type == "vendor" && dispatch(setVendors(response?.data?.data?.vendors));
-                type == "vendor" && dispatch(setVendorDataFetched(true));
-                type == "user" && dispatch(setUsers(response?.data?.data?.users));
-                type == "user" && dispatch(setUserDataFetched(true));
-                type == "product" && dispatch(setProducts(response?.data?.data?.products));
+                const data = response?.data?.data[dataKey];
+                dispatch(fetchDataAction(data));
+                dispatch(setDataFetchedAction(true));
             } catch (error) {
                 if (!axios.isCancel(error)) {
                     setError("Error getting the data");
@@ -52,7 +40,7 @@ const useReadData = (url, type) => {
         return () => {
             source.cancel();
         };
-    }, [dispatch, url, token]);
+    }, [dispatch, url, token, fetchDataAction, setDataFetchedAction, isDataFetched, dataKey]);
 
     return { loading, error };
 };

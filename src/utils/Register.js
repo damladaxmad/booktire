@@ -69,7 +69,7 @@ hideModal, onUpdate}) => {
           store(res?.data?.data)
         }).catch((err) => {
           setDisabled(false)
-          alert(err.response.data.message);
+          alert(err?.response?.data?.message);
         });
       }    
     

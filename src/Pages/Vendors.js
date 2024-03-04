@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Table from "../utils/Table";
 import { useDispatch, useSelector } from "react-redux";
-import { addVendor, deleteVendor, updateVendor } from "../containers/vendor/vendorSlice"; // Update Redux actions
+import { addVendor, deleteVendor, setVendorDataFetched, setVendors, updateVendor } from "../containers/vendor/vendorSlice"; // Update Redux actions
 import { constants } from "../Helpers/constantsFile";
 import Register from "../utils/Register";
 import { deleteFunction } from "../funcrions/deleteStuff";
@@ -42,8 +42,13 @@ export default function Vendors() {
   const { showRegister, update, toBeUpdatedCustomer: toBeUpdatedVendor, 
     handleUpdate, handleHide, handleShowRegister } = useRegisterForm() 
 
-  const { loading, error } = useReadData(url, "vendor");
-  console.log(vendors)
+    const { loading, error } = useReadData(
+      url,
+       setVendors,
+       setVendorDataFetched,
+       state => state.vendors.isVendorDataFetched,
+       "vendors"
+   );
 
   const notify = (message) => toast(message, {
     autoClose: 2700,

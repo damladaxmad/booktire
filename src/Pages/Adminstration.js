@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Table from "../utils/Table";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser, deleteUser, updateUser } from "../containers/user/userSlice"; // Update Redux actions
+import { addUser, deleteUser, setUserDataFetched, setUsers, updateUser } from "../containers/user/userSlice"; // Update Redux actions
 import { constants } from "../Helpers/constantsFile";
 import Register from "../utils/Register";
 import { deleteFunction } from "../funcrions/deleteStuff";
@@ -43,8 +43,14 @@ export default function Users() { // Change component name
   const { showRegister, update, toBeUpdatedCustomer: toBeUpdatedUser, // Update variable names
     handleUpdate, handleHide, handleShowRegister } = useRegisterForm() // Update hook
 
-  const { loading, error } = useReadData(url, "user");
-  console.log(users)
+
+  const { loading, error } = useReadData(
+    url,
+    setUsers,
+    setUserDataFetched,
+    state => state.users.isUsersDataFetched,
+    "users"
+  );
 
   const notify = (message) => toast(message, {
     autoClose: 2700,

@@ -53,8 +53,8 @@ const Selectors = ({ saleType, setSaleType, customer, setCustomer, date, setDate
             height: "36px",
             borderRadius: "5px",
             width: "183px",
-            minHeight: "28px", // Add minHeight property for better compatibility
-            ...(isDisabled && { cursor: "not-allowed" }), // Optional: style for disabled state
+            minHeight: "28px", 
+            ...(isDisabled && { cursor: "not-allowed" }), 
           })
         }}
         value={customer ? { value: customer, label: customer.name } : null}

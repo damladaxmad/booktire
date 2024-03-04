@@ -8,6 +8,9 @@ import useReadData from '../hooks/useReadData';
 import { Typography } from '@material-ui/core';
 import SalesReport from '../containers/sales/SaleReport';
 import moment from 'moment';
+import SalesTable from '../containers/sales/SalesTable';
+import { setProductDataFetched, setProducts } from '../containers/products/productSlice';
+import { setCustomerDataFetched, setCustomers } from '../containers/customer/customerSlice';
 
 const Sales = () => {
   const [disabled, setDisabled] = useState(false);
@@ -21,8 +24,20 @@ const Sales = () => {
   const urlProduct = `${constants.baseUrl}/products/get-business-products/${business?._id}`;
   const urlCustomer = `${constants.baseUrl}/customers/get-business-customers/${business?._id}`;
 
-  useReadData(urlProduct, 'product');
-  useReadData(urlCustomer, 'customer');
+useReadData(
+    urlProduct,
+    setProducts,
+    setProductDataFetched,
+    state => state.products.isProductsDataFetched,
+    "products"
+);
+useReadData(
+  urlCustomer,
+  setCustomers,
+  setCustomerDataFetched,
+  state => state.customers.isCustomerDataFetched,
+  "customers"
+);
 
   const handleTabChange = (tabIndex) => {
     setCurrentTab(tabIndex);
@@ -118,6 +133,23 @@ const Sales = () => {
           }}>
           Report
         </div>
+        <div
+          onClick={() => handleTabChange(2)}
+          style={{
+           padding: '5px 0px',
+            width: "80px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: '10px',
+            cursor: 'pointer',
+            backgroundColor: currentTab === 2 ? constants.pColor : 'transparent',
+            color: currentTab === 2 ? 'white' : 'black',
+            borderRadius: '50px',
+            border: `1px solid ${constants.pColor}`
+          }}>
+          Sales
+        </div>
       </div>
       <div style={{
         width: "100%", margin: "auto", background: "white", borderRadius: "10px",
@@ -139,6 +171,9 @@ const Sales = () => {
         )}
         {currentTab === 1 && (
           <SalesReport />
+        )}
+        {currentTab === 2 && (
+          <SalesTable />
         )}
       </div>
     </div>

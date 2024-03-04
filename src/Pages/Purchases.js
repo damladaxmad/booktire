@@ -8,6 +8,8 @@ import useReadData from '../hooks/useReadData';
 import PurchaseSelectors from '../containers/puchase/PurchaseSelectors';
 import moment from 'moment';
 import PurchaseItemsForm from '../containers/puchase/PurchaseItemsForm';
+import { setProductDataFetched, setProducts } from '../containers/products/productSlice';
+import { setVendorDataFetched, setVendors } from '../containers/vendor/vendorSlice';
 
 const Purchases = () => {
   const [disabled, setDisabled] = useState(false)
@@ -20,8 +22,20 @@ const Purchases = () => {
   const urlProduct = `${constants.baseUrl}/products/get-business-products/${business?._id}`
   const urlVendor = `${constants.baseUrl}/vendors/get-business-vendors/${business?._id}`
 
-  useReadData(urlProduct, "product");
-  useReadData(urlVendor, "vendor");
+  useReadData(
+    urlProduct,
+    setProducts,
+    setProductDataFetched,
+    state => state.products.isProductsDataFetched,
+    "products"
+);
+useReadData(
+  urlVendor,
+  setVendors,
+  setVendorDataFetched,
+  state => state.vendors.isVendorDataFetched,
+  "vendors"
+);
 
   const createPurchase = (data) => {
     axios.post(`${constants.baseUrl}/purchases`, data,

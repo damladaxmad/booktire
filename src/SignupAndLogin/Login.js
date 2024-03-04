@@ -23,6 +23,8 @@ const Login = (props) => {
   const [showSpinner, setShowSpinner] = useState(false)
   const [stateValues, setStateValues] = useState("")
   const [usernameOrPasswordError, setUsernameOrPasswordError] = useState('')
+  const [noInternet, setNoInternet] = useState(false);
+  const [disableButton, setDisableButton] = useState(false); // State to disable button
 
   const loginArr = [
     { label: "Enter Username", type: "text", name: "userName" },
@@ -45,24 +47,28 @@ const Login = (props) => {
   };
 
   const authenticateFun = async (values) => {
-  
-    const response = await axios
-    .post(`${constants.baseUrl}/users/authenticate`, {
-      username: values.userName,
-      password: values.password,
-      version: "notify_version"
+    try {
+      const response = await axios.post(`${constants.baseUrl}/users/authenticate`, {
+        username: values.userName,
+        password: values.password,
+        version: "notify_version"
+      });
+
+      dispatch(setActiveUser(response.data?.data?.user));
+      dispatch(setToken(`Bearer ${response?.data?.token}`));
+      dispatch(setIsLogin(true));
+      setShowSpinner(false);
+      props.showHandler(response.data?.data?.user);
+    } catch (err) {
+      setShowSpinner(false);
+      if (!navigator.onLine) {
+        setUsernameOrPasswordError(""); // Clear error message if no internet
+        setDisableButton(true); // Disable button if no internet
+      } else {
+        setUsernameOrPasswordError(err.response?.data?.message || "Incorrect username or password"); // Display error message for incorrect credentials
+        setDisableButton(false); // Enable button if there's an error
+      }
     }
-    ).then(res => {
-      dispatch(setActiveUser(res.data?.data?.user))
-      dispatch(setToken(`Bearer ${res?.data?.token}`))
-      dispatch(setIsLogin(true))
-      setShowSpinner(false)
-      props.showHandler(res.data?.data?.user)
-    })
-    .catch((err) => {
-      setShowSpinner(false)
-      setUsernameOrPasswordError(err.response?.data?.message)
-    });
   }
 
   const formik = useFormik({
@@ -78,10 +84,26 @@ const Login = (props) => {
   });
 
   useEffect(()=> {
-      if (stateValues != "") authenticateFun(stateValues)
-    
+    if (stateValues !== "") authenticateFun(stateValues);
   }, [stateValues])
 
+  // Event listener to check for online/offline status
+  useEffect(() => {
+    const handleConnectionChange = () => {
+      setNoInternet(!navigator.onLine);
+      if (navigator.onLine) {
+        setDisableButton(false); // Enable button when internet connection is restored
+      }
+    };
+
+    window.addEventListener("online", handleConnectionChange);
+    window.addEventListener("offline", handleConnectionChange);
+
+    return () => {
+      window.removeEventListener("online", handleConnectionChange);
+      window.removeEventListener("offline", handleConnectionChange);
+    };
+  }, []);
 
   return (
     <form
@@ -91,10 +113,10 @@ const Login = (props) => {
      }}
     >
       {loginArr.map((a, index) => (
-        <div key = {index}>
-      {showSpinner && <Backdrop className={classes.backdrop} open>
-        <CircularProgress color="inherit" />
-      </Backdrop>}
+        <div key={index}>
+          {showSpinner && <Backdrop className={classes.backdrop} open>
+            <CircularProgress color="inherit" />
+          </Backdrop>}
           <input
             placeholder={a.label}
             id={a.name}
@@ -120,12 +142,23 @@ const Login = (props) => {
       ))}
 
       <CustomButton 
-      type = "submit" text = "login"
-      bgColor={constants.pColor}
-      width = "290px"/>
-      { usernameOrPasswordError != '' ? <p style={{alignSelf: "center",
-    color: "red"}}> 
-      {usernameOrPasswordError}</p> : null}
+        type="submit" 
+        text="login"
+        bgColor={constants.pColor}
+        width="290px"
+        disabled={disableButton}
+        style = {{marginBottom: "10px"}}
+      />
+      {noInternet && !disableButton && 
+        <p style={{alignSelf: "center", color: "red"}}>
+          No internet connection
+        </p>
+      }
+      {!noInternet && usernameOrPasswordError && 
+        <p style={{alignSelf: "center", color: "red"}}>
+          {usernameOrPasswordError}
+        </p>
+      }
     </form>
   );
 };

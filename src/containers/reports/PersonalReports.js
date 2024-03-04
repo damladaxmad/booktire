@@ -49,7 +49,7 @@ const PersonalReport = ({name, type}) => {
         <div style = {{
             background: "white",
             borderRadius: "8px",
-            padding: "20px 30px",
+            padding: "30px 50px",
             display: "flex",
             gap: "30px",
             flexDirection: "column",

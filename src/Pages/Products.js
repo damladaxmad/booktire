@@ -13,7 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import TitleComponent from "../reusables/TitleComponent.";
 import io from 'socket.io-client';
 import useReadData from "../hooks/useReadData";
-import { addProduct, deleteProduct, updateProduct } from "../containers/products/productSlice";
+import { addProduct, deleteProduct, setProductDataFetched, setProducts, updateProduct } from "../containers/products/productSlice";
 import CreateProduct from "../containers/products/CreateProduct";
 
 const parentDivStyle = {
@@ -36,11 +36,17 @@ export default function Products() {
   const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions)))
 
   const dispatch = useDispatch()
-  console.log(products)
+
   const { showRegister, update, toBeUpdatedCustomer,
     handleUpdate, handleHide, handleShowRegister } = useRegisterForm()
 
-  const { loading, error } = useReadData(url, "product");
+    const { loading, error } = useReadData(
+       url,
+       setProducts,
+       setProductDataFetched,
+       state => state.products.isProductsDataFetched,
+       "products"
+   );
 
   const notify = (message) => toast(message, {
     autoClose: 2700,

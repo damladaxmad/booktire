@@ -1,4 +1,5 @@
 import { Typography } from "@mui/material"
+import { constants } from "../../Helpers/constantsFile"
 
 export default function LatestTransactions() {
 
@@ -27,7 +28,7 @@ function Transaction({ data, index }) {
     return (
         <div style={{
             display: "flex", flexDirection: "row", width: "100%",
-            background: index == 0 ? "#6A03B6" : "white", borderRadius: "8px", padding: "15px 20px",
+            background: index == 0 ? constants.pColor : "white", borderRadius: "8px", padding: "15px 20px",
             alignItems: "center", justifyContent: "space-between",
             color: index == 0 ? "white" : "black", position: "relative"
         }}>

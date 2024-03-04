@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Table from "../utils/Table";
 import { useDispatch, useSelector } from "react-redux";
-import { addCustomer, deleteCustomer, updateCustomer, updateCustomerSocketBalance } from "../containers/customer/customerSlice";
+import { addCustomer, deleteCustomer, setCustomerDataFetched, setCustomers, updateCustomer, updateCustomerSocketBalance } from "../containers/customer/customerSlice";
 import { constants } from "../Helpers/constantsFile";
 import Register from "../utils/Register";
 import { deleteFunction } from "../funcrions/deleteStuff";
@@ -16,6 +16,7 @@ import io from 'socket.io-client';
 import useReadData from "../hooks/useReadData";
 import useEventHandler from "../hooks/useEventHandler";
 import { handleAddCustomerBalance, handleDeleteCustomerBalance, handleUpdateCustomerBalance } from "../containers/customer/customerUtils";
+import { Typography } from "@mui/material";
 
 const parentDivStyle = {
   display: "flex",
@@ -30,7 +31,7 @@ export default function Customers() {
   const [query, setQuery] = useState("")
   const [showTransactions, setShowTransactions] = useState(false)
   const [instance, setInstance] = useState(null)
-  const { business } = useSelector(state => state.login.activeUser)
+  const { business, privileges } = useSelector(state => state.login.activeUser)
   const mySocketId = useSelector(state => state?.login?.mySocketId)
   const token = useSelector(state => state.login.token)
   const url = `${constants.baseUrl}/customers/get-business-customers/${business?._id}`
@@ -42,7 +43,13 @@ export default function Customers() {
   const { showRegister, update, toBeUpdatedCustomer,
     handleUpdate, handleHide, handleShowRegister } = useRegisterForm()
 
-  const { loading, error } = useReadData(url, "customer");
+    const { loading, error } = useReadData(
+     url,
+      setCustomers,
+      setCustomerDataFetched,
+      state => state.customers.isCustomerDataFetched,
+      "customers"
+  );
 
   const notify = (message) => toast(message, {
     autoClose: 2700,
@@ -131,6 +138,12 @@ export default function Customers() {
     }
 
 };
+
+// if (!privileges?.includes("Customers")) return (
+//   <div style = {parentDivStyle}>
+//     <Typography> You cannot access this tab</Typography>
+//   </div>
+// )
 
 
   return (
