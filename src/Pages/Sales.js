@@ -21,8 +21,8 @@ const Sales = () => {
   const [currentTab, setCurrentTab] = useState(0); // Track current tab index
   const token = useSelector(state => state?.login?.token);
   const { business, name } = useSelector(state => state.login.activeUser);
-  const urlProduct = `${constants.baseUrl}/products/get-business-products/${business?._id}`;
   const urlCustomer = `${constants.baseUrl}/customers/get-business-customers/${business?._id}`;
+  const urlProduct = `${constants.baseUrl}/products/get-business-products/${business?._id}`;
 
 useReadData(
     urlProduct,
@@ -50,6 +50,7 @@ useReadData(
       }
     }).then((res) => {
       setDisabled(false);
+      setProductDataFetched(false)
       alert("Successfully created sale!");
     }).catch((err) => {
       setDisabled(false);

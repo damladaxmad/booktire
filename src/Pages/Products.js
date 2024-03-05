@@ -34,6 +34,7 @@ export default function Products() {
   const token = useSelector(state => state.login.token)
   const products = JSON.parse(JSON.stringify(useSelector(state => state.products?.products || [])))
   const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions)))
+  const productDataFetched = useSelector(state => state.products.isProductsDataFetched)
 
   const dispatch = useDispatch()
 
@@ -44,7 +45,7 @@ export default function Products() {
        url,
        setProducts,
        setProductDataFetched,
-       state => state.products.isProductsDataFetched,
+      state => state.productDataFetched,
        "products"
    );
 

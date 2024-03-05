@@ -1,6 +1,5 @@
 import { Typography } from "@material-ui/core"
 import { useSelector } from "react-redux";
-import LoadingPlaceHolder from "./LoadingPlaceHolder";
 import { useState } from "react";
 import { useEffect } from "react";
 
@@ -26,43 +25,10 @@ const Top5DeenCustomers = (props) => {
       borderRadius: "12px", display: "flex", flexDirection: "column",
       gap: "10px", minWidth: "34.5%", marginRight: "18px",
     }}>
-      {!loaded && (
-        <LoadingPlaceHolder
-          extraStyles={{
-            height: "15px",
-            width: "120px",
-            marginBottom: "16px",
-            borderRadius: "10px",
-          }}
-        />
-      )}
-      {/* {loaded && <Typography style = {{color: "lightGray", fontWeight: "bold"}}>
-                Customers Deen
-            </Typography>}
-            {!loaded && (
-          <LoadingPlaceHolder
-            extraStyles={{
-              height: "15px",
-              width: "160px",
-              marginBottom: "16px",
-              borderRadius: "10px",
-            }}
-          />
-        )}
-           {loaded && <Typography style = {{fontWeight: "600", fontSize: "22px",
-        color: "black"}}>
-            Top Deen Customers
-            </Typography>} */}
-
+ 
       {loaded ? topValues?.map((customer, index) => {
         if (customer?.balance < 1) return
-        if (!loaded) return <LoadingPlaceHolder
-          extraStyles={{
-            height: "15px",
-            marginBottom: "16px",
-            borderRadius: "10px",
-          }}
-        />
+       
         return <div style={{ display: "flex", borderBottom: "1px solid #E3E3E3", paddingBottom: "4px",}}>
             <Typography style={{
               fontSize: "14px",
@@ -92,13 +58,6 @@ const Top5DeenCustomers = (props) => {
           }}> ${customer.balance?.toFixed(2)} </Typography>
         </div>
       }) : skeArray?.map(index => {
-        if (!loaded) return <LoadingPlaceHolder
-          extraStyles={{
-            height: "15px",
-            marginBottom: "16px",
-            borderRadius: "10px",
-          }}
-        />
       })}
 
 
