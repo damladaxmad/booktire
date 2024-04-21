@@ -38,7 +38,7 @@ export default function LatestTransactions() {
         }}>
             {loading ? ( // Display loading indicator if loading is true
                 <div style={{ textAlign: "center" }}>
-                    <CircularProgress />
+                    <CircularProgress style = {{color: constants.pColor}} />
                     <Typography variant="body2" style={{ marginTop: 10 }}>Loading...</Typography>
                 </div>
             ) : (
@@ -74,7 +74,7 @@ function Transaction({ data, index }) {
 
             <div style={{ display: "flex", flexDirection: "column", }}>
                 <Typography style={{ fontSize: "15px", fontWeight: "bold" }}> Products ({data.products?.length})</Typography>
-                <Typography style={{ fontSize: "14px", color: index === 0 ? "#EAD8F8" : "#B4B4B4" }}> {moment(data.date).format("YYYY-MM-DD")}</Typography>
+                <Typography style={{ fontSize: "14px", color: index === 0 ? constants.colorSubText : "#B4B4B4" }}> {moment(data.date).format("YYYY-MM-DD")}</Typography>
             </div>
             <Typography style={{ fontSize: "15px" }}> {data.paymentType}</Typography>
             <Typography style={{ fontSize: "15px" }}> ${data.total}</Typography>

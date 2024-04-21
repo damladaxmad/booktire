@@ -100,6 +100,7 @@ const ItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
         field="name"
         onChange={(e) => handleInputChange(index, { target: { name: 'product', value: e.value } })}
         onSelect={(e) => {
+          handleInputChange(index, { target: { name: 'product', value: e.value } })
           handleInputChange(index, { target: { name: 'quantity', value: 1 } });
           handleInputChange(index, { target: { name: 'salePrice', value: e.value.salePrice } });
         }}

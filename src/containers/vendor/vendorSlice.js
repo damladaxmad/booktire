@@ -37,6 +37,16 @@ export const vendorSlice = createSlice({
     setVendorDataFetched: (state, action) => { // Change function name and state property
       state.isVendorDataFetched = action.payload;
     },
+
+    updateVendorSocketBalance: (state, action) => {
+      const { _id, transaction } = action.payload;
+      console.log(transaction);
+      const index = state.vendors.findIndex(vendor => vendor._id === _id);
+      if (index !== -1) {
+        state.vendors[index].balance += transaction;
+      }
+    },
+    
     logoutVendors: (state, action) => { // Change function name
       return {
         vendors: [],
@@ -47,6 +57,6 @@ export const vendorSlice = createSlice({
 });
 
 export const { setVendors, addVendor, deleteVendor, updateVendor, updateVendorBalance, 
-  setVendorDataFetched, logoutVendors } = vendorSlice.actions; // Change action names
+  setVendorDataFetched, logoutVendors, updateVendorSocketBalance } = vendorSlice.actions; // Change action names
 
 export default vendorSlice.reducer;

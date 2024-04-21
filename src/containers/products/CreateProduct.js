@@ -3,20 +3,18 @@ import { useFormik } from "formik";
 import axios from "axios";
 import Modal from "../../Modal/Modal";
 import { constants } from "../../Helpers/constantsFile";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CustomButton from "../../reusables/CustomButton";
 import Select from "react-select";
-import { setCategories, setCategoryDataFetched } from "../category/categorySlice";
+import { addCategory, setCategories, setCategoryDataFetched } from "../category/categorySlice";
 import useReadData from "../../hooks/useReadData";
-
-// const categories = [
-//   "Apple Phone",
-//   "Android Phones",
-//   // Add more categories as needed
-// ];
+import Register from "../../utils/Register";
+import {categoryFields} from "../category/cateogryModal"
+import { ToastContainer, toast } from "react-toastify";
 
 const CreateProduct = ({ instance, store, name, fields, update, url, business, hideModal, onUpdate }) => {
   const [disabled, setDisabled] = useState(false);
+  const [showCategory, setShowCategory] = useState(false)
   const token = useSelector(state => state.login.token);
   const mySocketId = useSelector(state => state?.login?.mySocketId);
   const { business: business2 } = useSelector(state => state.login.activeUser)
@@ -31,6 +29,8 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
     state => state.users.isCategoriesDataFetched,
     "categories"
   );
+
+  const dispatch = useDispatch()
 
   const validate = (values) => {
     const errors = {};
@@ -96,8 +96,29 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
     },
   });
 
+  const notify = (message) => toast(message, {
+    autoClose: 2700,
+    hideProgressBar: true,
+    theme: "light",
+    position: "top-center"
+  });
+
+
   return (
     <Modal onClose={hideModal} pwidth="600px" left="32.5%" top="24%">
+     {showCategory && <Register
+        update={false}
+        name="Category"
+        fields={categoryFields}
+        url="product-categories"
+        business={business}
+        hideModal={() => { setShowCategory(false) }}
+        store={(data) => {
+          console.log(data)
+          notify("Category Added Successfully!")
+          dispatch(addCategory(data?.createdCategory))
+        }}
+        />}
       <div
         style={{
           display: "flex",
@@ -145,7 +166,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
             </div>
           ))}
 
-          {/* React-Select for category */}
+          <div style = {{display: "flex", gap: "5px", width: "250px", marginLeft: "20px"}}>
           <Select
             placeholder='Select category'
             styles={{
@@ -154,13 +175,13 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
                 border: "1px solid lightGrey",
                 height: "40px",
                 borderRadius: "5px",
-                width: "250px",
+                width: "180px",
                 minHeight: "28px",
                 ...(isDisabled && { cursor: "not-allowed" }),
               }),
               menu: (provided, state) => ({
                 ...provided,
-                zIndex: 9999 // Ensure the dropdown is on top of other elements
+                zIndex: 9999 
               }),
               option: (provided, state) => ({
                 ...provided,
@@ -172,24 +193,29 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
               }),
               singleValue: (provided, state) => ({
                 ...provided,
-                color: "black", // Keep text black for selected value
+                color: "black",
               }),
               input: (provided, state) => ({
                 ...provided,
-                color: "black", // Keep text black for input
+                color: "black", 
                 "&:focus": {
                   borderColor: constants.pColor,
                   boxShadow: `0 0 0 1px ${constants.pColor}`,
                 }
               }),
             }}
-            menuPlacement="top" // Position the menu above the select input
+            menuPlacement="top" 
             value={formik.values.category ? { value: formik.values.category, label: formik.values.category.categoryName } : null}
-            options={categories.map(category => ({ value: category, label: category.categoryName }))}
+            options={categories?.map(category => ({ value: category, label: category?.categoryName }))}
             onChange={(selectedOption) => formik.setFieldValue("category", selectedOption ? selectedOption.value : null)}
-            isClearable={true} // Make the Select clearable
+            isClearable={true} 
             isDisabled={disabled}
           />
+
+          <CustomButton text = "ADD" style = {{fontSize: "14px"}} width = "45px" bgColor="black"
+          onClick = {() => setShowCategory(true)}/>
+
+          </div>
 
           <CustomButton
             disabled={disabled}
@@ -199,6 +225,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
             bgColor={constants.pColor}
             style={{ marginTop: "0px" }}
           />
+      <ToastContainer/>
         </form>
       </div>
     </Modal>

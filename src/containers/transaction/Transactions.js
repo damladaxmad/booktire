@@ -96,7 +96,7 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
         },
     };
 
-    let balance = 0
+    let balance = null
     transactions?.map(transaction => {
         balance += transaction?.debit - transaction?.credit
     })
@@ -265,7 +265,7 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
                     <Typography style={{
                         fontSize: "20px", fontWeight: "bold"
                     }}>
-                        {constants?.moneySign}{balance?.toFixed(2)}
+                        {constants?.moneySign}{balance ? balance?.toFixed(2) : instance?.balance?.toFixed(2)}
                     </Typography>
                 </div>
 

@@ -6,5 +6,10 @@ export const constants = {
     sColor: "#E90139", 
     pTextColor: "#CCBED6",
     subColor: "#979797",
-    backdropColor: "#F8F2FE"
+    backdropColor: "#F8F2FE",
+    activeTabColor: "#9300FF",
+    sideBarColor: "#6A03B6",
+    colorSubText: "#EAD8F8",
+    businnesColor: "#54068D",
+    businessSubText: "#975EC0"
 }

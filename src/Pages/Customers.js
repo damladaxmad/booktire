@@ -16,7 +16,6 @@ import io from 'socket.io-client';
 import useReadData from "../hooks/useReadData";
 import useEventHandler from "../hooks/useEventHandler";
 import { handleAddCustomerBalance, handleDeleteCustomerBalance, handleUpdateCustomerBalance } from "../containers/customer/customerUtils";
-import { Typography } from "@mui/material";
 
 const parentDivStyle = {
   display: "flex",

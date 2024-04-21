@@ -16,10 +16,14 @@ hideModal, onUpdate}) => {
   const validate = (values) => {
     const errors = {};
 
-     if (!values.name) {
+     if ( name !== "Category" && !values.name) {
        errors.name = "Field is Required";
      }
-     if ( name !== "User" && !values.phone) {
+
+     if ( name == "Category" && !values.categoryName) {
+       errors.categoryName = "Field is Required";
+     }
+     if ( (name !== "User" && name !== "Category") && (!values.phone)) {
        errors.phone = "Field is Required";
      }
   

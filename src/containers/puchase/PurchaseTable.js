@@ -7,8 +7,8 @@ import { useSelector } from 'react-redux';
 import { constants } from '../../Helpers/constantsFile';
 import CustomButton from '../../reusables/CustomButton';
 
-export default function SalesTable() {
-    const [sales, setSales] = useState([]);
+export default function PurchaseTable() {
+    const [purchases, setPurchases] = useState([]);
     const [loading, setLoading] = useState(false);
     const token = useSelector(state => state?.login?.token);
     const { business } = useSelector(state => state.login.activeUser);
@@ -16,36 +16,36 @@ export default function SalesTable() {
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
 
     useEffect(() => {
-        fetchSales();
+        fetchPurchases();
     }, []);
 
-    const fetchSales = () => {
+    const fetchPurchases = () => {
         setLoading(true);
-        axios.get(`https://booktire-api.onrender.com/api/client/v1/sales/get-business-sales/${business?._id}?startDate=${startDate}&endDate=${endDate}`, {
+        axios.get(`https://booktire-api.onrender.com/api/client/v1/purchases/get-business-purchases/${business?._id}?startDate=${startDate}&endDate=${endDate}`, {
             headers: {
                 "authorization": token
             }
         }).then(res => {
-            setSales(res?.data?.data?.sales);
+            setPurchases(res?.data?.data?.purchases);
         }).catch(error => {
-            console.error("Error fetching sales:", error);
+            console.error("Error fetching purchases:", error);
         }).finally(() => {
             setLoading(false);
         });
     };
 
     const handleViewClick = () => {
-        fetchSales();
+        fetchPurchases();
     };
 
-    const handleCancelSale = (saleId) => {
-        axios.post(`${constants.baseUrl}/sales/cancel-business-sale/${business._id}/${saleId}`, {}, {
+    const handleCancelPurchase = (purchaseId) => {
+        axios.post(`${constants.baseUrl}/purchases/cancel-business-purchase/${business._id}/${purchaseId}`, {}, {
             headers: {
                 "authorization": token
             }
         }).then(res => {
-            alert("Successfully Canceled Sale!")
-            fetchSales()
+            alert("Successfully Canceled Purchase!")
+            fetchPurchases()
         }).catch(err => {
             alert(err?.response?.data?.message)
         })
@@ -61,7 +61,7 @@ export default function SalesTable() {
         {
             title: 'Action',
             render: rowData => (
-                <button onClick={() => handleCancelSale(rowData._id)}>Cancel Sale</button>
+                <button onClick={() => handleCancelPurchase(rowData._id)}>Cancel Purchase</button>
             )
         }
     ];
@@ -102,9 +102,9 @@ export default function SalesTable() {
                 </div>
             ) : (
                 <MaterialTable
-                    title="Sales"
+                    title="Purchases"
                     columns={columns}
-                    data={sales}
+                    data={purchases}
                     options={{
                         pageSizeOptions: [5, 10, 20],
                         pageSize: 10,

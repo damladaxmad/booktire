@@ -54,13 +54,13 @@ export default function Dashboard() {
 
   let lowStock = 0
   products?.map(product => {
-    if (product.quantity <= product.reOrderNumber && product.quantity && product.quantity !== 0)
+    if (product.quantity <= product.reOrderNumber && product.quantity && product.quantity > 0)
     lowStock ++
   })
 
   let noStock = 0
   products?.map(product => {
-    if (!product.quantity || product.quantity == 0)
+    if (!product.quantity || product.quantity < 1)
     noStock ++
   })
 
@@ -112,8 +112,8 @@ function StatusCard ({data}) {
     <div style = {{display: "flex", background: "white", padding: "20px", borderRadius: "10px",
     width: "30%", flexDirection: "row", gap: "15px",}}>
 
-        <Avatar style = {{background: "#F6E9FF"}}>
-        <RiCoinsLine style = {{color: "#6A03B6", fontSize: "20px"}} />
+        <Avatar style = {{background: constants.backdropColor}}>
+        <RiCoinsLine style = {{color: constants.pColor, fontSize: "20px"}} />
         </Avatar>
 
         <div style = {{display: "flex", flexDirection: "column"}}>

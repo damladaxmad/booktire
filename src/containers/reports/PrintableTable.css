@@ -1,0 +1,63 @@
+@media all {
+
+}
+
+@media print {
+
+  @page {
+  margin: 0rem;
+  width: auto;
+}
+
+html, body {
+  height: auto !important;
+  overflow: hidden !important;
+}
+
+
+  .waryaa button{
+    display: none;
+  }
+  /* .print-footer {
+    position: fixed;
+    bottom: 20px; 
+    left: 0;
+    width: 100%;
+    margin-top: "20px";
+    text-align: center;
+    background-color: #f0f0f0;
+    padding: 10px;
+  } */
+
+  .page-break {
+    /* page-break-after: always; */
+    /* Add margin or padding for spacing between pages */
+    margin-bottom: 20px;
+ 
+}
+}
+
+@media screen {
+    .printable-table {
+        display: none;
+    }
+}
+
+@media print {
+    @page {
+        margin-top: 1.5cm;
+    }
+    .printable-table {
+        display: block;
+    }
+    .print-footer {
+        position: fixed;
+        bottom: 20px; /* Adjust the position as needed */
+        left: 0;
+        width: 100%;
+        margin-top: "20px";
+        text-align: center;
+        background-color: white;
+        padding: 10px;
+      }
+}

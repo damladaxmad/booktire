@@ -6,9 +6,10 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Fade from '@mui/material/Fade';
 import React, { useState } from "react";
+import { constants } from "../Helpers/constantsFile";
 
 const subDivStyle = {
-    display: "flex", background: "#54068D", borderRadius: "10px",
+    display: "flex", background: constants.businnesColor, borderRadius: "10px",
     flexDirection: "row", padding: "10px", width: "90%", cursor: "pointer",
     gap: "10px", alignItems: "center", margin: "auto",
     marginLeft: "11px", justifyContent:"space-between"
@@ -56,7 +57,7 @@ export default function BusinessSection() {
 
                 <div style={{ display: "flex", flexDirection: "column", }}>
                     <Typography style={{ fontSize: "13px", fontWeight: "bold", color: "white" }}> {business?.businessName}</Typography>
-                    <Typography style={{ fontSize: "13px", color: "#975EC0" }}> {business?.businessNumber || "252 616549198"}</Typography>
+                    <Typography style={{ fontSize: "13px", color: constants.businessSubText }}> {business?.businessNumber || "252 616549198"}</Typography>
                 </div>
 
                 <RiIcons.RiArrowDownSFill style={{ fontSize: "20px",  color: "white" }} />,

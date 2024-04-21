@@ -8,6 +8,7 @@ import Purchases from "./Pages/Purchases"
 import Adminstration from "./Pages/Adminstration"
 import Products from "./Pages/Products";
 import Import from "./Pages/Import";
+import YourComponent from "./Pages/PrintableTableComponent";
 
 export const pages = [
         <Route path="/dashboard" element={<Dashboard />} />,

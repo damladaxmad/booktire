@@ -2,6 +2,7 @@ import { Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import styles from './styles.module.css';
+import { constants } from '../Helpers/constantsFile';
 
 const SubMenu = ({ item }) => {
   const navigate = useNavigate();
@@ -16,7 +17,8 @@ const SubMenu = ({ item }) => {
     flexDirection: "row",
     justifyContent: "space-between",
     color: "white",
-    background: isActive && "#9300FF"
+    // background: isActive && "#9300FF"
+    background: isActive && constants.activeTabColor
   };
 
   const subTabStyle = {

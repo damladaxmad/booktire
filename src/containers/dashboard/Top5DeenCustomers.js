@@ -16,8 +16,6 @@ const Top5DeenCustomers = (props) => {
     values.push(customer.balance)
   })
   let topValues = customers?.sort((a, b) => b.balance - a.balance).slice(0, 5)
-  console.log(topValues)
-
 
   return (
     <div style={{

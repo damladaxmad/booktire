@@ -1,26 +1,30 @@
 import React, { useState } from 'react';
-import ItemsForm from '../containers/sales/ItemsForm';
-import Selectors from '../containers/sales/Selectors';
+import PurchaseSelectors from '../containers/puchase/PurchaseSelectors';
+import PurchaseItemsForm from '../containers/puchase/PurchaseItemsForm';
 import axios from 'axios';
 import { constants } from '../Helpers/constantsFile';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useReadData from '../hooks/useReadData';
-import PurchaseSelectors from '../containers/puchase/PurchaseSelectors';
-import moment from 'moment';
-import PurchaseItemsForm from '../containers/puchase/PurchaseItemsForm';
+import { Typography } from '@material-ui/core';
 import { setProductDataFetched, setProducts } from '../containers/products/productSlice';
-import { setVendorDataFetched, setVendors } from '../containers/vendor/vendorSlice';
+import { setVendorDataFetched, setVendors, updateVendorBalance, updateVendorSocketBalance } from '../containers/vendor/vendorSlice';
+import moment from 'moment';
+import PurchasesTable from '../containers/puchase/PurchaseTable';
 
 const Purchases = () => {
   const [disabled, setDisabled] = useState(false)
   const [purchaseType, setPurchaseType] = useState('cash');
   const [vendor, setVendor] = useState('');
-  const [date, setDate] = useState(new Date());
+  const today = new Date()
+  const [date, setDate] = useState(moment(today).format("YYYY-MM-DD"));
   const [refNumber, setRefNumber] = useState("")
+  const [currentTab, setCurrentTab] = useState(0); // Track current tab index
   const token = useSelector(state => state?.login?.token)
   const { business, name } = useSelector(state => state.login.activeUser)
   const urlProduct = `${constants.baseUrl}/products/get-business-products/${business?._id}`
   const urlVendor = `${constants.baseUrl}/vendors/get-business-vendors/${business?._id}`
+
+  const dispatch = useDispatch()
 
   useReadData(
     urlProduct,
@@ -28,35 +32,43 @@ const Purchases = () => {
     setProductDataFetched,
     state => state.products.isProductsDataFetched,
     "products"
-);
-useReadData(
-  urlVendor,
-  setVendors,
-  setVendorDataFetched,
-  state => state.vendors.isVendorDataFetched,
-  "vendors"
-);
+  );
+
+  useReadData(
+    urlVendor,
+    setVendors,
+    setVendorDataFetched,
+    state => state.vendors.isVendorDataFetched,
+    "vendors"
+  );
+
+  const handleTabChange = (tabIndex) => {
+    setCurrentTab(tabIndex);
+  };
 
   const createPurchase = (data) => {
-    axios.post(`${constants.baseUrl}/purchases`, data,
-    {
+    axios.post(`${constants.baseUrl}/purchases`, data, {
       headers: {
         "authorization": token
       }
     }).then((res) => {
       setDisabled(false)
+      let purchase = res?.data?.data?.createdPurchase[0]
+      console.log(purchase.vendor, purchase.total)
+      dispatch(updateVendorSocketBalance({_id: purchase?.vendor, transaction: purchase?.total}))
       alert("Sucessfully created purchase!")
     }).catch((err) => {
       setDisabled(false)
       console.log(data)
       alert(err.response?.data?.message);
     });
-  }
+  };
+
   const handleAddProduct = ({ products, discount, total }) => {
     setDisabled(true)
 
     console.log('Submitted data:', { products, discount, total });
-  
+
     const transformedData = {
       products: products.map(product => ({
         refProduct: product?.product?._id,
@@ -64,17 +76,17 @@ useReadData(
         category: "Phones",
         unitPrice: product.unitPrice,
         salePrice: product.salePrice,
-        quantity: product.quantity
+        quantity: parseInt(product.quantity)
       })),
       discount: discount,
       paymentType: purchaseType,
-      business: business?._id, 
-      vendor: vendor?._id, 
+      business: business?._id,
+      vendor: vendor?._id,
       date: date,
       refNumber: refNumber,
       user: name
     };
-    
+
     createPurchase(transformedData);
   };
 
@@ -87,24 +99,52 @@ useReadData(
   };
 
   return (
-    <div style={{width: "95%", margin: "auto"}}>
-
-      <div style={{width: "100%", margin: "auto", background: "white", borderRadius: "10px",
-    padding: "30px", display: "flex", flexDirection: "column"}}>
-
-      <PurchaseSelectors
-        purchaseType={purchaseType}
-        setPurchaseType={setPurchaseType}
-        vendor={vendor}
-        setVendor={setVendor}
-        date={date}
-        setDate={setDate}
-        refNumber = {refNumber}
-        setRefNumber = {setRefNumber}
-      />
-
-      <PurchaseItemsForm handleAddProduct={handleAddProduct} handleFinish={handleFinish} 
-      disabled = {disabled}/>
+    <div style={{ width: "95%", margin: "auto" }}>
+      <div style={{ display: 'flex', marginBottom: '20px', gap: "10px" }}>
+        <div
+          onClick={() => handleTabChange(0)}
+          style={{
+            padding: '5px 0px', width: "80px", display: "flex", alignItems: "center", justifyContent: "center",
+            marginRight: '10px', cursor: 'pointer',
+            backgroundColor: currentTab === 0 ? constants.pColor : 'transparent',
+            color: currentTab === 0 ? 'white' : 'black', borderRadius: '50px', border: `1px solid ${constants.pColor}`
+          }}>
+          <Typography>Form </Typography>
+        </div>
+        <div
+          onClick={() => handleTabChange(1)}
+          style={{
+            padding: '5px 0px', width: "80px", display: "flex", alignItems: "center", justifyContent: "center",
+            marginRight: '10px', cursor: 'pointer',
+            backgroundColor: currentTab === 1 ? constants.pColor : 'transparent',
+            color: currentTab === 1 ? 'white' : 'black', borderRadius: '50px', border: `1px solid ${constants.pColor}`
+          }}>
+          Table
+        </div>
+      </div>
+      <div style={{
+        width: "100%", margin: "auto", background: "white", borderRadius: "10px",
+        padding: "30px", display: "flex", flexDirection: "column"
+      }}>
+        {currentTab === 0 && (
+          <>
+            <PurchaseSelectors
+              purchaseType={purchaseType}
+              setPurchaseType={setPurchaseType}
+              vendor={vendor}
+              setVendor={setVendor}
+              date={date}
+              setDate={setDate}
+              refNumber={refNumber}
+              setRefNumber={setRefNumber}
+            />
+            <PurchaseItemsForm handleAddProduct={handleAddProduct} handleFinish={handleFinish}
+              disabled={disabled} />
+          </>
+        )}
+        {currentTab === 1 && (
+          <PurchasesTable />
+        )}
       </div>
     </div>
   );

@@ -3,14 +3,14 @@ import ItemsForm from '../containers/sales/ItemsForm';
 import Selectors from '../containers/sales/Selectors';
 import axios from 'axios';
 import { constants } from '../Helpers/constantsFile';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useReadData from '../hooks/useReadData';
 import { Typography } from '@material-ui/core';
 import SalesReport from '../containers/sales/SaleReport';
 import moment from 'moment';
 import SalesTable from '../containers/sales/SalesTable';
 import { setProductDataFetched, setProducts } from '../containers/products/productSlice';
-import { setCustomerDataFetched, setCustomers } from '../containers/customer/customerSlice';
+import { setCustomerDataFetched, setCustomers, updateCustomerSocketBalance } from '../containers/customer/customerSlice';
 
 const Sales = () => {
   const [disabled, setDisabled] = useState(false);
@@ -23,6 +23,8 @@ const Sales = () => {
   const { business, name } = useSelector(state => state.login.activeUser);
   const urlCustomer = `${constants.baseUrl}/customers/get-business-customers/${business?._id}`;
   const urlProduct = `${constants.baseUrl}/products/get-business-products/${business?._id}`;
+
+  const dispatch = useDispatch()
 
 useReadData(
     urlProduct,
@@ -51,6 +53,8 @@ useReadData(
     }).then((res) => {
       setDisabled(false);
       setProductDataFetched(false)
+      let sale = res?.data?.data?.createdSale[0]
+      dispatch(updateCustomerSocketBalance({_id: sale?.customer, transaction: sale?.total}))
       alert("Successfully created sale!");
     }).catch((err) => {
       setDisabled(false);

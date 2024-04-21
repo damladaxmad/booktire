@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { useSelector } from "react-redux";
 import CustomButton from "../../reusables/CustomButton";
+import { constants } from "../../Helpers/constantsFile";
 
 export default function SalesReport() {
     const token = useSelector(state => state?.login?.token);
@@ -70,7 +71,7 @@ export default function SalesReport() {
             <SalesDashboard sales = {sales}/>
 
             {loading ? (
-                <div style={{ textAlign: 'center' }}>
+                <div style={{ textAlign: 'center', marginTop: "10px" }}>
                     <CircularProgress />
                 </div>
             ) : (
@@ -92,7 +93,7 @@ function Sale({ sale }) {
         <div style={{ display: "flex", gap: "14px", borderRadius: "5px", border: "1px solid #E3E3E3",
         width: "80%", flexDirection: "column" }}>
 
-            <div style = {{background: "#F8F2FE", display: "flex", width: "100%", padding: "5px 15px",
+            <div style = {{background: constants.backdropColor, display: "flex", width: "100%", padding: "5px 15px",
             justifyContent: "space-between"
             }}> 
             <Typography style = {{fontSize: "16px", }}>{sale.paymentType}</Typography>

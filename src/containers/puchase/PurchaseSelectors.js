@@ -1,58 +1,65 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { AutoComplete } from 'primereact/autocomplete';
 import moment from 'moment';
+import Select from 'react-select';
 
 const PurchaseSelectors = ({ purchaseType, setPurchaseType, vendor, setVendor, date, setDate, setRefNumber }) => {
-  const [value, setValue] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const vendors = useSelector(state => state?.vendors.vendors)
-  const [filteredVendors, setFilteredVendors] = useState([]);
-
+  const vendors = useSelector(state => state?.vendors.vendors);
 
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
-    setDate(e.target.value)
+    setDate(e.target.value);
   };
 
-  const searchVendors = (event) => {
-    const query = event.query;
-    const filteredVendors = vendors.filter(vendor =>
-      vendor.name.toLowerCase().includes(query?.toLowerCase())
-    );
-    setFilteredVendors(filteredVendors);
+  const handleVendorSelect = (selectedOption) => {
+    setVendor(selectedOption?.value);
   };
 
-  
-  const handleVendorSelect = (event) => {
-    setVendor(event.value);
-  };
+  const purchaseTypeOptions = [
+    { value: 'cash', label: 'Cash' },
+    { value: 'invoice', label: 'Invoice' }
+  ];
+
+  const vendorOptions = vendors.map(vendor => ({
+    value: vendor,
+    label: vendor.name
+  }));
 
   return (
     <div style={{ display: "flex", gap: "20px" }}>
+      <Select
+        placeholder='Select purchase type'
+        styles={{
+          control: (styles) => ({
+            ...styles,
+            border: "1px solid lightGrey",
+            height: "36px",
+            borderRadius: "5px",
+            width: "100px"
+          })
+        }}
+        value={purchaseTypeOptions.find(option => option.value === purchaseType)}
+        options={purchaseTypeOptions}
+        onChange={(selectedOption) => setPurchaseType(selectedOption.value)}
+      />
 
-      <select value={purchaseType} style={{
-        width: "100px", borderRadius: "5px", padding: "10px",
-        height: "2.5rem", border: "1px solid lightGrey"
-      }}
-        onChange={(e) => setPurchaseType(e.target.value)}>
-        <option value="cash">Cash</option>
-        <option value="invoice">Invoice</option>
-      </select>
-
-        <AutoComplete
-          placeholder='Select vendor'
-          style={{ border: "1px solid lightGrey", height: "36px", borderRadius: "5px",
-        width: "183px" }}
-          value={value}
-          suggestions={filteredVendors}
-          completeMethod={searchVendors}
-          onChange={(e) => setValue(e.value)}
-          onSelect={handleVendorSelect}
-          field="name" // Specify which property to display in the dropdown
-          dropdown
-          disabled={purchaseType == "cash"} 
-        />
+      <Select
+        placeholder='Select vendor'
+        styles={{
+          control: (styles) => ({
+            ...styles,
+            border: "1px solid lightGrey",
+            height: "36px",
+            borderRadius: "5px",
+            width: "183px"
+          })
+        }}
+        value={vendor ? { value: vendor, label: vendor.name } : null}
+        options={vendorOptions}
+        onChange={handleVendorSelect}
+        isDisabled={purchaseType === "cash"}
+      />
 
       <input
         type="date"
@@ -63,8 +70,7 @@ const PurchaseSelectors = ({ purchaseType, setPurchaseType, vendor, setVendor, d
           fontSize: "16px",
           borderRadius: "5px",
           background: "white",
-          border: "1px solid lightGrey",
-      
+          border: "1px solid lightGrey"
         }}
         value={moment(selectedDate).format("YYYY-MM-DD")}
         onChange={handleDateChange}
@@ -79,13 +85,12 @@ const PurchaseSelectors = ({ purchaseType, setPurchaseType, vendor, setVendor, d
           fontSize: "14px",
           borderRadius: "5px",
           background: "white",
-          border: "1px solid lightGrey",
-      
+          border: "1px solid lightGrey"
         }}
         placeholder='Invoice no.'
-        onChange={(e)=> setRefNumber(e.target.value)}
+        onChange={(e) => setRefNumber(e.target.value)}
       />
-      
+
     </div>
   );
 };

@@ -1,10 +1,16 @@
 import { Typography } from "@material-ui/core"
 import { useSelector } from "react-redux"
 import MyTable from "../../utils/MyTable"
+import PrintableTableComponent from "./PintableTableComponent"
+import { useReactToPrint } from 'react-to-print';
+import CustomButton from "../../reusables/CustomButton";
+
 const PersonalReport = ({name, type}) => {
 
     const customers = JSON.parse(JSON.stringify(useSelector(state => state.customers.customers)))
     const vendors = JSON.parse(JSON.stringify(useSelector(state => state.vendors.vendors)))
+
+    const imageUrl = `https://firebasestorage.googleapis.com/v0/b/deentire-application.appspot.com/o/LOGO%2Fliibaan.jpeg?alt=media&token=f5b0b3e7-a5e0-4e0d-b3d2-20a920f97fde`;
 
     let customerTotal = 0
     let vendorTotal = 0
@@ -45,6 +51,10 @@ const PersonalReport = ({name, type}) => {
         { title: "Balance", field: "balance" },
     ]
 
+    const handlePrint = useReactToPrint({
+        content: () => document.querySelector('.printable-table'),
+    });
+
     return (
         <div style = {{
             background: "white",
@@ -55,6 +65,10 @@ const PersonalReport = ({name, type}) => {
             flexDirection: "column",
             width: "100%"
         }}>
+
+            <PrintableTableComponent columns={columns} data={type == "Customers" ? realCustomers : realVendors} imageUrl={imageUrl} 
+            reportTitle = {`${type} Report`}> 
+            </PrintableTableComponent>
             <div style = {{display: "flex", justifyContent: "space-between"}}>
             <div>
                 <Typography style = {{
@@ -66,6 +80,9 @@ const PersonalReport = ({name, type}) => {
                     color: "#6C6C6C"
                 }}> {decideCount()} {name}</Typography>
             </div>
+            
+            <CustomButton text = "Print" onClick={handlePrint} height="35px" fontSize="14px"/>
+
             <Typography style = {{
                     fontWeight: "bold",
                     fontSize: "20px"

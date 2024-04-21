@@ -17,12 +17,14 @@ import { SidebarData } from './SidebarData';
 import BusinessSection from "./BusinessSection";
 import { useSelector } from "react-redux";
 import "../App.css"
+import { constants } from "../Helpers/constantsFile";
 
 const drawerWidth = 260;
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
-  background: "#6A03B6",
+  // background: "#6A03B6",
+  background: constants.sideBarColor,
   // background: "#3A3A3A",
   border: "none",
   transition: theme.transitions.create('width', {
@@ -201,7 +203,7 @@ export default function NewLayout({ children, props }) {
               </Typography>
               <Typography style={{
                 fontSize: "13px",
-                color: "#CCBED6",
+                color: constants.colorSubText,
                 // color: "#A8A8A8",
                  fontWeight: "500", marginLeft: "5px"
               }}>
@@ -231,7 +233,7 @@ export default function NewLayout({ children, props }) {
       </Drawer>
       <div style={{
         width: "90%", margin: "85px auto",
-        marginTop: "100px", background:"#F8F2FE"
+        marginTop: "100px", background: constants.backdropColor
       }}>
         {location?.path == "/" && <Typography style = {{marginLeft:"20px",
       fontSize: "18px"}}> Hello {activeUser?.name}, welcome back!</Typography>}

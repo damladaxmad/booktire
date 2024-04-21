@@ -30,19 +30,19 @@ const Selectors = ({ saleType, setSaleType, customer, setCustomer, date, setDate
       setCustomer(null); // Clear the customer state
     }
   };
-  
+
+  const saleTypeOptions = [
+    { value: 'cash', label: 'Cash' },
+    { value: 'invoice', label: 'Invoice' }
+  ];
 
   return (
     <div style={{ display: "flex", gap: "20px" }}>
-
-      <select value={saleType} style={{
-        width: "100px", borderRadius: "5px", padding: "10px",
-        height: "2.5rem", border: "1px solid lightGrey"
-      }}
-        onChange={(e) => setSaleType(e.target.value)}>
-        <option value="cash">Cash</option>
-        <option value="invoice">Invoice</option>
-      </select>
+      <Select
+        value={saleTypeOptions.find(option => option.value === saleType)}
+        options={saleTypeOptions}
+        onChange={(selectedOption) => setSaleType(selectedOption.value)}
+      />
 
       <Select
         placeholder='Select customer'
@@ -53,8 +53,8 @@ const Selectors = ({ saleType, setSaleType, customer, setCustomer, date, setDate
             height: "36px",
             borderRadius: "5px",
             width: "183px",
-            minHeight: "28px", 
-            ...(isDisabled && { cursor: "not-allowed" }), 
+            minHeight: "28px",
+            ...(isDisabled && { cursor: "not-allowed" }),
           })
         }}
         value={customer ? { value: customer, label: customer.name } : null}

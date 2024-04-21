@@ -102,7 +102,7 @@ export default function Privileges({ user, hide }) {
                         checked={selectedTabs.includes(tabName)}
                         onChange={() => handleTabSelect(tabName)}
                         style={{
-                            color: '#6A03B6', 
+                            color: constants.pColor, 
                             '&.Mui-checked': {
                                 color: '#6A03B6' 
                             },

@@ -13,6 +13,7 @@ import Billing from "./containers/Billing.js";
 import io from 'socket.io-client';
 import {pages} from "./RoutesData.js";
 import { setSocketId } from "./SignupAndLogin/loginSlice.js";
+import { constants } from "./Helpers/constantsFile.js";
 
 function App() {
   const isLogin = useSelector((state) => state.login.isLogin);
@@ -58,7 +59,7 @@ function App() {
     <div
       className="App"
       style={{
-        backgroundColor: "#F8F2FE",
+        backgroundColor: constants.backdropColor,
         display: "flex",
         justifyContent: "center",
       }}
