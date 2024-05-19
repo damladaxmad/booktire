@@ -9,6 +9,7 @@ import Adminstration from "./Pages/Adminstration"
 import Products from "./Pages/Products";
 import Import from "./Pages/Import";
 import YourComponent from "./Pages/PrintableTableComponent";
+import Qarashaad from "./Pages/Qarashaad";
 
 export const pages = [
         <Route path="/dashboard" element={<Dashboard />} />,
@@ -20,4 +21,5 @@ export const pages = [
         <Route path="/adminstration" element={<Adminstration />} />,
         <Route path="/products" element={<Products />} />,
         <Route path="/import" element={<Import />} />,
+        <Route path="/expenses" element={<Qarashaad />} />,
 ]

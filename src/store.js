@@ -7,6 +7,8 @@ import productSlice from './containers/products/productSlice';
 import vendorSlice from './containers/vendor/vendorSlice';
 import userSlice from './containers/user/userSlice';
 import categorySlice from './containers/category/categorySlice';
+import qarashaadSlice from './containers/qarashaad/qarashaadSlice';
+import expenseTypesSlice from './containers/expenseTypes/expenseTypesSlice';
 
 const store = configureStore({
   reducer: {
@@ -16,7 +18,9 @@ const store = configureStore({
     users: userSlice,
     transactions: transactionSlice,
     products: productSlice,
-    categories: categorySlice
+    categories: categorySlice,
+    qarashaad: qarashaadSlice,
+    expenseTypes: expenseTypesSlice
   },
 });
 

@@ -15,6 +15,7 @@
     "@react-pdf/renderer": "2.1.0",
     "@reduxjs/toolkit": "^1.9.7",
     "axios": "^0.21.1",
+    "canvas": "^2.11.2",
     "electron-is-dev": "^1.2.0",
     "electron-notification": "^1.0.0",
     "formik": "^2.2.9",

@@ -4,7 +4,7 @@ import DashboardIcon from "@material-ui/icons/Dashboard";
 import GroupIcon from "@material-ui/icons/Group";
 import { VscPerson } from "react-icons/vsc";
 import { MdOutlineAdminPanelSettings, MdOutlineFileDownload, MdPointOfSale, MdProductionQuantityLimits } from 'react-icons/md';
-import { BiPurchaseTagAlt } from "react-icons/bi";
+import { BiPurchaseTagAlt, BiWallet } from "react-icons/bi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 
 export const SidebarData = [
@@ -53,6 +53,11 @@ export const SidebarData = [
     text: "Reports",
     icon: <HiOutlineDocumentReport   style={{fontSize: "20px",}} />,
     path: "/reports",
+  },
+  {
+    text: "Expenses",
+    icon: <BiWallet   style={{fontSize: "20px",}} />,
+    path: "/expenses",
   },
   {
     text: "Adminstration",

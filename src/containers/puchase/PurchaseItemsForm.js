@@ -5,6 +5,7 @@ import CustomButton from '../../reusables/CustomButton';
 import { constants } from '../../Helpers/constantsFile';
 import { MdAdd, MdDelete } from 'react-icons/md';
 import { Typography } from '@material-ui/core';
+import Select from "react-select"
 
 const PurchaseItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
   const initialProductState = { product: '', quantity: '', unitPrice: '', salePrice: '', subtotal: 0 };
@@ -14,6 +15,7 @@ const PurchaseItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
   const [discount, setDiscount] = useState(0);
   const [total, setTotal] = useState(0);
   const sliceProducts = useSelector(state => state?.products.products);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [filteredProducts, setFilteredProducts] = useState([]);
 
   useEffect(() => {
@@ -81,21 +83,31 @@ const PurchaseItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
           </div>
           {products.map((product, index) => (
             <div key={index} style={{ display: "flex", width: "100%", gap: "20px" }}>
-              <AutoComplete
+            <Select
                 placeholder='Select product'
-                style={{ flex: "2", minWidth: "0", border: "1px solid lightGrey", height: "36px", borderRadius: "5px" }}
-                value={product.product}
-                suggestions={filteredProducts}
-                completeMethod={searchProducts}
-                field="name"
-                onChange={(e) => handleInputChange(index, { target: { name: 'product', value: e.value } })}
-                onSelect={(e) => {
+                styles={{
+                  control: (styles, { isDisabled }) => ({
+                    ...styles,
+                    border: "1px solid lightGrey",
+                    height: "36px",
+                    borderRadius: "5px",
+                    width: "170px",
+                    minHeight: "28px",
+                    ...(isDisabled && { cursor: "not-allowed" }),
+                  })
+                }}
+                value={product.selectedProduct}
+                options={sliceProducts.map(product => ({ value: product, label: product.name }))}
+                onChange={(e) => {
+                  const updatedProducts = [...products];
+                  updatedProducts[index].selectedProduct = e;
                   handleInputChange(index, { target: { name: 'product', value: e.value } })
                   handleInputChange(index, { target: { name: 'quantity', value: 1 } });
-                  handleInputChange(index, { target: { name: 'unitPrice', value: e.value.unitPrice } });
                   handleInputChange(index, { target: { name: 'salePrice', value: e.value.salePrice } });
+                  handleInputChange(index, { target: { name: 'unitPrice', value: e.value.unitPrice } });
+                  setProducts(updatedProducts);
                 }}
-                dropdown
+                
               />
               <input
                 style={{ flex: "1", minWidth: "0", width: "100px", border: "1px solid lightGrey", borderRadius: "5px", padding: "5px 10px" }}

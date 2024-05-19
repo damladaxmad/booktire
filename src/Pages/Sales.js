@@ -11,6 +11,7 @@ import moment from 'moment';
 import SalesTable from '../containers/sales/SalesTable';
 import { setProductDataFetched, setProducts } from '../containers/products/productSlice';
 import { setCustomerDataFetched, setCustomers, updateCustomerSocketBalance } from '../containers/customer/customerSlice';
+import NewSales from '../containers/newSales/NewSales';
 
 const Sales = () => {
   const [disabled, setDisabled] = useState(false);
@@ -157,22 +158,24 @@ useReadData(
         </div>
       </div>
       <div style={{
-        width: "100%", margin: "auto", background: "white", borderRadius: "10px",
-        padding: "30px", display: "flex", flexDirection: "column"
+        width: "100%", margin: "auto", borderRadius: "10px",
+        padding: "0px", display: "flex", flexDirection: "column"
       }}>
         {currentTab === 0 && (
-          <>
-            <Selectors
-              saleType={saleType}
-              setSaleType={setSaleType}
-              customer={customer}
-              setCustomer={setCustomer}
-              date={date}
-              setDate={setDate}
-            />
-            <ItemsForm handleAddProduct={handleAddProduct} handleFinish={handleFinish}
-              disabled={disabled} />
-          </>
+
+          <NewSales/>
+          // <>
+          //   <Selectors
+          //     saleType={saleType}
+          //     setSaleType={setSaleType}
+          //     customer={customer}
+          //     setCustomer={setCustomer}
+          //     date={date}
+          //     setDate={setDate}
+          //   />
+          //   <ItemsForm handleAddProduct={handleAddProduct} handleFinish={handleFinish}
+          //     disabled={disabled} />
+          // </>
         )}
         {currentTab === 1 && (
           <SalesReport />

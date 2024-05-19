@@ -5,6 +5,10 @@ import Modal from "../Modal/Modal";
 import { constants } from "../Helpers/constantsFile";
 import { useSelector } from "react-redux";
 import CustomButton from "../reusables/CustomButton";
+import useReadData from "../hooks/useReadData";
+import Select from "react-select"
+import { setExpenseTypes, setExpenseTypesDataFetched } from "../containers/expenseTypes/expenseTypesSlice";
+import moment from "moment";
 
 const Register = ({instance, store, name, fields, update, url, business,
 hideModal, onUpdate}) => {
@@ -13,17 +17,31 @@ hideModal, onUpdate}) => {
   const [disabled, setDisabled] = useState(false)
   const token = useSelector(state => state.login.token)
   const mySocketId = useSelector(state => state?.login?.mySocketId)
+  const { business: business2 } = useSelector(state => state.login.activeUser)
+  const expenseTypes = JSON.parse(JSON.stringify(useSelector(state => state.expenseTypes?.expenseTypes || [])))
+  const expenseTypeUrl = `${constants.baseUrl}/expenses-types/get-business-expense-types/${business2?._id}`
+
+  useReadData(
+    expenseTypeUrl,
+    setExpenseTypes,
+    setExpenseTypesDataFetched,
+    state => state.users.isExpenseTypesDataFetched,
+    "expenseTypes"
+  );
+
+  const today = new Date()
+
   const validate = (values) => {
     const errors = {};
 
-     if ( name !== "Category" && !values.name) {
+     if ( (name !== "Category" && !values.name && name !== "Qarashaad")) {
        errors.name = "Field is Required";
      }
 
      if ( name == "Category" && !values.categoryName) {
        errors.categoryName = "Field is Required";
      }
-     if ( (name !== "User" && name !== "Category") && (!values.phone)) {
+     if ( (name !== "User" && name !== "Category" && name !== "Qarashaad") && (!values.phone)) {
        errors.phone = "Field is Required";
      }
   
@@ -37,7 +55,11 @@ hideModal, onUpdate}) => {
         phone: update ? instance?.phone : "",
         district: update ? instance?.district : "",
         username: update && name == "User" ? instance?.username : "",
-        role: update && name == "User" ? instance?.role : ""
+        role: update && name == "User" ? instance?.role : "",
+        description: update && name == "Qarashaad" ? instance?.description : "",
+        amount: update && name == "Qarashaad" ? instance?.amount : "",
+        date: update && name == "Qarashaad" ? moment(instance?.date).format("YYYY-MM-DD") : moment(today).format("YYYY-MM-DD"),
+        expenseType: update ? instance?.expenseType : "",
     },
     validate,
     onSubmit: (values,  ) => {
@@ -124,6 +146,51 @@ hideModal, onUpdate}) => {
             ) : null}
           </div>
         ))}
+
+{(name ==  "Qarashaad" ) && <Select
+            placeholder='Select type'
+            styles={{
+              control: (styles, { isDisabled }) => ({
+                ...styles,
+                border: "1px solid lightGrey",
+                height: "40px",
+                borderRadius: "5px",
+                width: "290px",
+                minHeight: "28px",
+                ...(isDisabled && { cursor: "not-allowed" }),
+              }),
+              menu: (provided, state) => ({
+                ...provided,
+                zIndex: 9999 
+              }),
+              option: (provided, state) => ({
+                ...provided,
+                color: state.isSelected ? "black" : "inherit", // Keep text black for selected option
+                backgroundColor: state.isSelected ? constants.pColor + "1A" : "inherit",
+                "&:hover": {
+                  backgroundColor: constants.pColor + "33",
+                }
+              }),
+              singleValue: (provided, state) => ({
+                ...provided,
+                color: "black",
+              }),
+              input: (provided, state) => ({
+                ...provided,
+                color: "black", 
+                "&:focus": {
+                  borderColor: constants.pColor,
+                  boxShadow: `0 0 0 1px ${constants.pColor}`,
+                }
+              }),
+            }}
+            menuPlacement="top" 
+            value={formik.values.expenseType ? { value: formik.values.expenseType, label: formik.values.expenseType?.name } : null}
+            options={expenseTypes?.map(type => ({ value: type, label: type?.name }))}
+            onChange={(selectedOption) => formik.setFieldValue("expenseType", selectedOption ? selectedOption.value : null)}
+            isClearable={true} 
+            isDisabled={disabled}
+          />}
 
        <CustomButton 
        disabled={disabled}
