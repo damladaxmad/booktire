@@ -1,3 +1,4 @@
+// ItemsList.js
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
@@ -20,7 +21,7 @@ const ItemsList = ({ selectedProducts, updateProductQty, handlePayment, removePr
     removeProduct(productId);
   };
 
-  const subtotal = selectedProducts.reduce((acc, product) => acc + product.price * product.qty, 0);
+  const subtotal = selectedProducts.reduce((acc, product) => acc + product.salePrice * product.qty, 0);
 
   return (
     <div 
@@ -37,7 +38,7 @@ const ItemsList = ({ selectedProducts, updateProductQty, handlePayment, removePr
       }}>
       <div style={{ flexGrow: 1 }}>
         {selectedProducts?.length < 1 && <p style = {{color: "grey", textAlign: "center", 
-        marginTop: "30px"}}> Please select some products...</p>}
+        marginTop: "20px"}}> Please select some products...</p>}
         {selectedProducts.map((product, index) => (
           <React.Fragment key={product.id}>
             <div className="selected-product" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: "4px" }}>
@@ -52,7 +53,7 @@ const ItemsList = ({ selectedProducts, updateProductQty, handlePayment, removePr
                   <AddIcon style={{ background: "black", borderRadius:"50px", color: "white", fontSize: "16px" }} />
                 </IconButton>
               </Box>
-              <Typography variant="body1" style={{ flex: 1, textAlign: 'center' }}>${product.price * product.qty}</Typography>
+              <Typography variant="body1" style={{ flex: 1, textAlign: 'center' }}>${product.salePrice * product.qty}</Typography>
               <IconButton size="small" onClick={() => handleRemoveProduct(product.id)} style={{ flex: 0 }}>
                 <DeleteIcon />
               </IconButton>
@@ -63,7 +64,7 @@ const ItemsList = ({ selectedProducts, updateProductQty, handlePayment, removePr
       </div>
       <div style={{ marginTop: 'auto', marginBottom: "5px" }}>
         <div style = {{display: "flex", flexDirection: "row", justifyContent: "space-between",
-            marginBottom: "5px"
+            marginBottom: "10px"
         }}>
         <Typography variant="body1">TOTAL:</Typography>
         <Typography variant="body" style = {{fontWeight: "bold"}}> ${subtotal.toFixed(2)}</Typography>

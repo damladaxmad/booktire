@@ -15,10 +15,6 @@ import NewSales from '../containers/newSales/NewSales';
 
 const Sales = () => {
   const [disabled, setDisabled] = useState(false);
-  const [saleType, setSaleType] = useState('cash');
-  const [customer, setCustomer] = useState('');
-  const today = new Date()
-  const [date, setDate] = useState(moment(today).format("YYYY-MM-DD"));
   const [currentTab, setCurrentTab] = useState(0); // Track current tab index
   const token = useSelector(state => state?.login?.token);
   const { business, name } = useSelector(state => state.login.activeUser);
@@ -63,20 +59,20 @@ useReadData(
     });
   };
 
-  const handleAddProduct = ({ products, discount, total }) => {
+  const handleAddProduct = ({ products, discount, total, date, saleType, customer }) => {
     setDisabled(true);
-
+    console.log(saleType, products)
     console.log('Submitted data:', { products, discount, total });
     products?.map(product => {
       console.log(product.salePrice);
     });
     const transformedData = {
       products: products.map(product => ({
-        refProduct: product?.product?._id,
-        name: product.product.name,
-        category: product.product.category,
-        unitPrice: product.product.unitPrice,
-        quantity: product.quantity,
+        refProduct: product?._id,
+        name: product.name,
+        category: product.category,
+        unitPrice: product.unitPrice,
+        quantity: product.qty,
         salePrice: product.salePrice
       })),
       discount: discount,
@@ -90,13 +86,13 @@ useReadData(
     createSale(transformedData);
   };
 
-  const handleFinish = () => {
-    if (!date) {
-      alert('Please select a date before finishing.');
-      return;
-    }
-    handleAddProduct();
-  };
+  // const handleFinish = () => {
+  //   if (!date) {
+  //     alert('Please select a date before finishing.');
+  //     return;
+  //   }
+  //   handleAddProduct();
+  // };
 
   return (
     <div style={{ width: "95%", margin: "auto" }}>
@@ -163,7 +159,7 @@ useReadData(
       }}>
         {currentTab === 0 && (
 
-          <NewSales/>
+          <NewSales handleAddProduct = {handleAddProduct}/>
           // <>
           //   <Selectors
           //     saleType={saleType}

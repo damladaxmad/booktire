@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import ProductList from './ProductList';
 import ItemsList from './ItemsList';
+import CheckoutModal from './CheckoutModal';
 
-const NewSales = () => {
+const NewSales = ({handleAddProduct}) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const addProduct = (product) => {
     setSelectedProducts((prevProducts) => {
@@ -32,12 +34,19 @@ const NewSales = () => {
   };
 
   const handlePayment = () => {
-    // Handle payment logic here
-    console.log('Payment clicked', selectedProducts);
+    setIsModalOpen(true);
   };
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  console.log(selectedProducts)
+
+  const subtotal = selectedProducts.reduce((acc, product) => acc + product.salePrice * product.qty, 0);
+
   return (
-    <div style = {{width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+    <div style={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
       <ProductList addProduct={addProduct} />
       <ItemsList 
         selectedProducts={selectedProducts} 
@@ -45,6 +54,18 @@ const NewSales = () => {
         handlePayment={handlePayment}
         removeProduct={removeProduct}
       />
+      {isModalOpen && (
+        <CheckoutModal 
+          selectedProducts={selectedProducts}
+          subtotal={subtotal}
+          onClose={closeModal}
+          onFinishPayment = { (data) => handleAddProduct({
+            products: selectedProducts,
+            saleType: data.saleType,
+            discount: data?.discount
+          })}
+        />
+      )}
     </div>
   );
 };
