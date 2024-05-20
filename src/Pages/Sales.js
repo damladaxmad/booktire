@@ -16,27 +16,28 @@ import NewSales from '../containers/newSales/NewSales';
 const Sales = () => {
   const [disabled, setDisabled] = useState(false);
   const [currentTab, setCurrentTab] = useState(0); // Track current tab index
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for controlling modal visibility
   const token = useSelector(state => state?.login?.token);
   const { business, name } = useSelector(state => state.login.activeUser);
   const urlCustomer = `${constants.baseUrl}/customers/get-business-customers/${business?._id}`;
   const urlProduct = `${constants.baseUrl}/products/get-business-products/${business?._id}`;
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-useReadData(
+  useReadData(
     urlProduct,
     setProducts,
     setProductDataFetched,
     state => state.products.isProductsDataFetched,
     "products"
-);
-useReadData(
-  urlCustomer,
-  setCustomers,
-  setCustomerDataFetched,
-  state => state.customers.isCustomerDataFetched,
-  "customers"
-);
+  );
+  useReadData(
+    urlCustomer,
+    setCustomers,
+    setCustomerDataFetched,
+    state => state.customers.isCustomerDataFetched,
+    "customers"
+  );
 
   const handleTabChange = (tabIndex) => {
     setCurrentTab(tabIndex);
@@ -49,10 +50,11 @@ useReadData(
       }
     }).then((res) => {
       setDisabled(false);
-      setProductDataFetched(false)
-      let sale = res?.data?.data?.createdSale[0]
-      dispatch(updateCustomerSocketBalance({_id: sale?.customer, transaction: sale?.total}))
+      setProductDataFetched(false);
+      let sale = res?.data?.data?.createdSale[0];
+      dispatch(updateCustomerSocketBalance({ _id: sale?.customer, transaction: sale?.total }));
       alert("Successfully created sale!");
+      setIsModalOpen(false); // Close modal when sale is created successfully
     }).catch((err) => {
       setDisabled(false);
       alert(err.response?.data?.message);
@@ -61,7 +63,7 @@ useReadData(
 
   const handleAddProduct = ({ products, discount, total, date, saleType, customer }) => {
     setDisabled(true);
-    console.log(saleType, products)
+    console.log(saleType, products);
     console.log('Submitted data:', { products, discount, total });
     products?.map(product => {
       console.log(product.salePrice);
@@ -86,21 +88,9 @@ useReadData(
     createSale(transformedData);
   };
 
-  // const handleFinish = () => {
-  //   if (!date) {
-  //     alert('Please select a date before finishing.');
-  //     return;
-  //   }
-  //   handleAddProduct();
-  // };
-
   return (
     <div style={{ width: "95%", margin: "auto" }}>
-      <div style={{
-        display: 'flex',
-        marginBottom: '20px',
-        gap: "10px"
-      }}>
+      <div style={{ display: 'flex', marginBottom: '20px', gap: "10px" }}>
         <div
           onClick={() => handleTabChange(0)}
           style={{
@@ -116,12 +106,12 @@ useReadData(
             borderRadius: '50px',
             border: `1px solid ${constants.pColor}`
           }}>
-           <Typography>Form </Typography>
+          <Typography>Form </Typography>
         </div>
         <div
           onClick={() => handleTabChange(1)}
           style={{
-           padding: '5px 0px',
+            padding: '5px 0px',
             width: "80px",
             display: "flex",
             alignItems: "center",
@@ -138,7 +128,7 @@ useReadData(
         <div
           onClick={() => handleTabChange(2)}
           style={{
-           padding: '5px 0px',
+            padding: '5px 0px',
             width: "80px",
             display: "flex",
             alignItems: "center",
@@ -153,32 +143,15 @@ useReadData(
           Sales
         </div>
       </div>
-      <div style={{
-        width: "100%", margin: "auto", borderRadius: "10px",
-        padding: "0px", display: "flex", flexDirection: "column"
-      }}>
+      <div style={{ width: "100%", margin: "auto", borderRadius: "10px", padding: "0px", display: "flex", flexDirection: "column" }}>
         {currentTab === 0 && (
-
-          <NewSales handleAddProduct = {handleAddProduct}/>
-          // <>
-          //   <Selectors
-          //     saleType={saleType}
-          //     setSaleType={setSaleType}
-          //     customer={customer}
-          //     setCustomer={setCustomer}
-          //     date={date}
-          //     setDate={setDate}
-          //   />
-          //   <ItemsForm handleAddProduct={handleAddProduct} handleFinish={handleFinish}
-          //     disabled={disabled} />
-          // </>
+          <NewSales 
+            handleAddProduct={handleAddProduct}
+            setIsModalOpen={setIsModalOpen} // Pass the function to control modal visibility
+          />
         )}
-        {currentTab === 1 && (
-          <SalesReport />
-        )}
-        {currentTab === 2 && (
-          <SalesTable />
-        )}
+        {currentTab === 1 && <SalesReport />}
+        {currentTab === 2 && <SalesTable />}
       </div>
     </div>
   );

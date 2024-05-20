@@ -1,16 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { MdClose } from 'react-icons/md';
-import { Typography, IconButton, TextField, Select, MenuItem, Button, Divider } from '@material-ui/core';
+import { Typography, IconButton, } from '@material-ui/core';
 import MaterialTable from 'material-table';
 import CustomButton from '../../reusables/CustomButton';
 import { constants } from '../../Helpers/constantsFile';
 import moment from 'moment';
+import { useSelector } from 'react-redux';
+import Select from "react-select"
 
 const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment }) => {
-  const [paymentType, setPaymentType] = useState('cash');
   const [discount, setDiscount] = useState("");
   const [total, setTotal] = useState(subtotal);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [value, setValue] = useState(''); // Define value state
+  const customers = useSelector(state => state?.customers.customers);
+  const [saleType, setSaleType] = useState("cash")
+  const [customer, setCustomer] = useState()
+
+
+  const searchCustomers = () => {
+    return customers
+      .filter(customer =>
+        customer?.name?.toLowerCase().includes(value.toLowerCase())
+      )
+      .map(customer => ({ value: customer, label: customer?.name }));
+  };
+
+  const handleCustomerSelect = (selectedOption) => {
+    if (selectedOption) {
+      setValue(selectedOption?.value?.name || ''); // Set the value state
+      setCustomer(selectedOption.value);
+    } else {
+      setCustomer(''); // Clear the value state
+    }
+  };
+
+  const saleTypeOptions = [
+    { value: 'cash', label: 'Cash' },
+    { value: 'invoice', label: 'Invoice' }
+  ];
+
 
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
@@ -50,7 +79,7 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment })
         <div style={{ width: '55%', marginRight: '20px' }}>
           <MaterialTable
             columns={[
-              { title: 'Items', field: 'name', width: "45%"},
+              { title: 'Items', field: 'name', cellStyle: { whiteSpace: 'nowrap' }},
               { title: 'QTY', field: 'qty', type: 'numeric' },
               { title: 'Price', field: 'salePrice', type: 'currency' },
               { title: 'Subtotal', field: 'subtotal', type: 'currency' }
@@ -66,13 +95,14 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment })
               search: false,
               paging: false,
               toolbar: false,
+              tableLayout: 'fixed',
               headerStyle: { fontWeight: "bold" }
             }}
             style={{ boxShadow: "none", width: "100%" }}
           />
         </div>
 
-        <div style = {{width: "1px", background: "lightGrey", height: "100%", marginRight: "20px"}}></div>
+        <div style={{ width: "1px", background: "lightGrey", height: "100%", marginRight: "20px" }}></div>
         <div style={{ width: '45%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -81,28 +111,42 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment })
                 <MdClose style={{ fontSize: "20px", color: constants.pColor }} />
               </IconButton>
             </div>
-            <div style={{ marginBottom: '20px' }}>
-              <Select
-                fullWidth
-                value={paymentType}
-                onChange={(e) => setPaymentType(e.target.value)}
-                variant="outlined"
-              >
-                <MenuItem value="invoice">Invoice</MenuItem>
-                <MenuItem value="cash">Cash</MenuItem>
-              </Select>
+
+            <div style = {{width: "100%", display: "flex", gap: "10px", flexDirection: "column",
+              marginBottom: "15px"
+            }}>
+            <Select
+              value={saleTypeOptions.find(option => option.value === saleType)}
+              options={saleTypeOptions}
+              onChange={(selectedOption) => setSaleType(selectedOption.value)}
+            />
+
+            <Select
+              placeholder='Select customer'
+              styles={{
+                control: (styles, { isDisabled }) => ({
+                  ...styles,
+                  border: "1px solid lightGrey",
+                  height: "36px",
+                  borderRadius: "5px",
+                  width: "100%",
+                  minHeight: "28px",
+                  ...(isDisabled && { cursor: "not-allowed" }),
+                })
+              }}
+              value={customer ? { value: customer, label: customer.name } : null}
+              // options={searchCustomers()}
+          options={customers.map(customer => ({ value: customer, label: customer?.name }))}
+              onChange={handleCustomerSelect}
+              isClearable={true} // Make the Select clearable
+              isDisabled={saleType === "cash"}
+            />
             </div>
-            {paymentType === 'invoice' && (
-              <div style={{ marginBottom: '20px' }}>
-                <Select fullWidth defaultValue="Jaamac Nuur" variant="outlined">
-                  <MenuItem value="Jaamac Nuur">Jaamac Nuur</MenuItem>
-                  <MenuItem value="Another Customer">Another Customer</MenuItem>
-                </Select>
-              </div>
-            )}
-            <div style={{ marginBottom: '20px',display:"flex", flexDirection: "row", width: "100%",
+
+            <div style={{
+              marginBottom: '20px', display: "flex", flexDirection: "row", width: "100%",
               justifyContent: "space-between"
-             }}>
+            }}>
               <input
                 type="date"
                 style={{
@@ -119,8 +163,10 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment })
               />
 
               <input
-                style={{ width: "47%", border: "1px solid lightGrey", borderRadius: "5px", 
-                padding: "7px 10px", height: "40px" }}
+                style={{
+                  width: "47%", border: "1px solid lightGrey", borderRadius: "5px",
+                  padding: "7px 10px", height: "40px"
+                }}
                 type="number"
                 placeholder='Discount'
                 name="price"
@@ -141,7 +187,8 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment })
               fullWidth
               variant="contained"
               color="primary"
-              onClick={() => onFinishPayment({discount: discount, saleType: paymentType, date: selectedDate})}
+              onClick={() => onFinishPayment({ discount: discount, saleType: saleType, 
+                date: selectedDate, customer: customer })}
               style={{ width: "100%", fontSize: "14px" }}
             />
           </div>

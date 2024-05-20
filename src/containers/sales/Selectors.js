@@ -4,14 +4,16 @@ import moment from 'moment';
 import Select from 'react-select';
 
 const Selectors = ({ saleType, setSaleType, customer, setCustomer, date, setDate }) => {
-  const [value, setValue] = useState(''); // Define value state
-  const customers = useSelector(state => state?.customers.customers);
   const [selectedDate, setSelectedDate] = useState(new Date());
-
+  
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
     setDate(e.target.value)
   };
+  
+  const [value, setValue] = useState(''); // Define value state
+  const customers = useSelector(state => state?.customers.customers);
+
 
   const searchCustomers = () => {
     return customers

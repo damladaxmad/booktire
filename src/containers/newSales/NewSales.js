@@ -3,9 +3,9 @@ import ProductList from './ProductList';
 import ItemsList from './ItemsList';
 import CheckoutModal from './CheckoutModal';
 
-const NewSales = ({handleAddProduct}) => {
+const NewSales = ({ handleAddProduct, setIsModalOpen }) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsLocalModalOpen] = useState(false);
 
   const addProduct = (product) => {
     setSelectedProducts((prevProducts) => {
@@ -27,6 +27,14 @@ const NewSales = ({handleAddProduct}) => {
     );
   };
 
+  const updateProductDetails = (productId, qty, salePrice) => {
+    setSelectedProducts((prevProducts) => 
+      prevProducts.map(p => 
+        p.id === productId ? { ...p, qty, salePrice } : p
+      )
+    );
+  };
+
   const removeProduct = (productId) => {
     setSelectedProducts((prevProducts) => 
       prevProducts.filter(p => p.id !== productId)
@@ -34,14 +42,22 @@ const NewSales = ({handleAddProduct}) => {
   };
 
   const handlePayment = () => {
-    setIsModalOpen(true);
+    setIsLocalModalOpen(true);
   };
 
   const closeModal = () => {
-    setIsModalOpen(false);
+    setIsLocalModalOpen(false);
   };
 
-  console.log(selectedProducts)
+  const handleFinishPayment = (data) => {
+    handleAddProduct({
+      products: selectedProducts,
+      saleType: data.saleType,
+      discount: data?.discount || 0,
+      customer: data?.customer
+    });
+    setIsModalOpen(false); // Close the modal after finishing payment
+  };
 
   const subtotal = selectedProducts.reduce((acc, product) => acc + product.salePrice * product.qty, 0);
 
@@ -51,6 +67,7 @@ const NewSales = ({handleAddProduct}) => {
       <ItemsList 
         selectedProducts={selectedProducts} 
         updateProductQty={updateProductQty}
+        updateProductDetails={updateProductDetails}
         handlePayment={handlePayment}
         removeProduct={removeProduct}
       />
@@ -59,11 +76,7 @@ const NewSales = ({handleAddProduct}) => {
           selectedProducts={selectedProducts}
           subtotal={subtotal}
           onClose={closeModal}
-          onFinishPayment = { (data) => handleAddProduct({
-            products: selectedProducts,
-            saleType: data.saleType,
-            discount: data?.discount
-          })}
+          onFinishPayment={handleFinishPayment}
         />
       )}
     </div>
