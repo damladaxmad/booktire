@@ -9,7 +9,7 @@ import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { MenuItem, Menu } from "@material-ui/core";
 
 const Table = ({ name, data, columns, state, onUpdate, onDelete, onSeeTransactions, onResetUser,
-onGiveAccess, onClickRow }) => {
+onGiveAccess, onProductStatement, onClickRow }) => {
   const tableIcons = {
     FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
     LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
@@ -70,6 +70,15 @@ onGiveAccess, onClickRow }) => {
           }}
         >
           Reset User
+        </MenuItem>)}
+
+        {(name == "Product" ) && (<MenuItem
+          onClick={() => {
+            handleClose()
+            onProductStatement(instance)
+          }}
+        >
+          Product Statement
         </MenuItem>)}
 
         {(name == "User" ) && (<MenuItem

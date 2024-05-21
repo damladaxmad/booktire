@@ -15,6 +15,7 @@ import io from 'socket.io-client';
 import useReadData from "../hooks/useReadData";
 import { addProduct, deleteProduct, setProductDataFetched, setProducts, updateProduct } from "../containers/products/productSlice";
 import CreateProduct from "../containers/products/CreateProduct";
+import ProductStatement from "../containers/products/ProductStatement";
 
 const parentDivStyle = {
   display: "flex",
@@ -35,6 +36,7 @@ export default function Products() {
   const products = JSON.parse(JSON.stringify(useSelector(state => state.products?.products || [])))
   const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions)))
   const productDataFetched = useSelector(state => state.products.isProductsDataFetched)
+  const [showStatement, setShowStatement] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -92,13 +94,13 @@ export default function Products() {
   return (
     <div style={parentDivStyle}>
 
-      {<TitleComponent title="Products"
+      {!showStatement && <TitleComponent title="Products"
         btnName="Create Products" onClick={handleShowRegister} />}
 
-      {<CustomRibbon query={query}
+      {!showStatement && <CustomRibbon query={query}
         setQuery={handleSearchChange} />}
 
-      { <Table
+      {!showStatement && <Table
         data={handler(products)} columns={columns}
         name="Product"
         state={loading ? "loading.." : error ? error : "no data to display"}
@@ -112,8 +114,12 @@ export default function Products() {
             `${constants.baseUrl}/products/${data?._id}`,
             token,
             () => { dispatch(deleteProduct(data)) })
-        }} />}
-
+        }} 
+        onProductStatement = {(data)=> {
+          setInstance(data)
+          setShowStatement(true)
+        }}/>}
+      
       {showRegister && <CreateProduct
         instance={toBeUpdatedCustomer}
         update={update}
@@ -136,6 +142,8 @@ export default function Products() {
             notify("Product updated successfully")
           }
         } />}
+
+        {showStatement && <ProductStatement product = {instance} goBack = {()=> setShowStatement(false)}/>}
 
       <ToastContainer />
 
