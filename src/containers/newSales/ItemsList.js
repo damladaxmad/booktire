@@ -84,7 +84,11 @@ const ItemsList = ({ selectedProducts, updateProductQty, handlePayment, removePr
         <Typography variant="body1">TOTAL:</Typography>
         <Typography variant="body" style = {{fontWeight: "bold"}}> ${subtotal.toFixed(2)}</Typography>
         </div>
-        <CustomButton text="Payment" style={{ width: "100%", height: "35px", fontSize: "15px" }} onClick={handlePayment} />
+        <CustomButton text="Payment" style={{ width: "100%", height: "35px", fontSize: "15px" }} 
+        onClick={() => {
+          if (selectedProducts?.length > 0) handlePayment()
+          else alert("Fadlan dooro Products!")
+        }} />
       </div>
       {selectedProduct && (
         <EditProductModal

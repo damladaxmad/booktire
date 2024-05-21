@@ -1,0 +1,52 @@
+.pos-printable {
+    width: 80mm; /* Adjust width according to your POS printer paper size */
+    padding: 10px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+}
+
+.pos-header, .pos-footer {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.pos-business-name {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.pos-business-info, .pos-report-title, .pos-date {
+    font-size: 12px;
+}
+
+.pos-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+.pos-table th, .pos-table td {
+    border-bottom: 1px solid #ddd;
+    padding: 4px;
+    text-align: justify;
+}
+
+
+.pos-summary {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.pos-summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+}
+
+.pos-summary-row.pos-total {
+    font-weight: bold;
+}
+
+.pos-footer-text {
+    font-size: 8px;
+}

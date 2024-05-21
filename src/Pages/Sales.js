@@ -16,7 +16,6 @@ import NewSales from '../containers/newSales/NewSales';
 const Sales = () => {
   const [disabled, setDisabled] = useState(false);
   const [currentTab, setCurrentTab] = useState(0); // Track current tab index
-  const [isModalOpen, setIsModalOpen] = useState(false); // State for controlling modal visibility
   const token = useSelector(state => state?.login?.token);
   const { business, name } = useSelector(state => state.login.activeUser);
   const urlCustomer = `${constants.baseUrl}/customers/get-business-customers/${business?._id}`;
@@ -43,50 +42,49 @@ const Sales = () => {
     setCurrentTab(tabIndex);
   };
 
-  const createSale = (data) => {
-    axios.post(`${constants.baseUrl}/sales`, data, {
-      headers: {
-        authorization: token
-      }
-    }).then((res) => {
-      setDisabled(false);
-      setProductDataFetched(false);
-      let sale = res?.data?.data?.createdSale[0];
-      dispatch(updateCustomerSocketBalance({ _id: sale?.customer, transaction: sale?.total }));
-      alert("Successfully created sale!");
-      setIsModalOpen(false); // Close modal when sale is created successfully
-    }).catch((err) => {
-      setDisabled(false);
-      alert(err.response?.data?.message);
-    });
-  };
+  // const createSale = (data) => {
+  //   axios.post(`${constants.baseUrl}/sales`, data, {
+  //     headers: {
+  //       authorization: token
+  //     }
+  //   }).then((res) => {
+  //     setDisabled(false);
+  //     setProductDataFetched(false);
+  //     let sale = res?.data?.data?.createdSale[0];
+  //     dispatch(updateCustomerSocketBalance({ _id: sale?.customer, transaction: sale?.total }));
+  //     alert("Successfully created sale!");
+  //   }).catch((err) => {
+  //     setDisabled(false);
+  //     alert(err.response?.data?.message);
+  //   });
+  // };
 
-  const handleAddProduct = ({ products, discount, total, date, saleType, customer }) => {
-    setDisabled(true);
-    console.log(saleType, products);
-    console.log('Submitted data:', { products, discount, total });
-    products?.map(product => {
-      console.log(product.salePrice);
-    });
-    const transformedData = {
-      products: products.map(product => ({
-        refProduct: product?._id,
-        name: product.name,
-        category: product.category,
-        unitPrice: product.unitPrice,
-        quantity: product.qty,
-        salePrice: product.salePrice
-      })),
-      discount: discount,
-      paymentType: saleType,
-      business: business?._id,
-      customer: customer?._id,
-      date: date,
-      user: name
-    };
+  // const handleAddProduct = ({ products, discount, total, date, saleType, customer }) => {
+  //   setDisabled(true);
+  //   console.log(saleType, products);
+  //   console.log('Submitted data:', { products, discount, total });
+  //   products?.map(product => {
+  //     console.log(product.salePrice);
+  //   });
+  //   const transformedData = {
+  //     products: products.map(product => ({
+  //       refProduct: product?._id,
+  //       name: product.name,
+  //       category: product.category,
+  //       unitPrice: product.unitPrice,
+  //       quantity: product.qty,
+  //       salePrice: product.salePrice
+  //     })),
+  //     discount: discount,
+  //     paymentType: saleType,
+  //     business: business?._id,
+  //     customer: customer?._id,
+  //     date: date,
+  //     user: name
+  //   };
 
-    createSale(transformedData);
-  };
+  //   createSale(transformedData);
+  // };
 
   return (
     <div style={{ width: "95%", margin: "auto" }}>
@@ -146,8 +144,7 @@ const Sales = () => {
       <div style={{ width: "100%", margin: "auto", borderRadius: "10px", padding: "0px", display: "flex", flexDirection: "column" }}>
         {currentTab === 0 && (
           <NewSales 
-            handleAddProduct={handleAddProduct}
-            setIsModalOpen={setIsModalOpen} // Pass the function to control modal visibility
+            // handleAddProduct={handleAddProduct}
           />
         )}
         {currentTab === 1 && <SalesReport />}

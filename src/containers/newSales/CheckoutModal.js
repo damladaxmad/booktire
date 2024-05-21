@@ -8,7 +8,7 @@ import moment from 'moment';
 import { useSelector } from 'react-redux';
 import Select from "react-select"
 
-const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment }) => {
+const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, disabled }) => {
   const [discount, setDiscount] = useState("");
   const [total, setTotal] = useState(subtotal);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -16,7 +16,6 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment })
   const customers = useSelector(state => state?.customers.customers);
   const [saleType, setSaleType] = useState("cash")
   const [customer, setCustomer] = useState()
-
 
   const searchCustomers = () => {
     return customers
@@ -40,15 +39,14 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment })
     { value: 'invoice', label: 'Invoice' }
   ];
 
-
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
-    // setDate(e.target.value)
   };
 
   useEffect(() => {
-    if (discount == "") setTotal(subtotal)
-    setTotal(subtotal - discount);
+    const discountValue = parseFloat(discount);
+    const calculatedTotal = isNaN(discountValue) ? subtotal : subtotal - discountValue;
+    setTotal(calculatedTotal);
   }, [discount, subtotal]);
 
   return (
@@ -183,12 +181,13 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment })
               <Typography variant="body1" style={{ fontWeight: 'bold' }}>${total.toFixed(2)}</Typography>
             </div>
             <CustomButton
+              disabled={disabled}
               text="FINISH PAYMENT"
               fullWidth
               variant="contained"
               color="primary"
               onClick={() => onFinishPayment({ discount: discount, saleType: saleType, 
-                date: selectedDate, customer: customer })}
+                date: selectedDate, customer: customer, products: selectedProducts })}
               style={{ width: "100%", fontSize: "14px" }}
             />
           </div>

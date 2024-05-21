@@ -75,7 +75,8 @@ export default function SalesReport() {
                     <CircularProgress />
                 </div>
             ) : (
-                <div style = {{marginTop: "25px", display:"flex", flexDirection: "column", gap: "25px"}}>
+                <div style = {{marginTop: "25px", display:"flex", flexDirection: "column", gap: "25px",
+                }}>
                     {sales.length > 0 ? (
                         sales.map(sale => <Sale key={sale._id} sale={sale} />)
                     ) : (
@@ -91,10 +92,10 @@ export default function SalesReport() {
 function Sale({ sale }) {
     return (
         <div style={{ display: "flex", gap: "14px", borderRadius: "5px", border: "1px solid #E3E3E3",
-        width: "80%", flexDirection: "column" }}>
+        width: "80%", flexDirection: "column", background: "white" }}>
 
             <div style = {{background: constants.backdropColor, display: "flex", width: "100%", padding: "5px 15px",
-            justifyContent: "space-between"
+            justifyContent: "space-between", background: "#EFEFEF"
             }}> 
             <Typography style = {{fontSize: "16px", }}>{sale.paymentType}</Typography>
             <Typography style = {{fontSize: "16px", }}>{sale.user}</Typography>
@@ -164,7 +165,7 @@ function SalesDashboard({ sales }) {
 
     return (
         <div style={{
-            background: "white", width: "100%",
+             width: "100%",
             borderRadius: "12px", display: "flex", flexDirection: "column",
             gap: "16px", marginRight: "18px", flexDirection: "row", flexWrap: "wrap"
         }}>
@@ -172,7 +173,7 @@ function SalesDashboard({ sales }) {
             {data.map((d, index) => (
                 <div key={index} style={{
                     display: "flex", border: "1px solid lightgray", padding: "10px",
-                    borderRadius: "5px", width: "48%", alignItems: "center"
+                    borderRadius: "5px", width: "48%", alignItems: "center", background: "white"
                 }}>
                     <MdKeyboardArrowRight style={{
                         fontSize: "18px", color: "gray", flex: "0.2"

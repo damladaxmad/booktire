@@ -9,7 +9,7 @@ import Select from "react-select";
 import { addCategory, setCategories, setCategoryDataFetched } from "../category/categorySlice";
 import useReadData from "../../hooks/useReadData";
 import Register from "../../utils/Register";
-import {categoryFields} from "../category/cateogryModal"
+import { categoryFields } from "../category/cateogryModal"
 import { ToastContainer, toast } from "react-toastify";
 
 const CreateProduct = ({ instance, store, name, fields, update, url, business, hideModal, onUpdate }) => {
@@ -18,10 +18,10 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
   const token = useSelector(state => state.login.token);
   const mySocketId = useSelector(state => state?.login?.mySocketId);
   const { business: business2 } = useSelector(state => state.login.activeUser)
-  const url2 = `${constants.baseUrl}/product-categories/get-business-product-categories/${business2?._id}`
   const categories = JSON.parse(JSON.stringify(useSelector(state => state.categories?.categories || [])))
+  const url2 = `${constants.baseUrl}/product-categories/get-business-product-categories/${business2?._id}`
 
-  console.log(categories)
+  console.log(business2?.units)
   useReadData(
     url2,
     setCategories,
@@ -106,7 +106,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
 
   return (
     <Modal onClose={hideModal} pwidth="600px" left="32.5%" top="24%">
-     {showCategory && <Register
+      {showCategory && <Register
         update={false}
         name="Category"
         fields={categoryFields}
@@ -118,7 +118,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
           notify("Category Added Successfully!")
           dispatch(addCategory(data?.createdCategory))
         }}
-        />}
+      />}
       <div
         style={{
           display: "flex",
@@ -166,54 +166,102 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
             </div>
           ))}
 
-          <div style = {{display: "flex", gap: "5px", width: "250px", marginLeft: "20px"}}>
-          <Select
-            placeholder='Select category'
-            styles={{
-              control: (styles, { isDisabled }) => ({
-                ...styles,
-                border: "1px solid lightGrey",
-                height: "40px",
-                borderRadius: "5px",
-                width: "180px",
-                minHeight: "28px",
-                ...(isDisabled && { cursor: "not-allowed" }),
-              }),
-              menu: (provided, state) => ({
-                ...provided,
-                zIndex: 9999 
-              }),
-              option: (provided, state) => ({
-                ...provided,
-                color: state.isSelected ? "black" : "inherit", // Keep text black for selected option
-                backgroundColor: state.isSelected ? constants.pColor + "1A" : "inherit",
-                "&:hover": {
-                  backgroundColor: constants.pColor + "33",
-                }
-              }),
-              singleValue: (provided, state) => ({
-                ...provided,
-                color: "black",
-              }),
-              input: (provided, state) => ({
-                ...provided,
-                color: "black", 
-                "&:focus": {
-                  borderColor: constants.pColor,
-                  boxShadow: `0 0 0 1px ${constants.pColor}`,
-                }
-              }),
-            }}
-            menuPlacement="top" 
-            value={formik.values.category ? { value: formik.values.category, label: formik.values.category.categoryName } : null}
-            options={categories?.map(category => ({ value: category, label: category?.categoryName }))}
-            onChange={(selectedOption) => formik.setFieldValue("category", selectedOption ? selectedOption.value : null)}
-            isClearable={true} 
-            isDisabled={disabled}
-          />
+          <div style={{ width: "250px", marginTop: "23px" }}>
+            <Select
+              placeholder='Select Unit'
+              styles={{
+                control: (styles, { isDisabled }) => ({
+                  ...styles,
+                  border: "1px solid lightGrey",
+                  height: "40px",
+                  borderRadius: "5px",
+                  width: "250px",
+                  minHeight: "28px",
+                  ...(isDisabled && { cursor: "not-allowed" }),
+                }),
+                menu: (provided, state) => ({
+                  ...provided,
+                  zIndex: 9999
+                }),
+                option: (provided, state) => ({
+                  ...provided,
+                  color: state.isSelected ? "black" : "inherit", // Keep text black for selected option
+                  backgroundColor: state.isSelected ? constants.pColor + "1A" : "inherit",
+                  "&:hover": {
+                    backgroundColor: constants.pColor + "33",
+                  }
+                }),
+                singleValue: (provided, state) => ({
+                  ...provided,
+                  color: "black",
+                }),
+                input: (provided, state) => ({
+                  ...provided,
+                  color: "black",
+                  "&:focus": {
+                    borderColor: constants.pColor,
+                    boxShadow: `0 0 0 1px ${constants.pColor}`,
+                  }
+                }),
+              }}
+              menuPlacement="top"
+              value={formik.values.unitMeasurment ? { value: formik.values.unitMeasurment, label: formik.values.unitMeasurment } : null}
+              options={business2?.units?.map(unit => ({ value: unit, label: unit }))}
+              onChange={(selectedOption) => formik.setFieldValue("unitMeasurment", selectedOption ? selectedOption.value : null)}
+              isClearable={true}
+              isDisabled={disabled}
+            />
 
-          <CustomButton text = "ADD" style = {{fontSize: "14px"}} width = "45px" bgColor="black"
-          onClick = {() => setShowCategory(true)}/>
+          </div>
+
+          <div style={{ display: "flex", gap: "5px", width: "250px", marginLeft: "20px" }}>
+            <Select
+              placeholder='Select category'
+              styles={{
+                control: (styles, { isDisabled }) => ({
+                  ...styles,
+                  border: "1px solid lightGrey",
+                  height: "40px",
+                  borderRadius: "5px",
+                  width: "180px",
+                  minHeight: "28px",
+                  ...(isDisabled && { cursor: "not-allowed" }),
+                }),
+                menu: (provided, state) => ({
+                  ...provided,
+                  zIndex: 9999
+                }),
+                option: (provided, state) => ({
+                  ...provided,
+                  color: state.isSelected ? "black" : "inherit", // Keep text black for selected option
+                  backgroundColor: state.isSelected ? constants.pColor + "1A" : "inherit",
+                  "&:hover": {
+                    backgroundColor: constants.pColor + "33",
+                  }
+                }),
+                singleValue: (provided, state) => ({
+                  ...provided,
+                  color: "black",
+                }),
+                input: (provided, state) => ({
+                  ...provided,
+                  color: "black",
+                  "&:focus": {
+                    borderColor: constants.pColor,
+                    boxShadow: `0 0 0 1px ${constants.pColor}`,
+                  }
+                }),
+              }}
+              menuPlacement="top"
+              value={formik.values.category ? { value: formik.values.category, label: formik.values.category.categoryName } : null}
+              options={categories?.map(category => ({ value: category, label: category?.categoryName }))}
+              onChange={(selectedOption) => formik.setFieldValue("category", selectedOption ? selectedOption.value : null)}
+              isClearable={true}
+              isDisabled={disabled}
+            />
+
+            <CustomButton text="ADD" style={{ fontSize: "14px" }} width="45px" bgColor="black"
+              onClick={() => setShowCategory(true)} />
 
           </div>
 
@@ -225,7 +273,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
             bgColor={constants.pColor}
             style={{ marginTop: "0px" }}
           />
-      <ToastContainer/>
+          <ToastContainer />
         </form>
       </div>
     </Modal>

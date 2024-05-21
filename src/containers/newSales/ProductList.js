@@ -4,13 +4,24 @@ import { MdProductionQuantityLimits } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 import Select from "react-select";
 import { constants } from '../../Helpers/constantsFile';
+import { setCategories, setCategoryDataFetched } from '../category/categorySlice';
+import useReadData from '../../hooks/useReadData';
 
 const ProductList = ({ addProduct }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const products = useSelector(state => state?.products.products);
   const [category, setCategory] = useState(null);
+  const { business } = useSelector(state => state.login.activeUser)
   const categories = JSON.parse(JSON.stringify(useSelector(state => state.categories?.categories || [])));
+  const url2 = `${constants.baseUrl}/product-categories/get-business-product-categories/${business?._id}`
 
+  useReadData(
+    url2,
+    setCategories,
+    setCategoryDataFetched,
+    state => state.users.isCategoriesDataFetched,
+    "categories"
+  );
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
