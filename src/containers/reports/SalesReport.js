@@ -1,0 +1,169 @@
+import React, { useEffect, useState } from "react";
+import { Typography, TextField, CircularProgress } from "@material-ui/core";
+import axios from "axios";
+import moment from "moment";
+import { useSelector } from "react-redux";
+import CustomButton from "../../reusables/CustomButton";
+import { constants } from "../../Helpers/constantsFile";
+import MaterialTable from "material-table";
+
+export default function SalesReport() {
+    const token = useSelector(state => state?.login?.token);
+    const { business } = useSelector(state => state.login.activeUser);
+    const [sales, setSales] = useState([]);
+    const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+    const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
+    const [loading, setLoading] = useState(false);
+
+    const fetchSales = () => {
+        setLoading(true);
+        axios.get(`${constants.baseUrl}/sales/get-business-sales/${business?._id}?startDate=${startDate}&endDate=${endDate}`, {
+            headers: {
+                "authorization": token
+            }
+        }).then(res => {
+            setSales(res?.data?.data?.sales);
+        }).catch(error => {
+            console.error("Error fetching sales:", error);
+        }).finally(() => {
+            setLoading(false);
+        });
+    };
+
+    useEffect(() => {
+        fetchSales();
+    }, []);
+
+    const handleViewClick = () => {
+        fetchSales();
+    };
+
+    return (
+        <div style={{ width: "97.5%", marginTop: "30px" }}>
+            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'flex-end', }}>
+                <TextField
+                    size="small"
+                    variant="outlined"
+                    type="date"
+                    label="Start Date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    style={{ marginRight: '20px' }}
+                />
+                <TextField
+                    size="small"
+                    variant="outlined"
+                    type="date"
+                    label="End Date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    style={{ marginRight: '20px' }}
+                />
+                <CustomButton text="View" height="37px" width="100px" fontSize="14px" onClick={handleViewClick} />
+            </div>
+
+            {loading ? (
+                <div style={{ textAlign: 'center', marginTop: "10px" }}>
+                    <CircularProgress />
+                </div>
+            ) : (
+                <MaterialTable
+                    title="Sales Report"
+                    columns={[
+                        { title: 'Sales Number', field: 'salesNumber' },
+                        { title: 'Items', field: 'items', render: rowData => <p>{rowData?.items?.length}</p> },
+                        { title: 'Date', field: 'date', render: rowData => moment(rowData.date).format("YYYY-MM-DD") },
+                        { title: 'User', field: 'user' },
+                        { title: 'Payment', field: 'paymentType' },
+                        { title: 'Subtotal', field: 'subtotal', render: rowData => `$${rowData?.total + rowData?.discount}` },
+                        { title: 'Discount', field: 'discount', render: rowData => `$${rowData?.discount}` },
+                        { title: 'Total', field: 'total', render: rowData => `$${rowData?.total}` }
+                    ]}
+                    data={sales.map((sale, index) => ({
+                        salesNumber: index + 1,
+                        items: sale.products,
+                        date: sale.date,
+                        user: sale.user,
+                        subtotal: sale.subtotal,
+                        discount: sale.discount,
+                        total: sale.total
+                    }))}
+                    options={{
+                        search: false,
+                        paging: false,
+                        toolbar: false,
+                        headerStyle: { fontWeight: "bold" }
+                    }}
+                    style={{ marginTop: "20px", boxShadow: "none", width: "100%" }}
+                />
+            )}
+
+            <SalesDashboard sales={sales} />
+        </div>
+    );
+}
+
+function SalesDashboard({ sales }) {
+    let numberOfSales = 0;
+    let revenueFromSales = 0;
+    let cashOnHand = 0;
+    let salesInvoice = 0;
+    let costOfGoodsSold = 0;
+
+    sales?.forEach(sale => {
+        numberOfSales++;
+        revenueFromSales += sale.total;
+        if (sale.paymentType === "cash") cashOnHand += sale.total;
+        if (sale.paymentType === "invoice") salesInvoice += sale.total;
+
+        sale.products.forEach(product => {
+            costOfGoodsSold += product.unitPrice * product.quantity;
+        });
+    });
+
+    const data1 = [
+        { title: "Number Of Sales", value: numberOfSales, isMoney: false },
+        { title: "Cash On Hand", value: cashOnHand, isMoney: true },
+        { title: "Sales Invoice", value: salesInvoice, isMoney: true },
+    ];
+
+    const data2 = [
+        { title: "Revenue From Sales", value: revenueFromSales, isMoney: true },
+        { title: "Cost Of Goods Sold", value: costOfGoodsSold, isMoney: true },
+        { title: "Profit From Sales", value: revenueFromSales - costOfGoodsSold, isMoney: true }
+    ];
+
+    return (
+        <div style={{
+            width: "100%",
+            display: "flex",
+            gap: "20px",
+            marginTop: "25px",
+            marginLeft: "auto",
+            marginRight: "auto"
+        }}>
+            {[data1, data2].map((data, index) => (
+                <div key={index} style={{
+                    width: "50%",
+                    borderRadius: "12px",
+                    border: "1px solid lightgray",
+                    padding: "10px 25px",
+                    background: "white"
+                }}>
+                    {data.map((d, index) => (
+                        <div key={index} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: index < data.length - 1 ? "1px solid lightgray" : "none" }}>
+                            <Typography style={{ fontSize: "14px", color: "black" }}>{d.title}</Typography>
+                            <Typography style={{ fontSize: "14px", color: "black" }}>{d.isMoney && "$"}{d.value}</Typography>
+                        </div>
+                    ))}
+                </div>
+            ))}
+        </div>
+    );
+}
