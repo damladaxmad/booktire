@@ -8,25 +8,25 @@ import { constants } from "../../Helpers/constantsFile";
 import MaterialTable from "material-table";
 import SalesDetailsModal from "./SalesDetailsModal";
 
-export default function SalesReport() {
+export default function PurchaesReport() {
     const token = useSelector(state => state?.login?.token);
     const { business } = useSelector(state => state.login.activeUser);
     const user = useSelector(state => state.login.activeUser);
-    const [sales, setSales] = useState([]);
+    const [purchases, setPurchases] = useState([]);
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
     const [loading, setLoading] = useState(false);
-    const [selectedSale, setSelectedSale] = useState(null);
+    const [selectedPurchase, setSelectedPurchase] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
 
-    const fetchSales = () => {
+    const fetchPurchases = () => {
         setLoading(true);
-        axios.get(`${constants.baseUrl}/sales/get-business-sales/${business?._id}?startDate=${moment(startDate).format("YYYY-MM-DD")}&endDate=${moment(endDate).format("YYYY-MM-DD")}`, {
+        axios.get(`${constants.baseUrl}/purchases/get-business-purchases/${business?._id}?startDate=${moment(startDate).format("YYYY-MM-DD")}&endDate=${moment(endDate).format("YYYY-MM-DD")}`, {
             headers: {
                 "authorization": token
             }
         }).then(res => {
-            setSales(res?.data?.data?.sales);
+            setPurchases(res?.data?.data?.purchases);
         }).catch(error => {
             console.error("Error fetching sales:", error);
         }).finally(() => {
@@ -35,21 +35,21 @@ export default function SalesReport() {
     };
 
     useEffect(() => {
-        fetchSales();
+        fetchPurchases();
     }, []);
 
     const handleViewClick = () => {
-        fetchSales();
+        fetchPurchases();
     };
 
-    const handleSalesNumberClick = (sale) => {
-        setSelectedSale(sale);
+    const handlePurchasesNumberClick = (sale) => {
+        setSelectedPurchase(sale);
         setModalOpen(true);
     };
 
     const handleCloseModal = () => {
         setModalOpen(false);
-        setSelectedSale(null);
+        setSelectedPurchase(null);
     };
 
     return (
@@ -91,12 +91,12 @@ export default function SalesReport() {
                     title="Sales Report"
                     columns={[
                         {
-                            title: 'Number', field: 'salesNumber', render: rowData => (
+                            title: 'Number', field: 'purchaseNumber', render: rowData => (
                                 <Typography
                                     style={{ color: 'blue', cursor: 'pointer' }}
-                                    onClick={() => handleSalesNumberClick(rowData)}
+                                    onClick={() => handlePurchasesNumberClick(rowData)}
                                 >
-                                    {rowData.salesNumber}
+                                    {rowData.purchaseNumber}
                                 </Typography>
                             )
                         },
@@ -108,8 +108,8 @@ export default function SalesReport() {
                         { title: 'Discount', field: 'discount', render: rowData => `$${rowData?.discount}` },
                         { title: 'Total', field: 'total', render: rowData => `$${rowData?.total}` }
                     ]}
-                    data={sales.map((sale, index) => ({
-                        salesNumber: sale?.saleNumber,
+                    data={purchases?.map((sale, index) => ({
+                        purchaseNumber: sale?.purchaseNumber,
                         products: sale?.products,
                         date: sale.date,
                         user: sale.user,
@@ -128,68 +128,68 @@ export default function SalesReport() {
                 />
             )}
 
-            <SalesDetailsModal open={modalOpen} handleClose={handleCloseModal} sale={selectedSale} business={business} user={user} />
+            <SalesDetailsModal open={modalOpen} handleClose={handleCloseModal} sale={selectedPurchase} business={business} user={user} />
 
-            <SalesDashboard sales={sales} />
+            {/* <SalesDashboard sales={sales} /> */}
         </div>
     );
 }
 
-function SalesDashboard({ sales }) {
-    let numberOfSales = 0;
-    let revenueFromSales = 0;
-    let cashOnHand = 0;
-    let salesInvoice = 0;
-    let costOfGoodsSold = 0;
+// function SalesDashboard({ sales }) {
+//     let numberOfSales = 0;
+//     let revenueFromSales = 0;
+//     let cashOnHand = 0;
+//     let salesInvoice = 0;
+//     let costOfGoodsSold = 0;
 
-    sales?.forEach(sale => {
-        numberOfSales++;
-        revenueFromSales += sale.total;
-        if (sale.paymentType === "cash") cashOnHand += sale.total;
-        if (sale.paymentType === "invoice") salesInvoice += sale.total;
+//     sales?.forEach(sale => {
+//         numberOfSales++;
+//         revenueFromSales += sale.total;
+//         if (sale.paymentType === "cash") cashOnHand += sale.total;
+//         if (sale.paymentType === "invoice") salesInvoice += sale.total;
 
-        sale.products.forEach(product => {
-            costOfGoodsSold += product.unitPrice * product.quantity;
-        });
-    });
+//         sale.products.forEach(product => {
+//             costOfGoodsSold += product.unitPrice * product.quantity;
+//         });
+//     });
 
-    const data1 = [
-        { title: "Number Of Sales", value: numberOfSales, isMoney: false },
-        { title: "Cash On Hand", value: cashOnHand, isMoney: true },
-        { title: "Sales Invoice", value: salesInvoice, isMoney: true },
-    ];
+//     const data1 = [
+//         { title: "Number Of Sales", value: numberOfSales, isMoney: false },
+//         { title: "Cash On Hand", value: cashOnHand, isMoney: true },
+//         { title: "Sales Invoice", value: salesInvoice, isMoney: true },
+//     ];
 
-    const data2 = [
-        { title: "Revenue From Sales", value: revenueFromSales, isMoney: true },
-        { title: "Cost Of Goods Sold", value: costOfGoodsSold, isMoney: true },
-        { title: "Profit From Sales", value: revenueFromSales - costOfGoodsSold, isMoney: true }
-    ];
+//     const data2 = [
+//         { title: "Revenue From Sales", value: revenueFromSales, isMoney: true },
+//         { title: "Cost Of Goods Sold", value: costOfGoodsSold, isMoney: true },
+//         { title: "Profit From Sales", value: revenueFromSales - costOfGoodsSold, isMoney: true }
+//     ];
 
-    return (
-        <div style={{
-            width: "100%",
-            display: "flex",
-            gap: "20px",
-            marginTop: "25px",
-            marginLeft: "auto",
-            marginRight: "auto"
-        }}>
-            {[data1, data2].map((data, index) => (
-                <div key={index} style={{
-                    width: "50%",
-                    borderRadius: "12px",
-                    border: "1px solid lightgray",
-                    padding: "10px 25px",
-                    background: "white"
-                }}>
-                    {data.map((d, index) => (
-                        <div key={index} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: index < data.length - 1 ? "1px solid lightgray" : "none" }}>
-                            <Typography style={{ fontSize: "14px", color: "black" }}>{d.title}</Typography>
-                            <Typography style={{ fontSize: "14px", color: "black" }}>{d.isMoney && "$"}{d.value}</Typography>
-                        </div>
-                    ))}
-                </div>
-            ))}
-        </div>
-    );
-}
+//     return (
+//         <div style={{
+//             width: "100%",
+//             display: "flex",
+//             gap: "20px",
+//             marginTop: "25px",
+//             marginLeft: "auto",
+//             marginRight: "auto"
+//         }}>
+//             {[data1, data2].map((data, index) => (
+//                 <div key={index} style={{
+//                     width: "50%",
+//                     borderRadius: "12px",
+//                     border: "1px solid lightgray",
+//                     padding: "10px 25px",
+//                     background: "white"
+//                 }}>
+//                     {data.map((d, index) => (
+//                         <div key={index} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: index < data.length - 1 ? "1px solid lightgray" : "none" }}>
+//                             <Typography style={{ fontSize: "14px", color: "black" }}>{d.title}</Typography>
+//                             <Typography style={{ fontSize: "14px", color: "black" }}>{d.isMoney && "$"}{d.value}</Typography>
+//                         </div>
+//                     ))}
+//                 </div>
+//             ))}
+//         </div>
+//     );
+// }

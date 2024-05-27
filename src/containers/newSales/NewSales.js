@@ -1,14 +1,17 @@
+// In NewSales.js
+
 import React, { useState } from 'react';
 import ProductList from './ProductList';
 import ItemsList from './ItemsList';
 import CheckoutModal from './CheckoutModal';
 import axios from 'axios';
 import { constants } from '../../Helpers/constantsFile';
-import { setProductDataFetched } from '../products/productSlice';
+import { setProductDataFetched, updateProductQuantity } from '../products/productSlice';
 import { updateCustomerSocketBalance } from '../customer/customerSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import PrintSaleModal from './PrintSaleModal';
+import moment from 'moment';
 
 const NewSales = () => {
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -17,7 +20,7 @@ const NewSales = () => {
   const [disabled, setDisabled] = useState(false);
   const token = useSelector(state => state?.login?.token);
   const { business, name } = useSelector(state => state.login.activeUser);
-  const [data, setData] = useState()
+  const [data, setData] = useState();
 
   const notify = (message) => toast(message, {
     autoClose: 2700,
@@ -73,7 +76,7 @@ const NewSales = () => {
   };
 
   const handleFinishPayment = (data) => {
-    setData(data)
+    setData(data);
     handleAddProduct({
       products: selectedProducts,
       saleType: data.saleType,
@@ -81,7 +84,6 @@ const NewSales = () => {
       customer: data?.customer,
       date: data.date
     });
-    setIsPrintModalOpen(true);
   };
 
   const subtotal = selectedProducts.reduce((acc, product) => acc + product.salePrice * product.qty, 0);
@@ -98,7 +100,11 @@ const NewSales = () => {
       setProductDataFetched(false);
       let sale = res?.data?.data?.createdSale[0];
       dispatch(updateCustomerSocketBalance({ _id: sale?.customer, transaction: sale?.total }));
+      selectedProducts.forEach(product => {
+        dispatch(updateProductQuantity({ productId: product._id, quantity: product.qty }));
+      });
       notify("Sale created!");
+      setIsPrintModalOpen(true);
       setIsModalOpen(false);
       setSelectedProducts([]);
     }).catch((err) => {
@@ -122,7 +128,7 @@ const NewSales = () => {
       paymentType: saleType,
       business: business?._id,
       customer: customer?._id,
-      date: date,
+      date: moment(date).format("YYYY-MM-DD"),
       user: name
     };
 
@@ -152,7 +158,7 @@ const NewSales = () => {
         <PrintSaleModal
           open={isPrintModalOpen}
           onClose={() => setIsPrintModalOpen(false)}
-          data = {data}
+          data={data}
           business={business}
           user={name}
         />

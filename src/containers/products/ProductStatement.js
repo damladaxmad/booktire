@@ -5,15 +5,17 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import CustomButton from '../../reusables/CustomButton';
 import moment from 'moment';
+import { constants } from '../../Helpers/constantsFile';
 
 export default function ProductStatement({ product, goBack }) {
     const [data, setData] = useState([]);
     const token = useSelector(state => state.login.token)
+    const { business } = useSelector(state => state.login.activeUser)
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`https://booktire-api.onrender.com/api/client/v1/products/get-business-product-statement/65cb22c6d728425e0f1ee777/${product.id}`, {
+                const response = await axios.get(`${constants.baseUrl}/products/get-business-product-statement/${business?._id}/${product?._id}`, {
                     headers: {
                         'Authorization': token
                     }

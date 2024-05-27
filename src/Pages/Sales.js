@@ -42,49 +42,6 @@ const Sales = () => {
     setCurrentTab(tabIndex);
   };
 
-  // const createSale = (data) => {
-  //   axios.post(`${constants.baseUrl}/sales`, data, {
-  //     headers: {
-  //       authorization: token
-  //     }
-  //   }).then((res) => {
-  //     setDisabled(false);
-  //     setProductDataFetched(false);
-  //     let sale = res?.data?.data?.createdSale[0];
-  //     dispatch(updateCustomerSocketBalance({ _id: sale?.customer, transaction: sale?.total }));
-  //     alert("Successfully created sale!");
-  //   }).catch((err) => {
-  //     setDisabled(false);
-  //     alert(err.response?.data?.message);
-  //   });
-  // };
-
-  // const handleAddProduct = ({ products, discount, total, date, saleType, customer }) => {
-  //   setDisabled(true);
-  //   console.log(saleType, products);
-  //   console.log('Submitted data:', { products, discount, total });
-  //   products?.map(product => {
-  //     console.log(product.salePrice);
-  //   });
-  //   const transformedData = {
-  //     products: products.map(product => ({
-  //       refProduct: product?._id,
-  //       name: product.name,
-  //       category: product.category,
-  //       unitPrice: product.unitPrice,
-  //       quantity: product.qty,
-  //       salePrice: product.salePrice
-  //     })),
-  //     discount: discount,
-  //     paymentType: saleType,
-  //     business: business?._id,
-  //     customer: customer?._id,
-  //     date: date,
-  //     user: name
-  //   };
-
-  //   createSale(transformedData);
-  // };
 
   return (
     <div style={{ width: "95%", margin: "auto" }}>
@@ -106,23 +63,7 @@ const Sales = () => {
           }}>
           <Typography>Form </Typography>
         </div>
-        <div
-          onClick={() => handleTabChange(1)}
-          style={{
-            padding: '5px 0px',
-            width: "80px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginRight: '10px',
-            cursor: 'pointer',
-            backgroundColor: currentTab === 1 ? constants.pColor : 'transparent',
-            color: currentTab === 1 ? 'white' : 'black',
-            borderRadius: '50px',
-            border: `1px solid ${constants.pColor}`
-          }}>
-          Report
-        </div>
+     
         <div
           onClick={() => handleTabChange(2)}
           style={{
@@ -147,7 +88,6 @@ const Sales = () => {
             // handleAddProduct={handleAddProduct}
           />
         )}
-        {currentTab === 1 && <SalesReport />}
         {currentTab === 2 && <SalesTable />}
       </div>
     </div>

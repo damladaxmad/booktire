@@ -10,6 +10,8 @@ import axios from "axios";
 import { addTransaction, deleteTransaction, setTransactions, updateTransaction } from "./transactionSlice";
 import TransactionForm from "./TransactionForm";
 import io from 'socket.io-client';
+import SalesDetailsModal from "../reports/SalesDetailsModal";
+import { Edit } from '@material-ui/icons';
 
 const Transactions = ({ instance, client, url, hideTransactions, }) => {
     const [loading, setLoading] = useState(false);
@@ -19,9 +21,22 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
     const [showForm, setShowForm] = useState(false)
     const [transaction, setTransaction] = useState(null)
     const token = useSelector(state => state.login.token)
-    const { business } = useSelector(state => state?.login?.activeUser)
+    const { business, user } = useSelector(state => state?.login?.activeUser)
     const mySocketId = useSelector(state => state?.login?.mySocketId)
     const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions)))
+    const [selectedSale, setSelectedSale] = useState(null);
+    const [modalOpen, setModalOpen] = useState(false);
+
+    const handleSalesDescriptionClick = (sale) => {
+        console.log(sale?.products)
+        setSelectedSale(sale);
+        setModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setModalOpen(false);
+        setSelectedSale(null);
+    };
 
     const calculateBalance = (transactions, currentTransaction) => {
         let balance = 0;
@@ -34,6 +49,12 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
     };
 
     const dispatch = useDispatch()
+
+    const handleRowEdit = (rowData) => {
+        setTransaction(rowData);
+        setUpdate(true);
+        setShowForm(true);
+    };
 
     useEffect(() => {
         let source = axios.CancelToken.source();
@@ -69,6 +90,16 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
         };
     }, [dispatch]);
 
+    const actions = [
+        {
+          icon: Edit,
+          tooltip: 'Edit User',
+          onClick: (event, rowData) => {
+           handleRowEdit(rowData)
+          },
+        }
+      ];
+
     const materialOptions = {
         showTitle: false,
         padding: "20px",
@@ -94,6 +125,7 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
             fontWeight: "bold",
             border: "1p solid #ABABAB"
         },
+        actionsColumnIndex: -1,
     };
 
     let balance = null
@@ -104,9 +136,23 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
 
     const columns = [
         {
-            title: "Description",
-            field: "description", width: "25%",
-            cellStyle: { border: "none" },
+            title: 'Description', field: 'description', cellStyle: {
+                borderBottom: "1px solid #A6A6A6"
+            },
+            render: rowData => (
+                <p
+                    style={{ color: (rowData?.sale || rowData?.purchase)   && 'blue', 
+                    cursor:  (rowData?.sale || rowData?.purchase) && 'pointer' }}
+                    onClick={() => {
+                        if (rowData?.sale)
+                        handleSalesDescriptionClick(rowData?.sale)
+                        if (rowData?.purchase)
+                        handleSalesDescriptionClick(rowData?.purchase)
+                    }}
+                >
+                    {rowData.description}
+                </p>
+            )
         },
 
         {
@@ -162,7 +208,6 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
         if (mySocketId == socketId) return
         if (business?._id !== businessId) return
         if (eventType === 'add') {
-            alert("add")
             dispatch(addTransaction(transaction))
         } else if (eventType === 'delete') {
             dispatch(deleteTransaction(transaction?._id))
@@ -280,6 +325,7 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
                     },
                 }}
                 options={materialOptions}
+                actions={actions}
                 style={{
                     borderRadius: "5px",
                     boxShadow: "none",
@@ -289,12 +335,11 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
                     marginTop: "15px",
                     background: constants.backdropColor,
                 }}
-                onRowClick={(e, rowData) => {
-                    setTransaction(rowData)
-                    setUpdate(true)
-                    setShowForm(true)
-                }}
+               
             />
+
+<SalesDetailsModal open={modalOpen} handleClose={handleCloseModal} sale={selectedSale} business={business} user={user} />
+
 
         </>
     );

@@ -41,8 +41,10 @@ const ItemsList = ({ selectedProducts, updateProductQty, handlePayment, removePr
       style={{ 
         background: "white", 
         padding: "10px", 
-        width: "35%", 
-        height: "420px",
+        width: "360px", 
+        height: "72vh",
+        position: "fixed",
+        right: "10px",
         borderRadius: "10px",
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
         display: 'flex',

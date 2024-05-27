@@ -1,3 +1,5 @@
+// In productSlice.js
+
 import { createSlice } from '@reduxjs/toolkit';
 
 export const productSlice = createSlice({
@@ -23,19 +25,25 @@ export const productSlice = createSlice({
         state.products[index] = { ...state.products[index], ...updatedProduct };
       }
     },
+    updateProductQuantity: (state, action) => {
+      const { productId, quantity } = action.payload;
+      const product = state.products.find(product => product._id === productId);
+      if (product) {
+        product.quantity -= quantity; 
+      }
+    },
     setProductDataFetched: (state, action) => {
       state.isProductsDataFetched = action.payload;
     },
-    logoutProducts: (state, action) => {
+    logoutProducts: (state) => {
       return {
         products: [],
         isProductsDataFetched: false
-      }; 
+      };
     },
   },
 });
 
-export const { setProducts, addProduct, deleteProduct, updateProduct, setProductDataFetched,
-logoutProducts } = productSlice.actions;
+export const { setProducts, addProduct, deleteProduct, updateProduct, updateProductQuantity, setProductDataFetched, logoutProducts } = productSlice.actions;
 
 export default productSlice.reducer;

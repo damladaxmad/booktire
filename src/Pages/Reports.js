@@ -4,6 +4,7 @@ import { Typography } from "@material-ui/core";
 import PersonalReport from "../containers/reports/PersonalReports";
 import StockSummary from "../containers/reports/StockSummary";
 import SalesReport from "../containers/reports/SalesReport"; // Import SalesReport component
+import PurchaesReport from "../containers/reports/PurchasesReport";
 
 export default function Reports() {
   const [currentTab, setCurrentTab] = useState(0);
@@ -88,12 +89,30 @@ export default function Reports() {
           }}>
           Sales
         </div>
+
+        <div
+          onClick={() => handleTabChange(4)}
+          style={{
+            padding: '5px 0px',
+            width: "100px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: 'pointer',
+            backgroundColor: currentTab === 4 ? constants.pColor : 'transparent',
+            color: currentTab === 4 ? 'white' : 'black',
+            borderRadius: '50px',
+            border: `1px solid ${constants.pColor}`
+          }}>
+          Purchases
+        </div>
       </div>
 
       {currentTab == 0 && <PersonalReport name="customers" type="Customers" />}
       {currentTab == 1 && <PersonalReport name="vendors" type="Vendors" />}
       {currentTab == 2 && <StockSummary />}
-      {currentTab == 3 && <SalesReport />} {/* Render SalesReport component */}
+      {currentTab == 3 && <SalesReport />} 
+      {currentTab == 4 && <PurchaesReport />} 
     </div>
   );
 }

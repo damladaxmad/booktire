@@ -9,7 +9,6 @@ export default function LatestTransactions() {
 
     const [sales, setSales] = useState([]);
     const [loading, setLoading] = useState(true); // State for loading indicator
-
     const { business } = useSelector(state => state.login?.activeUser);
     const token = useSelector(state => state.login?.token);
     const today = new Date()
@@ -20,11 +19,11 @@ export default function LatestTransactions() {
                 "authorization": token
             }
         }).then(res => {
-            setSales(res?.data?.data?.sales || []); // Set sales or empty array if no data
+            setSales(res?.data?.data?.sales || []);
         }).catch(error => {
             console.error("Error fetching sales:", error);
         }).finally(() => {
-            setLoading(false); // Set loading to false when data fetching completes
+            setLoading(false); 
         });
     };
 

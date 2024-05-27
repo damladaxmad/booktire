@@ -31,11 +31,9 @@ export default function Products() {
   const [instance, setInstance] = useState(null)
   const { business } = useSelector(state => state.login.activeUser)
   const url = `${constants.baseUrl}/products/get-business-products/${business?._id}`
-  const mySocketId = useSelector(state => state?.login?.mySocketId)
+  // const mySocketId = useSelector(state => state?.login?.mySocketId)
   const token = useSelector(state => state.login.token)
   const products = JSON.parse(JSON.stringify(useSelector(state => state.products?.products || [])))
-  const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions)))
-  const productDataFetched = useSelector(state => state.products.isProductsDataFetched)
   const [showStatement, setShowStatement] = useState(false)
 
   const dispatch = useDispatch()
@@ -47,7 +45,7 @@ export default function Products() {
        url,
        setProducts,
        setProductDataFetched,
-      state => state.productDataFetched,
+      state => state.products?.isProductsDataFetched,
        "products"
    );
 

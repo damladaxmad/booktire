@@ -86,13 +86,21 @@ const SignupAndLogin = (props) => {
 
         <Typography style = {{marginTop: "10px", color: "grey"}}>&copy; 2024 TACABTIRE ICT</Typography>
       </div>
-      <div className={classes.rightSide}>
-        <div className={classes.formContainer}>
+      <div className={classes.rightSide} style = {{
+        display: "flex", gap: "5px", flexDirection: "column"
+      }}>
+        <div className={classes.formContainer} style = {{marginTop: "40px"}}>
           <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
             <p className={classes.title}>Login</p>
           </div>
           <Login showHandler={showHandler} />
         </div>
+          <Typography style = {{fontWeight: "bold",
+            fontSize: "15px", marginTop: "40px"
+          }}> CONTACT US:</Typography>
+          <Typography style = {{ fontSize: "15px"
+           
+          }}> 0619365258 / 0616549198</Typography>
       </div>
     </div>
   );

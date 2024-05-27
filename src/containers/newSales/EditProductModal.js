@@ -1,6 +1,7 @@
 // EditProductModal.js
 import React, { useState } from 'react';
 import { Modal, Box, Typography, TextField, Button } from '@material-ui/core';
+import { constants } from '../../Helpers/constantsFile';
 
 const EditProductModal = ({ open, handleClose, product, updateProductDetails }) => {
   const [qty, setQty] = useState(product.qty);
@@ -51,7 +52,8 @@ const EditProductModal = ({ open, handleClose, product, updateProductDetails }) 
           <Button onClick={handleClose} style={{ marginRight: '10px' }}>
             Cancel
           </Button>
-          <Button variant="contained" color="primary" onClick={handleSave}>
+          <Button variant="contained" color="primary" onClick={handleSave} 
+          style = {{background: constants?.pColor}}>
             Save
           </Button>
         </Box>

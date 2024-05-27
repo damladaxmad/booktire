@@ -24,7 +24,7 @@ const POSPrintableComponent = ({ reportTitle, columns, data, date, discount, sub
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((row, index) => (
+                    {data?.map((row, index) => (
                         <tr key={index}>
                             {columns.map((column) => (
                                 <td key={column.field}>{row[column.field]}</td>
