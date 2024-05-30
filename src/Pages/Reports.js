@@ -5,6 +5,8 @@ import PersonalReport from "../containers/reports/PersonalReports";
 import StockSummary from "../containers/reports/StockSummary";
 import SalesReport from "../containers/reports/SalesReport"; // Import SalesReport component
 import PurchaesReport from "../containers/reports/PurchasesReport";
+import ExpensesReport from "../containers/reports/ExpenseReport";
+import ServicesReport from "../containers/reports/ServicesReport";
 
 export default function Reports() {
   const [currentTab, setCurrentTab] = useState(0);
@@ -106,6 +108,38 @@ export default function Reports() {
           }}>
           Purchases
         </div>
+        <div
+          onClick={() => handleTabChange(5)}
+          style={{
+            padding: '5px 0px',
+            width: "100px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: 'pointer',
+            backgroundColor: currentTab === 5 ? constants.pColor : 'transparent',
+            color: currentTab === 5 ? 'white' : 'black',
+            borderRadius: '50px',
+            border: `1px solid ${constants.pColor}`
+          }}>
+          Expenses
+        </div>
+        <div
+          onClick={() => handleTabChange(6)}
+          style={{
+            padding: '5px 0px',
+            width: "100px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: 'pointer',
+            backgroundColor: currentTab === 6 ? constants.pColor : 'transparent',
+            color: currentTab === 6 ? 'white' : 'black',
+            borderRadius: '50px',
+            border: `1px solid ${constants.pColor}`
+          }}>
+          Services
+        </div>
       </div>
 
       {currentTab == 0 && <PersonalReport name="customers" type="Customers" />}
@@ -113,6 +147,8 @@ export default function Reports() {
       {currentTab == 2 && <StockSummary />}
       {currentTab == 3 && <SalesReport />} 
       {currentTab == 4 && <PurchaesReport />} 
+      {currentTab == 5 && <ExpensesReport />} 
+      {currentTab == 6 && <ServicesReport />} 
     </div>
   );
 }

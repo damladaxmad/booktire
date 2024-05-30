@@ -105,7 +105,8 @@ const ProductList = ({ addProduct }) => {
         />
       </div>
 
-      <div style={{ display: "flex", gap: "20px", marginTop: "20px", width: "100%", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "20px", marginTop: "20px", width: "100%",
+       flexWrap: "wrap", height: "62vh", overflowY: "scroll"}}>
         {filteredProducts.map((product) => {
           if (category && product.category !== category?.categoryName) return null;
           return <ProductCard key={product.id} product={product} handleProductClick={handleProductClick} />
