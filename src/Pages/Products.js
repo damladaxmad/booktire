@@ -16,6 +16,8 @@ import useReadData from "../hooks/useReadData";
 import { addProduct, deleteProduct, setProductDataFetched, setProducts, updateProduct } from "../containers/products/productSlice";
 import CreateProduct from "../containers/products/CreateProduct";
 import ProductStatement from "../containers/products/ProductStatement";
+import { Typography } from "@material-ui/core";
+import Services from "./Services";
 
 const parentDivStyle = {
   display: "flex",
@@ -31,10 +33,15 @@ export default function Products() {
   const [instance, setInstance] = useState(null)
   const { business } = useSelector(state => state.login.activeUser)
   const url = `${constants.baseUrl}/products/get-business-products/${business?._id}`
-  // const mySocketId = useSelector(state => state?.login?.mySocketId)
+  const [showServices, setShowServices] = useState(false)
   const token = useSelector(state => state.login.token)
   const products = JSON.parse(JSON.stringify(useSelector(state => state.products?.products || [])))
   const [showStatement, setShowStatement] = useState(false)
+  const [currentTab, setCurrentTab] = useState(0);
+
+  const handleTabChange = (tabIndex) => {
+    setCurrentTab(tabIndex);
+  };
 
   const dispatch = useDispatch()
 
@@ -92,13 +99,62 @@ export default function Products() {
   return (
     <div style={parentDivStyle}>
 
-      {!showStatement && <TitleComponent title="Products"
+     
+      <div style={{
+        display: 'flex',
+        marginBottom: '20px',
+        gap: "10px",
+        width: "100%",
+        justifyContent: "flex-start"
+      }}>
+        <div
+          onClick={() => handleTabChange(0)}
+          style={{
+            padding: '5px 0px',
+            width: "100px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: '10px',
+            cursor: 'pointer',
+            backgroundColor: currentTab === 0 ? constants.pColor : 'transparent',
+            color: currentTab === 0 ? 'white' : 'black',
+            borderRadius: '50px',
+            border: `1px solid ${constants.pColor}`
+          }}>
+          <Typography>Products</Typography>
+        </div>
+
+        <div
+          onClick={() => handleTabChange(1)}
+          style={{
+            padding: '5px 0px',
+            width: "100px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: '10px',
+            cursor: 'pointer',
+            backgroundColor: currentTab === 1 ? constants.pColor : 'transparent',
+            color: currentTab === 1 ? 'white' : 'black',
+            borderRadius: '50px',
+            border: `1px solid ${constants.pColor}`
+          }}>
+          <Typography>Services</Typography>
+        </div>
+
+        </div>
+
+        {currentTab == 1 && <Services />}
+
+        {(!showStatement && currentTab == 0 ) && <TitleComponent title=""
         btnName="Create Products" onClick={handleShowRegister} />}
 
-      {!showStatement && <CustomRibbon query={query}
+      {(!showStatement && currentTab == 0 ) && <CustomRibbon query={query}
         setQuery={handleSearchChange} />}
 
-      {!showStatement && <Table
+
+      {(!showStatement && currentTab == 0 ) && <Table
         data={handler(products)} columns={columns}
         name="Product"
         state={loading ? "loading.." : error ? error : "no data to display"}

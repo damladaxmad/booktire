@@ -44,7 +44,7 @@ const ProductList = ({ addProduct }) => {
 
   return (
     <div style={{ width: "63%" }}>
-      <div style={{ display: "flex", gap: "20px", width: "100%" }}>
+      <div style={{ display: "flex", gap: "20px", width: "98%" }}>
         <input
           type="text"
           placeholder="Search products..."

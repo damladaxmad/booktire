@@ -4,14 +4,25 @@ import MyTable from "../../utils/MyTable"
 import PrintableTableComponent from "./PintableTableComponent"
 import { useReactToPrint } from 'react-to-print';
 import CustomButton from "../../reusables/CustomButton";
+import { setCustomerDataFetched, setCustomers } from "../customer/customerSlice";
+import useReadData from "../../hooks/useReadData";
+import { constants } from "../../Helpers/constantsFile";
 
 const PersonalReport = ({name, type}) => {
 
     const customers = JSON.parse(JSON.stringify(useSelector(state => state.customers.customers)))
     const vendors = JSON.parse(JSON.stringify(useSelector(state => state.vendors.vendors)))
-
+    const { business } = useSelector(state => state.login.activeUser);
     const imageUrl = `https://firebasestorage.googleapis.com/v0/b/deentire-application.appspot.com/o/LOGO%2Fliibaan.jpeg?alt=media&token=f5b0b3e7-a5e0-4e0d-b3d2-20a920f97fde`;
+    const urlCustomer = `${constants.baseUrl}/customers/get-business-customers/${business?._id}`;
 
+    useReadData(
+      urlCustomer,
+      setCustomers,
+      setCustomerDataFetched,
+      state => state.customers.isCustomerDataFetched,
+      "customers"
+    );
     let customerTotal = 0
     let vendorTotal = 0
 
