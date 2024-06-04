@@ -22,7 +22,7 @@ export default function Reports() {
       <div style={{
         display: 'flex',
         marginBottom: '20px',
-        gap: "10px"
+        gap: "10px",
       }}>
         <div
           onClick={() => handleTabChange(0)}
@@ -139,6 +139,22 @@ export default function Reports() {
             border: `1px solid ${constants.pColor}`
           }}>
           Services
+        </div>
+        <div
+          onClick={() => handleTabChange(7)}
+          style={{
+            padding: '5px 0px',
+            width: "100px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: 'pointer',
+            backgroundColor: currentTab === 7 ? constants.pColor : 'transparent',
+            color: currentTab === 7 ? 'white' : 'black',
+            borderRadius: '50px',
+            border: `1px solid ${constants.pColor}`
+          }}>
+          Income
         </div>
       </div>
 

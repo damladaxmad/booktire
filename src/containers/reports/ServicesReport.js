@@ -6,24 +6,26 @@ import { useSelector } from "react-redux";
 import CustomButton from "../../reusables/CustomButton";
 import { constants } from "../../Helpers/constantsFile";
 import MaterialTable from "material-table";
-import SalesDetailsModal from "./SalesDetailsModal";
+import ServiceDetailsModal from "./ServiceDetailsModal";
 
 export default function ServicesReport() {
     const token = useSelector(state => state?.login?.token);
     const { business } = useSelector(state => state.login.activeUser);
+    const user = useSelector(state => state.login.activeUser);
     const [services, setServices] = useState([]);
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
     const [loading, setLoading] = useState(false);
+    const [selectedService, setSelectedService] = useState(null);
+    const [modalOpen, setModalOpen] = useState(false);
 
-    const fetServices = () => {
+    const fetchServices = () => {
         setLoading(true);
-        axios.get(`${constants.baseUrl}/services/get-business-service/${business?._id}?startDate=${moment(startDate).format("YYYY-MM-DD")}&endDate=${moment(endDate).format("YYYY-MM-DD")}`, {
+        axios.get(`${constants.baseUrl}/services/get-business-services/${business?._id}?startDate=${moment(startDate).format("YYYY-MM-DD")}&endDate=${moment(endDate).format("YYYY-MM-DD")}`, {
             headers: {
                 "authorization": token
             }
         }).then(res => {
-            console.log(res?.data?.data)
             setServices(res?.data?.data?.services);
         }).catch(error => {
             console.error("Error fetching services:", error);
@@ -33,18 +35,22 @@ export default function ServicesReport() {
     };
 
     useEffect(() => {
-        fetServices();
+        fetchServices();
     }, []);
 
     const handleViewClick = () => {
-        fetServices();
+        fetchServices();
     };
 
-    let total = 0
-    services?.map(service => {
-        total += service?.amount
-    })
+    const handleServiceNumberClick = (service) => {
+        setSelectedService(service);
+        setModalOpen(true);
+    };
 
+    const handleCloseModal = () => {
+        setModalOpen(false);
+        setSelectedService(null);
+    };
 
     return (
         <div style={{ width: "97.5%", marginTop: "30px" }}>
@@ -82,15 +88,36 @@ export default function ServicesReport() {
                 </div>
             ) : (
                 <MaterialTable
-                    title="Sales Report"
+                    title="Service Report"
                     columns={[
-                        { title: 'Description', field: 'description', width: "4%" },
-                        { title: 'Amount', field: 'amount', render: data => <p>${data?.amount}</p> },
-                        { title: 'Payment', field: 'paymentMethod' },
-                        { title: 'Type', field: 'amount', render: rowData => <p>{rowData?.serviceType?.name}</p> },
+                        {
+                            title: 'Number', field: 'serviceNumber', render: rowData => (
+                                <Typography
+                                    style={{ color: 'blue', cursor: 'pointer' }}
+                                    onClick={() => handleServiceNumberClick(rowData)}
+                                >
+                                    {rowData.serviceNumber}
+                                </Typography>
+                            )
+                        },
+                        { title: 'Items', field: 'serviceItems', render: rowData => <p>{rowData?.serviceItems?.length}</p> },
                         { title: 'Date', field: 'date', render: rowData => moment(rowData.date).format("YYYY-MM-DD") },
+                        { title: 'User', field: 'user', width: "4%" },
+                        { title: 'Payment', field: 'paymentType' },
+                        { title: 'Subtotal', field: 'subtotal', render: rowData => `$${rowData?.total + rowData?.discount}` },
+                        { title: 'Discount', field: 'discount', render: rowData => `$${rowData?.discount}` },
+                        { title: 'Total', field: 'total', render: rowData => `$${rowData?.total}` }
                     ]}
-                    data={services}
+                    data={services.map((service, index) => ({
+                        serviceNumber: service?.serviceNumber,
+                        serviceItems: service?.serviceItems,
+                        date: service.date,
+                        user: service.user,
+                        paymentType: service?.paymentType,
+                        subtotal: service.subtotal,
+                        discount: service.discount,
+                        total: service.total
+                    }))}
                     options={{
                         search: false,
                         paging: false,
@@ -101,14 +128,57 @@ export default function ServicesReport() {
                 />
             )}
 
-            <div style={{ display: "flex", gap: "10px", width: "100%", justifyContent: "flex-end",
-                marginTop: "15px"
-             }}>
-                <Typography style={{ fontSize: "16px", textAlign: "right" }}> TOTAL:</Typography>
-                <Typography style={{ fontSize: "16px", fontWeight: "bold", textAlign: "right" }}> ${total}</Typography>
-            </div>
+            <ServiceDetailsModal open={modalOpen} handleClose={handleCloseModal} service={selectedService} business={business} user={user} />
 
-
+            <ServicesDashboard services={services} />
         </div>
     );
 }
+
+function ServicesDashboard({ services }) {
+    let numberOfServices = 0;
+    let revenueFromServices = 0;
+    let cashOnHand = 0;
+    let servicesInvoice = 0;
+
+    services?.forEach(service => {
+        numberOfServices++;
+        revenueFromServices += service.total;
+        if (service.paymentType === "cash") cashOnHand += service.total;
+        if (service.paymentType === "invoice") servicesInvoice += service.total;
+    });
+
+    const data = [
+        { title: "Number Of Services", value: numberOfServices, isMoney: false },
+        { title: "Cash On Hand", value: cashOnHand, isMoney: true },
+        { title: "Services Invoice", value: servicesInvoice, isMoney: true },
+        { title: "Revenue From Services", value: revenueFromServices, isMoney: true }
+    ];
+
+    return (
+        <div style={{
+            width: "100%",
+            display: "flex",
+            gap: "20px",
+            marginTop: "25px",
+            marginLeft: "auto",
+            marginRight: "auto"
+        }}>
+            <div style={{
+                width: "100%",
+                borderRadius: "12px",
+                border: "1px solid lightgray",
+                padding: "10px 25px",
+                background: "white"
+            }}>
+                {data.map((d, index) => (
+                    <div key={index} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: index < data.length - 1 ? "1px solid lightgray" : "none" }}>
+                        <Typography style={{ fontSize: "14px", color: "black" }}>{d.title}</Typography>
+                        <Typography style={{ fontSize: "14px", color: "black" }}>{d.isMoney && "$"}{d.value}</Typography>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+

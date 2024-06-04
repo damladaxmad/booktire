@@ -15,6 +15,7 @@ import io from 'socket.io-client';
 import useReadData from "../hooks/useReadData";
 import { addService, deleteService, setServiceDataFetched, setServices, updateService } from "../containers/services/serviceSlice";
 import CreateService from "../containers/services/CreateService";
+import { setServiceTypeDataFetched, setServiceTypes } from "../containers/serviceType/serviceTypeSlice";
 
 const parentDivStyle = {
   display: "flex",
@@ -29,9 +30,9 @@ export default function Services() {
   const [query, setQuery] = useState("")
   const [instance, setInstance] = useState(null)
   const { business } = useSelector(state => state.login.activeUser)
-  const url = `${constants.baseUrl}/services/get-business-service/${business?._id}`
+  const url = `${constants.baseUrl}/service-types/get-business-service-types/${business?._id}`
   const token = useSelector(state => state.login.token)
-  const services = JSON.parse(JSON.stringify(useSelector(state => state.services?.services || [])))
+  const serviceTypes = JSON.parse(JSON.stringify(useSelector(state => state.serviceTypes?.serviceTypes || [])))
   
   const dispatch = useDispatch()
 
@@ -40,10 +41,10 @@ export default function Services() {
 
   const { loading, error } = useReadData(
     url,
-    setServices,
-    setServiceDataFetched,
-    state => state.services?.isServicesDataFetched,
-    "services"
+    setServiceTypes,
+    setServiceTypeDataFetched,
+    state => state.serviceTypes?.isServiceTypesDataFetched,
+    "serviceTypes"
   );
 
   const notify = (message) => toast(message, {
@@ -54,9 +55,9 @@ export default function Services() {
   });
 
   const columns = [
-    { title: "Description", field: "description", width: "24%" },
-    { title: "Amount", field: "amount" },
-    { title: "Type", field: "serviceType", render: data => <p> {data?.serviceType?.name}</p> },
+    { title: "name", field: "name", width: "24%" },
+    { title: "Price", field: "price" },
+    // { title: "Type", field: "serviceType", render: data => <p> {data?.serviceType?.name}</p> },
   ];
 
   const handler = (data) => {
@@ -94,7 +95,7 @@ export default function Services() {
         setQuery={handleSearchChange} />}
 
       { <Table
-        data={handler(services)} columns={columns}
+        data={handler(serviceTypes)} columns={columns}
         name="Service"
         state={loading ? "loading.." : error ? error : "no data to display"}
         onUpdate={(data) => {

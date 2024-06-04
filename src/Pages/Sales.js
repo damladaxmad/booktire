@@ -12,6 +12,9 @@ import SalesTable from '../containers/sales/SalesTable';
 import { setProductDataFetched, setProducts } from '../containers/products/productSlice';
 import { setCustomerDataFetched, setCustomers, updateCustomerSocketBalance } from '../containers/customer/customerSlice';
 import NewSales from '../containers/newSales/NewSales';
+import NewServices from '../containers/newServices/NewServices';
+import { setServiceTypes } from '../containers/serviceType/serviceTypeSlice';
+import { setServiceDataFetched } from '../containers/services/serviceSlice';
 
 const Sales = () => {
   const [disabled, setDisabled] = useState(false);
@@ -20,6 +23,7 @@ const Sales = () => {
   const { business, name } = useSelector(state => state.login.activeUser);
   const urlCustomer = `${constants.baseUrl}/customers/get-business-customers/${business?._id}`;
   const urlProduct = `${constants.baseUrl}/products/get-business-products/${business?._id}`;
+  const urlServiceType = `${constants.baseUrl}/service-types/get-business-service-types/${business?._id}`;
 
   const dispatch = useDispatch();
 
@@ -29,6 +33,13 @@ const Sales = () => {
     setProductDataFetched,
     state => state.products.isProductsDataFetched,
     "products"
+  );
+  useReadData(
+    urlServiceType,
+    setServiceTypes,
+    setServiceDataFetched,
+    state => state.serviceTypes.isServiceTypeDataFetched,
+    "serviceTypes"
   );
   useReadData(
     urlCustomer,
@@ -65,6 +76,23 @@ const Sales = () => {
         </div>
      
         <div
+          onClick={() => handleTabChange(3)}
+          style={{
+            padding: '5px 0px',
+            width: "80px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: '10px',
+            cursor: 'pointer',
+            backgroundColor: currentTab === 3 ? constants.pColor : 'transparent',
+            color: currentTab === 3 ? 'white' : 'black',
+            borderRadius: '50px',
+            border: `1px solid ${constants.pColor}`
+          }}>
+          Services
+        </div>
+        <div
           onClick={() => handleTabChange(2)}
           style={{
             padding: '5px 0px',
@@ -89,6 +117,7 @@ const Sales = () => {
           />
         )}
         {currentTab === 2 && <SalesTable />}
+        {currentTab === 3 && <NewServices />}
       </div>
     </div>
   );
