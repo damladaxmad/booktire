@@ -74,7 +74,8 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
         flexDirection: 'row',
         justifyContent: "space-between"
       }}>
-        <div style={{ width: '55%', marginRight: '20px' }}>
+        <div style={{ width: '55%', marginRight: '20px', height: "100%", 
+        overflowY: selectedProducts?.length > 8 && "scroll"   }}>
           <MaterialTable
             columns={[
               { title: 'Items', field: 'name', cellStyle: { whiteSpace: 'nowrap' }},

@@ -49,7 +49,8 @@ const ItemsList = ({ selectedProducts, updateProductQty, handlePayment, removePr
         flexDirection: 'column',
         justifyContent: 'space-between'
       }}>
-      <div style={{ flexGrow: 1 }}>
+      <div style={{ flexGrow: 1, height: "60vh", 
+      overflowY: selectedProducts?.length > 8 && "scroll"}}>
         {selectedProducts?.length < 1 && <p style = {{color: "grey", textAlign: "center", 
         marginTop: "20px"}}> Please select some products...</p>}
         {selectedProducts.map((product, index) => (

@@ -9,36 +9,40 @@ import Select from "react-select";
 import useReadData from "../../hooks/useReadData";
 import Register from "../../utils/Register";
 import { ToastContainer, toast } from "react-toastify";
+import {serviceTypeFields} from "../serviceType/serviceTypeModal"
 import { addServiceType, setServiceTypeDataFetched, setServiceTypes } from "../serviceType/serviceTypeSlice";
-import { serviceTypeFields } from "../serviceType/serviceTypeModal";
+import { addServiceCategory, setServiceCategories, setServiceCategoriesDataFetched } from "./serviceCategorySlice";
+import { serviceCategoryFields } from "./serviceCategoryModal";
 
 const CreateProduct = ({ instance, store, name, fields, update, url, business, hideModal, onUpdate }) => {
   const [disabled, setDisabled] = useState(false);
-  const [showServiceType, setShowServiceType] = useState(false)
+  const [showServiceCategory, setShowServiceCategory] = useState(false)
   const token = useSelector(state => state.login.token);
   const mySocketId = useSelector(state => state?.login?.mySocketId);
   const { business: business2 } = useSelector(state => state.login.activeUser)
-  const serviceTypes = JSON.parse(JSON.stringify(useSelector(state => state.serviceTypes?.serviceTypes || [])))
-  const url2 = `${constants.baseUrl}/service-types/get-business-service-types/${business2?._id}`
+  const serviceCategories = JSON.parse(JSON.stringify(useSelector(state => state.serviceCategories?.serviceCategories || [])))
+  const url2 = `${constants.baseUrl}/service-categories/get-business-service-categories/${business2?._id}`
 
   useReadData(
     url2,
-    setServiceTypes,
-    setServiceTypeDataFetched,
-    state => state.users.isServiceTypeDataFetched,
-    "serviceTypes"
+    setServiceCategories,
+    setServiceCategoriesDataFetched,
+    state => state.serviceCategories.isServiceCategoriesDataFetched,
+    "categories"
   );
+
+  console.log(instance)
 
   const dispatch = useDispatch()
 
   const validate = (values) => {
     const errors = {};
 
-    if (!values.description) {
-      errors.description = "Field is Required";
+    if (!values.name) {
+      errors.name = "Field is Required";
     }
-    if (!values.amount) {
-      errors.amount = "Field is Required";
+    if (!values.price) {
+      errors.price = "Field is Required";
     }
 
     return errors;
@@ -46,9 +50,9 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
 
   const formik = useFormik({
     initialValues: {
-      description: update ? instance?.description : "",
-      amount: update ? instance?.amount : "",
-      serviceType: update ? instance?.serviceType : null,
+      name: update ? instance?.name : "",
+      price: update ? instance?.price : "",
+      category: update ? instance?.category : null,
     },
     validate,
     onSubmit: (values) => {
@@ -57,8 +61,8 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
       values.socketId = mySocketId;
 
       // Convert category to string if it's an object
-      if (typeof values.serviceType === 'object') {
-        values.serviceType = values.serviceType?._id;
+      if (typeof values.category === 'object') {
+        values.category = values.category?.name;
       }
 
       if (update) {
@@ -101,17 +105,17 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
 
   return (
     <Modal onClose={hideModal} pwidth="600px" left="32.5%" top="24%">
-      {showServiceType && <Register
+      {showServiceCategory && <Register
         update={false}
-        name="Service Type"
-        fields={serviceTypeFields}
-        url="service-types"
+        name="Service Category"
+        fields={serviceCategoryFields}
+        url="service-categories"
         business={business}
-        hideModal={() => { setShowServiceType(false) }}
+        hideModal={() => { setShowServiceCategory(false) }}
         store={(data) => {
           console.log(data)
-          notify("ServiceType Added Successfully!")
-          dispatch(addServiceType(data?.serviceType))
+          notify("ServiceCategory Added Successfully!")
+          dispatch(addServiceCategory(data?.createdServiceCategory))
         }}
       />}
       <div
@@ -199,15 +203,15 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
                 }),
               }}
               menuPlacement="top"
-              value={formik.values.serviceType ? { value: formik.values.serviceType, label: formik.values.serviceType.name } : null}
-              options={serviceTypes?.map(serviceType => ({ value: serviceType, label: serviceType?.name }))}
-              onChange={(selectedOption) => formik.setFieldValue("serviceType", selectedOption ? selectedOption.value : null)}
+              value={formik.values.category ? { value: formik.values.category, label: formik.values.category.name } : null}
+              options={serviceCategories?.map(serviceCategory => ({ value: serviceCategory, label: serviceCategory?.name }))}
+              onChange={(selectedOption) => formik.setFieldValue("category", selectedOption ? selectedOption.value : null)}
               isClearable={true}
               isDisabled={disabled}
             />
 
             <CustomButton text="ADD" style={{ fontSize: "14px" }} width="45px" bgColor="black"
-              onClick={() => setShowServiceType(true)} />
+              onClick={() => setShowServiceCategory(true)} />
 
           </div>
 

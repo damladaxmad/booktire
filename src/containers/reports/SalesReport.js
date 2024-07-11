@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Typography, TextField, CircularProgress, Modal, Backdrop, Fade, Box } from "@material-ui/core";
+import { Typography, TextField, CircularProgress } from "@material-ui/core";
 import axios from "axios";
 import moment from "moment";
 import { useSelector } from "react-redux";
@@ -7,6 +7,9 @@ import CustomButton from "../../reusables/CustomButton";
 import { constants } from "../../Helpers/constantsFile";
 import MaterialTable from "material-table";
 import SalesDetailsModal from "./SalesDetailsModal";
+import { setUserDataFetched, setUsers } from "../user/userSlice";
+import Select from "react-select";
+import useReadData from "../../hooks/useReadData";
 
 export default function SalesReport() {
     const token = useSelector(state => state?.login?.token);
@@ -18,6 +21,17 @@ export default function SalesReport() {
     const [loading, setLoading] = useState(false);
     const [selectedSale, setSelectedSale] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null); // Track selected user
+    const userUrl = `${constants.baseUrl}/users/get-business-users/${business?._id}`;
+    const users = useSelector(state => state.users.users);
+
+    useReadData(
+        userUrl,
+        setUsers,
+        setUserDataFetched,
+        state => state.users.isUsersDataFetched,
+        "users"
+    );
 
     const fetchSales = () => {
         setLoading(true);
@@ -52,9 +66,17 @@ export default function SalesReport() {
         setSelectedSale(null);
     };
 
+    const filteredSales = selectedUser
+        ? sales.filter(sale => sale?.user === selectedUser?.label)
+        : sales;
+
+    console.log(selectedUser)
+
     return (
         <div style={{ width: "97.5%", marginTop: "30px" }}>
-            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'flex-end', }}>
+            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'flex-end',
+           
+             }}>
                 <TextField
                     size="small"
                     variant="outlined"
@@ -79,7 +101,17 @@ export default function SalesReport() {
                     }}
                     style={{ marginRight: '20px' }}
                 />
-                <CustomButton text="View" height="37px" width="100px" fontSize="14px" onClick={handleViewClick} />
+                <Select
+                    placeholder="Select User"
+                    options={users?.map(user => ({ value: user._id, label: user?.username }))}
+                    onChange={selectedOption => setSelectedUser(selectedOption)} // Handle selected user
+                    isClearable={true}
+                    isSearchable={true}
+                    style={{ width: '300px' }}
+                />
+                <CustomButton text="View" height="37px" width="100px" fontSize="14px"
+                style = {{marginLeft: "20px"}}
+                onClick={handleViewClick} />
             </div>
 
             {loading ? (
@@ -108,7 +140,7 @@ export default function SalesReport() {
                         { title: 'Discount', field: 'discount', render: rowData => `$${rowData?.discount}` },
                         { title: 'Total', field: 'total', render: rowData => `$${rowData?.total}` }
                     ]}
-                    data={sales.map((sale, index) => ({
+                    data={filteredSales.map((sale, index) => ({
                         salesNumber: sale?.saleNumber,
                         products: sale?.products,
                         date: sale.date,
@@ -124,13 +156,13 @@ export default function SalesReport() {
                         toolbar: false,
                         headerStyle: { fontWeight: "bold" }
                     }}
-                    style={{ marginTop: "20px", boxShadow: "none", width: "100%" }}
+                    style={{ marginTop: "20px", boxShadow: "none", width: "100%", zIndex: 0 }}
                 />
             )}
 
             <SalesDetailsModal open={modalOpen} handleClose={handleCloseModal} sale={selectedSale} business={business} user={user} />
 
-            <SalesDashboard sales={sales} />
+            <SalesDashboard sales={filteredSales} />
         </div>
     );
 }

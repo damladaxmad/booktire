@@ -7,6 +7,8 @@ import { constants } from '../../Helpers/constantsFile';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import Select from "react-select"
+import useReadData from '../../hooks/useReadData';
+import { setUserDataFetched, setUsers } from '../user/userSlice';
 
 const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, disabled }) => {
   const [discount, setDiscount] = useState("");
@@ -14,8 +16,20 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [value, setValue] = useState(''); // Define value state
   const customers = useSelector(state => state?.customers.customers);
+  const { business } = useSelector(state => state.login.activeUser);
   const [saleType, setSaleType] = useState("cash")
   const [customer, setCustomer] = useState()
+  const [selectedUser, setSelectedUser] = useState(null); // Track selected user
+  const userUrl = `${constants.baseUrl}/users/get-business-users/${business?._id}`;
+  const users = useSelector(state => state.users.users);
+
+  useReadData(
+    userUrl,
+    setUsers,
+    setUserDataFetched,
+    state => state.users.isUsersDataFetched,
+    "users"
+  );
 
   const searchCustomers = () => {
     return customers
@@ -74,10 +88,13 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
         flexDirection: 'row',
         justifyContent: "space-between"
       }}>
-        <div style={{ width: '55%', marginRight: '20px' }}>
+        <div style={{
+          width: '55%', marginRight: '20px', height: "100%",
+          overflowY: selectedProducts?.length > 8 && "scroll"
+        }}>
           <MaterialTable
             columns={[
-              { title: 'Items', field: 'name', cellStyle: { whiteSpace: 'nowrap' }},
+              { title: 'Items', field: 'name', cellStyle: { whiteSpace: 'nowrap' } },
               { title: 'QTY', field: 'qty', type: 'numeric' },
               { title: 'Price', field: 'salePrice', type: 'currency' },
               { title: 'Subtotal', field: 'subtotal', type: 'currency' }
@@ -110,35 +127,46 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
               </IconButton>
             </div>
 
-            <div style = {{width: "100%", display: "flex", gap: "10px", flexDirection: "column",
+            <div style={{
+              width: "100%", display: "flex", gap: "10px", flexDirection: "column",
               marginBottom: "15px"
             }}>
-            <Select
-              value={saleTypeOptions.find(option => option.value === saleType)}
-              options={saleTypeOptions}
-              onChange={(selectedOption) => setSaleType(selectedOption.value)}
-            />
+              <Select
+                value={saleTypeOptions.find(option => option.value === saleType)}
+                options={saleTypeOptions}
+                onChange={(selectedOption) => setSaleType(selectedOption.value)}
+              />
 
-            <Select
-              placeholder='Select customer'
-              styles={{
-                control: (styles, { isDisabled }) => ({
-                  ...styles,
-                  border: "1px solid lightGrey",
-                  height: "36px",
-                  borderRadius: "5px",
-                  width: "100%",
-                  minHeight: "28px",
-                  ...(isDisabled && { cursor: "not-allowed" }),
-                })
-              }}
-              value={customer ? { value: customer, label: customer.name } : null}
-              // options={searchCustomers()}
-          options={customers.map(customer => ({ value: customer, label: customer?.name }))}
-              onChange={handleCustomerSelect}
-              isClearable={true} // Make the Select clearable
-              isDisabled={saleType === "cash"}
-            />
+              <Select
+                placeholder="Select User"
+                options={users?.map(user => ({ value: user._id, label: user?.username }))}
+                onChange={selectedOption => setSelectedUser(selectedOption)} // Handle selected user
+                isClearable={true}
+                isSearchable={true}
+                style={{ width: '30%' }}
+              />
+
+              <Select
+                placeholder='Select customer'
+                styles={{
+                  control: (styles, { isDisabled }) => ({
+                    ...styles,
+                    border: "1px solid lightGrey",
+                    height: "36px",
+                    borderRadius: "5px",
+                    width: "100%",
+                    minHeight: "28px",
+                    ...(isDisabled && { cursor: "not-allowed" }),
+                  })
+                }}
+                value={customer ? { value: customer, label: customer.name } : null}
+                // options={searchCustomers()}
+                options={customers.map(customer => ({ value: customer, label: customer?.name }))}
+                onChange={handleCustomerSelect}
+                isClearable={true} // Make the Select clearable
+                isDisabled={saleType === "cash"}
+              />
+
             </div>
 
             <div style={{
@@ -186,9 +214,16 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
               fullWidth
               variant="contained"
               color="primary"
-              onClick={() => onFinishPayment({ discount: discount, saleType: saleType, 
-                date: selectedDate, customer: customer, products: selectedProducts })}
+              onClick={() => {
+                if (!selectedUser) return alert("Fadlan Dooro User")
+                onFinishPayment({
+                  discount: discount, saleType: saleType,
+                  date: selectedDate, customer: customer, user: selectedUser?.label, products: selectedProducts
+                })
+              }
+              }
               style={{ width: "100%", fontSize: "14px" }}
+
             />
           </div>
         </div>

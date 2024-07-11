@@ -14,13 +14,13 @@ import moment from 'moment';
 import PrintServiceModal from './PrintServiceModal';
 import { setServiceTypeDataFetched } from '../serviceType/serviceTypeSlice';
 
-const NewServices = () => {
+const NewServices = ({loading}) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const token = useSelector(state => state?.login?.token);
-  const { business, name } = useSelector(state => state.login.activeUser);
+  const { business, username } = useSelector(state => state.login.activeUser);
   const [data, setData] = useState();
 
   const notify = (message) => toast(message, {
@@ -54,10 +54,10 @@ const NewServices = () => {
     );
   };
 
-  const updateProductDetails = (productId, qty, salePrice) => {
+  const updateProductDetails = (productId, qty, price) => {
     setSelectedProducts((prevProducts) => 
       prevProducts.map(p => 
-        p.id === productId ? { ...p, qty, salePrice } : p
+        p.id === productId ? { ...p, qty, price } : p
       )
     );
   };
@@ -128,7 +128,7 @@ const NewServices = () => {
       business: business?._id,
       customer: customer?._id,
       date: moment(date).format("YYYY-MM-DD"),
-      user: name
+      user: username
     };
 
     createSale(transformedData);
@@ -136,7 +136,7 @@ const NewServices = () => {
 
   return (
     <div style={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-      <ProductList addProduct={addProduct} />
+      <ProductList addProduct={addProduct} loading = {loading}/>
       <ItemsList 
         selectedProducts={selectedProducts} 
         updateProductQty={updateProductQty}
@@ -159,7 +159,7 @@ const NewServices = () => {
           onClose={() => setIsPrintModalOpen(false)}
           data={data}
           business={business}
-          user={name}
+          user={username}
         />
       )}
       <ToastContainer />

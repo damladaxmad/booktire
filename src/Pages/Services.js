@@ -7,15 +7,15 @@ import Register from "../utils/Register";
 import { deleteFunction } from "../funcrions/deleteStuff";
 import useRegisterForm from "../hooks/useRegister";
 import CustomRibbon from "../reusables/CustomRibbon";
-import { fields } from "../containers/services/serviceModal";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TitleComponent from "../reusables/TitleComponent.";
 import io from 'socket.io-client';
 import useReadData from "../hooks/useReadData";
-import { addService, deleteService, setServiceDataFetched, setServices, updateService } from "../containers/services/serviceSlice";
+import {  } from "../containers/services/serviceCategorySlice";
 import CreateService from "../containers/services/CreateService";
-import { setServiceTypeDataFetched, setServiceTypes } from "../containers/serviceType/serviceTypeSlice";
+import { addServiceType, deleteServiceType, setServiceTypeDataFetched, setServiceTypes, updateServiceType } from "../containers/serviceType/serviceTypeSlice";
+import { serviceTypeFields } from "../containers/serviceType/serviceTypeModal";
 
 const parentDivStyle = {
   display: "flex",
@@ -55,7 +55,8 @@ export default function Services() {
   });
 
   const columns = [
-    { title: "name", field: "name", width: "24%" },
+    { title: "Service Name", field: "name", width: "24%" },
+    { title: "Category", field: "category" },
     { title: "Price", field: "price" },
     // { title: "Type", field: "serviceType", render: data => <p> {data?.serviceType?.name}</p> },
   ];
@@ -105,9 +106,9 @@ export default function Services() {
         onDelete={(data) => {
           deleteFunction(true, "Delete Service",
             data.name,
-            `${constants.baseUrl}/services/${data?._id}`,
+            `${constants.baseUrl}/service-types/${data?._id}`,
             token,
-            () => { dispatch(deleteService(data)) })
+            () => { dispatch(deleteServiceType(data)) })
         }} 
        />}
       
@@ -115,22 +116,23 @@ export default function Services() {
         instance={toBeUpdatedCustomer}
         update={update}
         name="Service"
-        fields={fields}
-        url="services"
+        fields={serviceTypeFields}
+        url="service-types"
         business={business?._id}
         hideModal={() => { handleHide() }}
         store={(data) => {
           console.log(data)
-          dispatch(addService(data?.createdService))
-          notify("Service created successfully")
+          dispatch(addServiceType(data?.createdServiceType))
+          notify("ServiceType created successfully")
         }}
         onUpdate={
           (data) => {
-            dispatch(updateService({
-              _id: data?.service?._id,
-              updatedService: data?.service
+            console.log(data)
+            dispatch(updateServiceType({
+              _id: data?.updatedServiceType?._id,
+              updatedServiceType: data?.updatedServiceType
             }));
-            notify("Service updated successfully")
+            notify("ServiceType updated successfully")
           }
         } />}
 

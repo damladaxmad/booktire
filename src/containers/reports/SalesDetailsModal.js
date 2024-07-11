@@ -39,7 +39,8 @@ const SalesDetailsModal = ({ open, handleClose, sale, business, user }) => {
                                 <Box key={index} display="flex" justifyContent="space-between" my={2} style={{ borderBottom: "1px solid lightgray", paddingBottom: "5px" }}>
                                     <Typography style={{ flex: 1.8 }}>{product.name}</Typography>
                                     <Typography style={{ flex: 1, textAlign: "right" }}>{product.quantity}</Typography>
-                                    <Typography style={{ flex: 1, textAlign: "right" }}>${product.salePrice}</Typography>
+                                    <Typography style={{ flex: 1, textAlign: "right" }}>{sale?.purchaseNumber ? `$${product?.unitPrice}` : 
+                                    `$${product?.salePrice}`}</Typography>
                                     <Typography style={{ flex: 1, textAlign: "right" }}>${product.subtotal}</Typography>
                                 </Box>
                             ))

@@ -1,28 +1,28 @@
-import { Typography } from '@mui/material';
-import React, { useState } from 'react';
+import { Typography, CircularProgress } from '@mui/material';
+import React, { useState, useEffect } from 'react';
 import { MdProductionQuantityLimits } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 import Select from "react-select";
 import { constants } from '../../Helpers/constantsFile';
-import { setCategories, setCategoryDataFetched } from '../category/categorySlice';
+import { setServiceCategories, setServiceCategoriesDataFetched } from '../services/serviceCategorySlice';
 import useReadData from '../../hooks/useReadData';
-import { setServiceTypeDataFetched, setServiceTypes } from '../serviceType/serviceTypeSlice';
 
-const ProductList = ({ addProduct }) => {
+const ProductList = ({ addProduct, loading }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const products = useSelector(state => state?.serviceTypes.serviceTypes);
   const [category, setCategory] = useState(null);
-  const { business } = useSelector(state => state.login.activeUser)
-  const categories = JSON.parse(JSON.stringify(useSelector(state => state.serviceTypes?.serviceTypes || [])));
-  const url2 = `${constants.baseUrl}/service-types/get-business-service-types/${business?._id}`
+  const { business } = useSelector(state => state.login.activeUser);
+  const categories = JSON.parse(JSON.stringify(useSelector(state => state.serviceCategories?.serviceCategories || [])));
+  const url2 = `${constants.baseUrl}/service-categories/get-business-service-categories/${business?._id}`;
 
   useReadData(
     url2,
-    setServiceTypes,
-    setServiceTypeDataFetched,
-    state => state.serviceTypes.isServiceTypesDataFetched,
-    "serviceTypes"
+    setServiceCategories,
+    setServiceCategoriesDataFetched,
+    state => state.serviceCategories.isServiceCategoriesDataFetched,
+    "categories"
   );
+
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -106,19 +106,31 @@ const ProductList = ({ addProduct }) => {
         />
       </div>
 
-      <div style={{ display: "flex", gap: "20px", marginTop: "20px", width: "100%",
-       flexWrap: "wrap", height: "62vh", overflowY: "scroll",}}>
-        {filteredProducts.map((product) => {
-          if (category && product.category !== category?.categoryName) return null;
-          return <ProductCard key={product.id} product={product} handleProductClick={handleProductClick} />
-        })}
-      </div>
+      {loading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+          <CircularProgress />
+        </div>
+      ) : (
+        <div style={{
+          display: "flex", gap: "20px", marginTop: "20px", width: "100%", flexWrap: "wrap",
+          maxHeight: "62vh", overflowY: "scroll"
+        }}>
+          {filteredProducts.map((product) => {
+            if (category && product.category !== category?.name) return null;
+            return <ProductCard key={product.id} product={product} handleProductClick={handleProductClick} />
+          })}
+        </div>
+      )}
+
+      {(!loading && filteredProducts?.length < 1) && <p style={{
+        color: "grey", textAlign: "center",
+        marginTop: "20px"
+      }}> No services here...</p>}
     </div>
   );
 };
 
 function ProductCard({ product, handleProductClick }) {
- 
   return (
     <div
       style={{
@@ -137,15 +149,6 @@ function ProductCard({ product, handleProductClick }) {
       <div style={{ display: "flex", gap: "5px", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <MdProductionQuantityLimits style={{ color: "#6A03B6", fontSize: "50px" }} />
         <div style={{ display: "flex", gap: "5px", flexDirection: "column" }}>
-          {/* <div style={{
-            display: "flex",
-            background: "#E9E9E9",
-            borderRadius: "5px",
-            padding: "5px 10px",
-            border: "1px solid #B8B8B8"
-          }}>
-            <Typography> Price: </Typography>
-          </div> */}
           <div style={{
             display: "flex",
             background: "#E9E9E9",
@@ -153,7 +156,7 @@ function ProductCard({ product, handleProductClick }) {
             padding: "5px 10px",
             border: "1px solid #B8B8B8"
           }}>
-            <Typography> Price: $2{product.price} </Typography>
+            <Typography> Price: ${product.price} </Typography>
           </div>
         </div>
       </div>

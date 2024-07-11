@@ -19,7 +19,7 @@ const TransactionForm = ({ type, update, instance, transaction, client, hideModa
     const [disabled, setDisabled] = useState(false)
     const token = useSelector(state => state.login.token)
     const mySocketId = useSelector(state => state?.login?.mySocketId)
-    const { name } = useSelector(state => state.login.activeUser)
+    const { username: name } = useSelector(state => state.login.activeUser)
     const today = new Date();
     const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions)))
     const dispatch = useDispatch()

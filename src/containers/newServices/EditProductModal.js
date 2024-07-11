@@ -5,10 +5,10 @@ import { constants } from '../../Helpers/constantsFile';
 
 const EditProductModal = ({ open, handleClose, product, updateProductDetails }) => {
   const [qty, setQty] = useState(product.qty);
-  const [salePrice, setSalePrice] = useState(product.salePrice);
+  const [price, setPrice] = useState(product.price);
 
   const handleSave = () => {
-    updateProductDetails(product.id, qty, salePrice);
+    updateProductDetails(product.id, qty, price);
     handleClose();
   };
 
@@ -45,8 +45,8 @@ const EditProductModal = ({ open, handleClose, product, updateProductDetails }) 
           variant='outlined'
           label="Price"
           type="number"
-          value={salePrice}
-          onChange={(e) => setSalePrice(parseFloat(e.target.value))}
+          value={price}
+          onChange={(e) => setPrice(parseFloat(e.target.value))}
         />
         <Box display="flex" justifyContent="flex-end" mt={2}>
           <Button onClick={handleClose} style={{ marginRight: '10px' }}>

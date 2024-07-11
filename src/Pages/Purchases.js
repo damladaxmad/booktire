@@ -20,7 +20,7 @@ const Purchases = () => {
   const [refNumber, setRefNumber] = useState("")
   const [currentTab, setCurrentTab] = useState(0); // Track current tab index
   const token = useSelector(state => state?.login?.token)
-  const { business, name } = useSelector(state => state.login.activeUser)
+  const { business, username: name } = useSelector(state => state.login.activeUser)
   const urlProduct = `${constants.baseUrl}/products/get-business-products/${business?._id}`
   const urlVendor = `${constants.baseUrl}/vendors/get-business-vendors/${business?._id}`
 

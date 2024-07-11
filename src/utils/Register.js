@@ -41,7 +41,7 @@ hideModal, onUpdate}) => {
      if ( name == "Category" && !values.categoryName) {
        errors.categoryName = "Field is Required";
      }
-     if ( (name !== "User" && name !== "Category" && name !== "Service Type" && name !== "Qarashaad") && (!values.phone)) {
+     if ( (name !== "User" && name !== "Category" && name !== "Service Category" && name !== "Service Type" && name !== "Qarashaad") && (!values.phone)) {
        errors.phone = "Field is Required";
      }
   

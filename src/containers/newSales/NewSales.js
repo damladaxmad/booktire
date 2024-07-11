@@ -13,13 +13,13 @@ import { ToastContainer, toast } from 'react-toastify';
 import PrintSaleModal from './PrintSaleModal';
 import moment from 'moment';
 
-const NewSales = () => {
+const NewSales = ({loading}) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const token = useSelector(state => state?.login?.token);
-  const { business, name } = useSelector(state => state.login.activeUser);
+  const { business, username } = useSelector(state => state.login.activeUser);
   const [data, setData] = useState();
 
   const notify = (message) => toast(message, {
@@ -82,7 +82,8 @@ const NewSales = () => {
       saleType: data.saleType,
       discount: data?.discount || 0,
       customer: data?.customer,
-      date: data.date
+      date: data.date,
+      user: data.user
     });
   };
 
@@ -113,7 +114,7 @@ const NewSales = () => {
     });
   };
 
-  const handleAddProduct = ({ products, discount, total, date, saleType, customer }) => {
+  const handleAddProduct = ({ products, discount, total, date, saleType, customer, user }) => {
     setDisabled(true);
     const transformedData = {
       products: products.map(product => ({
@@ -129,7 +130,7 @@ const NewSales = () => {
       business: business?._id,
       customer: customer?._id,
       date: moment(date).format("YYYY-MM-DD"),
-      user: name
+      user: user
     };
 
     createSale(transformedData);
@@ -137,7 +138,7 @@ const NewSales = () => {
 
   return (
     <div style={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-      <ProductList addProduct={addProduct} />
+      <ProductList addProduct={addProduct} loading = {loading}/>
       <ItemsList 
         selectedProducts={selectedProducts} 
         updateProductQty={updateProductQty}
@@ -160,7 +161,7 @@ const NewSales = () => {
           onClose={() => setIsPrintModalOpen(false)}
           data={data}
           business={business}
-          user={name}
+          user={username}
         />
       )}
       <ToastContainer />

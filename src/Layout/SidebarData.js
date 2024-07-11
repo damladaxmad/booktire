@@ -13,52 +13,48 @@ export const SidebarData = [
     icon: <DashboardIcon style={{fontSize: "20px",}} />,
     path: "/dashboard",
   },
-
-  {
-    text: "Customers",
-    icon: <GroupIcon style={{fontSize: "20px", }} />,
-    path: "/customers",
-    // iconClosed: <RiIcons.RiArrowDownSFill style={{fontSize: "20px", }}/>,
-    // iconOpened: <RiIcons.RiArrowUpSFill style={{fontSize: "20px", }}/>,
-    // subNav: [
-    //   {
-    //     text: 'Import Customers',
-    //     path: '/customers/import',
-    //     icon: <GroupIcon style={{fontSize: "20px", }} />
-    //   }
-    // ]
-  },
   {
     text: "Sales",
     icon: <MdPointOfSale  style={{fontSize: "20px",}} />,
     path: "/sales",
   },
-  
+
   {
     text: "Products",
     icon: <MdProductionQuantityLimits  style={{fontSize: "20px",}} />,
     path: "/products",
   },
-  {
-    text: "Vendors",
-    icon: <VscPerson style={{fontSize: "20px",}} />,
-    path: "/vendors",
-  },
+
   {
     text: "Purchases",
     icon: <BiPurchaseTagAlt  style={{fontSize: "20px",}} />,
     path: "/purchases",
   },
-  {
-    text: "Reports",
-    icon: <HiOutlineDocumentReport   style={{fontSize: "20px",}} />,
-    path: "/reports",
-  },
+
   {
     text: "Expenses",
     icon: <BiWallet   style={{fontSize: "20px",}} />,
     path: "/expenses",
   },
+
+  {
+    text: "Customers",
+    icon: <GroupIcon style={{fontSize: "20px", }} />,
+    path: "/customers",
+  },
+  
+  {
+    text: "Vendors",
+    icon: <VscPerson style={{fontSize: "20px",}} />,
+    path: "/vendors",
+  },
+ 
+  {
+    text: "Reports",
+    icon: <HiOutlineDocumentReport   style={{fontSize: "20px",}} />,
+    path: "/reports",
+  },
+
   {
     text: "Adminstration",
     icon: <MdOutlineAdminPanelSettings  style={{fontSize: "20px",}} />,

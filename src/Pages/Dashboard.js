@@ -1,7 +1,7 @@
-import { Avatar, Typography } from "@mui/material"
-import { RiCoinsLine } from "react-icons/ri"
-import Top5DeenCustomers from "../containers/dashboard/Top5DeenCustomers"
-import LatestTransactions from "../containers/dashboard/LatestTransactions"
+import { Avatar, Typography } from "@mui/material";
+import { RiCoinsLine } from "react-icons/ri";
+import Top5DeenCustomers from "../containers/dashboard/Top5DeenCustomers";
+import LatestTransactions from "../containers/dashboard/LatestTransactions";
 import { setCustomerDataFetched, setCustomers } from "../containers/customer/customerSlice";
 import useReadData from "../hooks/useReadData";
 import { useSelector } from "react-redux";
@@ -97,15 +97,31 @@ export default function Dashboard() {
     .filter(sale => moment(sale.date).isSame(startOfToday, 'day'))
     .reduce((acc, sale) => acc + sale.total, 0);
 
-    const startOfThisMonth = moment().startOf('month');
-    const endOfToday = moment().endOf('day');
-    
-    const thisMonthSalesTotal = sales
-        .filter(sale => moment(sale.date).isBetween(startOfThisMonth, endOfToday, null, '[]'))
-        .reduce((acc, sale) => acc + sale.total, 0);    
+  const startOfThisMonth = moment().startOf('month');
+  const endOfToday = moment().endOf('day');
+
+  const thisMonthSalesTotal = sales
+    .filter(sale => moment(sale.date).isBetween(startOfThisMonth, endOfToday, null, '[]'))
+    .reduce((acc, sale) => acc + sale.total, 0);    
 
   const allTimeSalesTotal = sales
     .reduce((acc, sale) => acc + sale.total, 0);
+    
+    const calculateCost = (products) => {
+      return products.reduce((acc, product) => acc + (product.unitPrice || 0), 0);
+    };
+    
+    const calculateProfit = (sale) => {
+      const total = sale.total || 0;
+      const cost = calculateCost(sale.products || []);
+      return total - cost;
+    };
+    
+    const thisMonthProfit = sales
+      .filter(sale => moment(sale.date).isBetween(startOfThisMonth, endOfToday, null, '[]'))
+      .reduce((acc, sale) => acc + calculateProfit(sale), 0);
+    
+    
 
   const statusCards = [
     { title: "receivable", value: receivable.toLocaleString(), isMoney: true },
@@ -113,7 +129,7 @@ export default function Dashboard() {
     { title: "products", value: products?.length.toLocaleString() },
     { title: "today sales", value: todaySalesTotal.toLocaleString(), isMoney: true },
     { title: "this month", value: thisMonthSalesTotal.toLocaleString(), isMoney: true },
-    { title: "all time", value: allTimeSalesTotal.toLocaleString(), isMoney: true },
+    { title: "monthly profit", value: thisMonthProfit.toLocaleString(), isMoney: true },
   ];
 
   return (

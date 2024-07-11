@@ -1,5 +1,5 @@
-import { Typography } from '@mui/material';
-import React, { useState } from 'react';
+import { Typography, CircularProgress } from '@mui/material';
+import React, { useState, useEffect } from 'react';
 import { MdProductionQuantityLimits } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 import Select from "react-select";
@@ -7,13 +7,13 @@ import { constants } from '../../Helpers/constantsFile';
 import { setCategories, setCategoryDataFetched } from '../category/categorySlice';
 import useReadData from '../../hooks/useReadData';
 
-const ProductList = ({ addProduct }) => {
+const ProductList = ({ addProduct, loading }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const products = useSelector(state => state?.products.products);
   const [category, setCategory] = useState(null);
-  const { business } = useSelector(state => state.login.activeUser)
+  const { business } = useSelector(state => state.login.activeUser);
   const categories = JSON.parse(JSON.stringify(useSelector(state => state.categories?.categories || [])));
-  const url2 = `${constants.baseUrl}/product-categories/get-business-product-categories/${business?._id}`
+  const url2 = `${constants.baseUrl}/product-categories/get-business-product-categories/${business?._id}`;
 
   useReadData(
     url2,
@@ -22,6 +22,7 @@ const ProductList = ({ addProduct }) => {
     state => state.users.isCategoriesDataFetched,
     "categories"
   );
+
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -105,13 +106,20 @@ const ProductList = ({ addProduct }) => {
         />
       </div>
 
-      <div style={{ display: "flex", gap: "20px", marginTop: "20px", width: "100%",
-       flexWrap: "wrap", height: "62vh", overflowY: "scroll"}}>
-        {filteredProducts.map((product) => {
-          if (category && product.category !== category?.categoryName) return null;
-          return <ProductCard key={product.id} product={product} handleProductClick={handleProductClick} />
-        })}
-      </div>
+      {loading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+          <CircularProgress />
+        </div>
+      ) : (
+        <div style={{ display: "flex", gap: "20px", marginTop: "20px", width: "100%", flexWrap: "wrap", maxHeight: "62vh", overflowY: "scroll"}}>
+          {filteredProducts.map((product) => {
+            if (category && product.category !== category?.categoryName) return null;
+            return <ProductCard key={product.id} product={product} handleProductClick={handleProductClick} />
+          })}
+        </div>
+      )}
+      {(filteredProducts?.length < 1 && !loading)&& <p style = {{color: "grey", textAlign: "center", 
+        marginTop: "20px"}}> No products here...</p>}
     </div>
   );
 };
@@ -127,7 +135,8 @@ function ProductCard({ product, handleProductClick }) {
         flexDirection: "column",
         gap: "10px",
         cursor: "pointer",
-        width: "30%"
+        width: "30%",
+        maxHeight: "200px" // Set a consistent height
       }}
       onClick={() => handleProductClick(product)}
     >

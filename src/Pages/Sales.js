@@ -13,8 +13,8 @@ import { setProductDataFetched, setProducts } from '../containers/products/produ
 import { setCustomerDataFetched, setCustomers, updateCustomerSocketBalance } from '../containers/customer/customerSlice';
 import NewSales from '../containers/newSales/NewSales';
 import NewServices from '../containers/newServices/NewServices';
-import { setServiceTypes } from '../containers/serviceType/serviceTypeSlice';
-import { setServiceDataFetched } from '../containers/services/serviceSlice';
+import { setServiceTypeDataFetched, setServiceTypes } from '../containers/serviceType/serviceTypeSlice';
+import ServiceTable from '../containers/sales/ServiceTable';
 
 const Sales = () => {
   const [disabled, setDisabled] = useState(false);
@@ -27,17 +27,17 @@ const Sales = () => {
 
   const dispatch = useDispatch();
 
-  useReadData(
+  const {loading} =useReadData(
     urlProduct,
     setProducts,
     setProductDataFetched,
     state => state.products.isProductsDataFetched,
     "products"
   );
-  useReadData(
+  const { loading: serviceLoading } = useReadData(
     urlServiceType,
     setServiceTypes,
-    setServiceDataFetched,
+    setServiceTypeDataFetched,
     state => state.serviceTypes.isServiceTypeDataFetched,
     "serviceTypes"
   );
@@ -109,15 +109,33 @@ const Sales = () => {
           }}>
           Sales
         </div>
+        <div
+          onClick={() => handleTabChange(4)}
+          style={{
+            padding: '5px 0px',
+            width: "80px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: '10px',
+            cursor: 'pointer',
+            backgroundColor: currentTab === 4 ? constants.pColor : 'transparent',
+            color: currentTab === 4 ? 'white' : 'black',
+            borderRadius: '50px',
+            border: `1px solid ${constants.pColor}`
+          }}>
+          Services
+        </div>
       </div>
       <div style={{ width: "100%", margin: "auto", borderRadius: "10px", padding: "0px", display: "flex", flexDirection: "column" }}>
         {currentTab === 0 && (
-          <NewSales 
+          <NewSales loading = {loading}
             // handleAddProduct={handleAddProduct}
           />
         )}
         {currentTab === 2 && <SalesTable />}
-        {currentTab === 3 && <NewServices />}
+        {currentTab === 3 && <NewServices loading = {serviceLoading} />}
+        {currentTab === 4 && <ServiceTable />}
       </div>
     </div>
   );

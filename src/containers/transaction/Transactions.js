@@ -12,6 +12,8 @@ import TransactionForm from "./TransactionForm";
 import io from 'socket.io-client';
 import SalesDetailsModal from "../reports/SalesDetailsModal";
 import { Edit } from '@material-ui/icons';
+import PrintableTableComponent from "../reports/PintableTableComponent";
+import { useReactToPrint } from "react-to-print";
 
 const Transactions = ({ instance, client, url, hideTransactions, }) => {
     const [loading, setLoading] = useState(false);
@@ -136,9 +138,7 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
 
     const columns = [
         {
-            title: 'Description', field: 'description', cellStyle: {
-                borderBottom: "1px solid #A6A6A6"
-            },
+            title: 'Description', field: 'description', cellStyle: { border: "none" },
             render: rowData => (
                 <p
                     style={{ color: (rowData?.sale || rowData?.purchase)   && 'blue', 
@@ -220,6 +220,12 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
 
     };
 
+    const handlePrint = useReactToPrint({
+        content: () => document.querySelector('.printable-table'),
+        documentTitle: `${instance?.name} Statement`
+    });
+
+    let newColumns = columns?.filter(column => column.title != "User")
 
     return (
         <>
@@ -300,6 +306,8 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
                     }}>
                         {instance.phone}
                     </Typography>
+
+                   
                 </div>
 
 
@@ -315,6 +323,15 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
                 </div>
 
             </div>
+
+            <CustomButton text = "Print" onClick={handlePrint} height="35px" fontSize="14px"
+                    style = {{marginTop: "10px", width: "100px", alignSelf: "start",
+                        background: "white", color: "black", border: "1px solid grey"
+                    }}/>
+
+            <PrintableTableComponent columns={newColumns} data={transactions} imageUrl={business?.logoUrl} 
+            reportTitle = {`${instance?.name} (${instance?.phone})`}> 
+            </PrintableTableComponent>
 
             <MaterialTable
                 columns={columns}
