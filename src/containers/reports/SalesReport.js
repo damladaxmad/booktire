@@ -123,16 +123,16 @@ export default function SalesReport() {
                     title="Sales Report"
                     columns={[
                         {
-                            title: 'Number', field: 'salesNumber', render: rowData => (
+                            title: 'Receipt', field: 'salesNumber', render: rowData => (
                                 <Typography
                                     style={{ color: 'blue', cursor: 'pointer' }}
                                     onClick={() => handleSalesNumberClick(rowData)}
                                 >
-                                    {rowData.salesNumber}
+                                   Receipt-{rowData.salesNumber}
                                 </Typography>
                             )
                         },
-                        { title: 'products', field: 'products', render: rowData => <p>{rowData?.products?.length}</p> },
+                        // { title: 'products', field: 'products', render: rowData => <p>{rowData?.products?.length}</p> },
                         { title: 'Date', field: 'date', render: rowData => moment(rowData.date).format("YYYY-MM-DD") },
                         { title: 'User', field: 'user', width: "4%" },
                         { title: 'Payment', field: 'paymentType' },

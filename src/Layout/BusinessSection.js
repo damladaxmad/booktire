@@ -16,9 +16,9 @@ const subDivStyle = {
 }
 
 export default function BusinessSection() {
-    const {business} = useSelector((state) => state.login.activeUser);
     const [anchorEl, setAnchorEl] = useState(null)
     const open = Boolean(anchorEl);
+    
     const handleClick = (event) => {
       setAnchorEl(event.currentTarget);
     };
@@ -38,7 +38,7 @@ export default function BusinessSection() {
                 aria-controls={open ? 'fade-menu' : undefined}
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
+                // onClick={handleClick}
             style={subDivStyle}>
 
                 <Avatar
@@ -56,8 +56,8 @@ export default function BusinessSection() {
                 </Avatar>
 
                 <div style={{ display: "flex", flexDirection: "column", }}>
-                    <Typography style={{ fontSize: "13px", fontWeight: "bold", color: "white" }}> {business?.businessName}</Typography>
-                    <Typography style={{ fontSize: "13px", color: constants.businessSubText }}> {business?.businessNumber || "252 616549198"}</Typography>
+                    <Typography style={{ fontSize: "13px", fontWeight: "bold", color: "white" }}> BOOKTIRE SYSTEM</Typography>
+                    <Typography style={{ fontSize: "13px", color: constants.businessSubText }}> TACABTIRE ICT</Typography>
                 </div>
 
                 <RiIcons.RiArrowDownSFill style={{ fontSize: "20px",  color: "white" }} />,

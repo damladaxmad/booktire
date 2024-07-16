@@ -26,10 +26,14 @@ export const productSlice = createSlice({
       }
     },
     updateProductQuantity: (state, action) => {
-      const { productId, quantity } = action.payload;
+      const { productId, quantity, type } = action.payload;
       const product = state.products.find(product => product._id === productId);
-      if (product) {
+      if (!product) return
+      if (type == "sale") {
         product.quantity -= quantity; 
+      }
+      if (type == "purchase") {
+        product.quantity += quantity; 
       }
     },
     setProductDataFetched: (state, action) => {

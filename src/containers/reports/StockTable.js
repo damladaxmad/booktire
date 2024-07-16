@@ -95,7 +95,7 @@ const StockTable = (props) => {
                     {props.data.quantity}
                   </p>
                   <p style={{ margin: "0px", width: "25%", textAlign: "end" }}>
-                    {props.data.category}
+                    {props.data?.category}
                   </p>
                   <p
                     style={{
@@ -105,7 +105,7 @@ const StockTable = (props) => {
                     }}
                   >
                     {constants.moneySign}
-                    {props.data.unitPrice.toFixed(2)}
+                    {props.data.unitPrice?.toFixed(2)}
                   </p>
                   <p
                     style={{
@@ -116,6 +116,16 @@ const StockTable = (props) => {
                   >
                     {constants.moneySign}
                     {props.data.salePrice?.toFixed(2)}
+                  </p>
+                  <p
+                    style={{
+                      margin: "0px",
+                      width: "20%",
+                      textAlign: "end",
+                    }}
+                  >
+                    {constants.moneySign}
+                    {props.data?.totalCost?.toFixed(2)}
                   </p>
                   <p
                     style={{
@@ -174,6 +184,15 @@ const StockTable = (props) => {
                     }}
                   >
                     Sale Price
+                  </p>
+                  <p
+                    style={{
+                      margin: "0px",
+                      width: "20%",
+                      textAlign: "end",
+                    }}
+                  >
+                    Total Cost
                   </p>
                   <p
                     style={{

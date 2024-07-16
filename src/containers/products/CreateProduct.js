@@ -38,9 +38,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
     if (!values.name) {
       errors.name = "Field is Required";
     }
-    if (!values.unitPrice) {
-      errors.unitPrice = "Field is Required";
-    }
+
 
     return errors;
   };
@@ -105,7 +103,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
 
 
   return (
-    <Modal onClose={hideModal} pwidth="600px" left="32.5%" top="24%">
+    <Modal onClose={hideModal} pwidth="500px" left="37.5%" top="24%">
       {showCategory && <Register
         update={false}
         name="Category"
@@ -122,14 +120,12 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
       <div
         style={{
           display: "flex",
-          width: "600px",
+          width: "500px",
           justifyContent: "center",
           alignItems: "center",
           flexDirection: "column",
           alignItems: "center",
           gap: "15px",
-          height: "390px",
-          overflowY: "scroll"
         }}
       >
         <h2>{update ? `${name} Update` : `${name} Creation`}</h2>
@@ -138,13 +134,13 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
           onSubmit={formik.handleSubmit}
           style={{
             display: "flex", gap: "20px",
-            flexDirection: "row", alignItems: "center", justifyContent: "center",
+            flexDirection: "column", alignItems: "center", justifyContent: "center",
             flexWrap: "wrap",
           }}
         >
           {fields?.map((a, index) => (
             <div key={index} style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-              <label style={{ fontWeight: "bold", fontSize: "12px" }}>{a.title}:</label>
+             
               <input
                 placeholder={a.label}
                 id={a.name}
@@ -154,7 +150,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
                 onBlur={formik.handleBlur}
                 value={formik.values[a.name]}
                 style={{
-                  width: "250px", color: "black",
+                  width: "300px", color: "black",
                   padding: "10px", borderRadius: "5px", height: "40px",
                   border: "1px solid lightGrey",
                 }}
@@ -166,7 +162,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
             </div>
           ))}
 
-          <div style={{ width: "250px", marginTop: "23px" }}>
+          <div style={{ width: "300px"}}>
             <Select
               placeholder='Select Unit'
               styles={{
@@ -175,7 +171,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
                   border: "1px solid lightGrey",
                   height: "40px",
                   borderRadius: "5px",
-                  width: "250px",
+                  width: "300px",
                   minHeight: "28px",
                   ...(isDisabled && { cursor: "not-allowed" }),
                 }),
@@ -214,7 +210,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
 
           </div>
 
-          <div style={{ display: "flex", gap: "5px", width: "250px", marginLeft: "20px" }}>
+          <div style={{ display: "flex", gap: "15px", width: "300px",  }}>
             <Select
               placeholder='Select category'
               styles={{
@@ -223,7 +219,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
                   border: "1px solid lightGrey",
                   height: "40px",
                   borderRadius: "5px",
-                  width: "180px",
+                  width: "220px",
                   minHeight: "28px",
                   ...(isDisabled && { cursor: "not-allowed" }),
                 }),
@@ -260,7 +256,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
               isDisabled={disabled}
             />
 
-            <CustomButton text="ADD" style={{ fontSize: "14px" }} width="45px" bgColor="black"
+            <CustomButton text="ADD" style={{ fontSize: "14px" }} width="55px" bgColor="black"
               onClick={() => setShowCategory(true)} />
 
           </div>
@@ -268,10 +264,10 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
           <CustomButton
             disabled={disabled}
             type="submit"
-            width="250px"
+            width="300px"
             text={update ? `Update ${name}` : `Create ${name}`}
             bgColor={constants.pColor}
-            style={{ marginTop: "0px" }}
+            style={{ marginTop: "10px" }}
           />
           <ToastContainer />
         </form>

@@ -99,6 +99,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function NewLayout({ children, props }) {
   const navigate = useNavigate();
+  const {business} = useSelector((state) => state.login.activeUser);
   const location = useLocation();
   const [show, setShow] = useState(false)
   const [open, setOpen] = React.useState(true);
@@ -199,7 +200,7 @@ export default function NewLayout({ children, props }) {
                 fontSize: "14px",
                 color: "white", fontWeight: "600", marginLeft: "5px"
               }}>
-                BOOKTIRE SYSTEM
+               {business?.businessName}
               </Typography>
               <Typography style={{
                 fontSize: "13px",
@@ -207,7 +208,7 @@ export default function NewLayout({ children, props }) {
                 // color: "#A8A8A8",
                  fontWeight: "500", marginLeft: "5px"
               }}>
-                BY TACABTIRE ICT
+                {business?.businessNumber}
               </Typography>
             </div>
 

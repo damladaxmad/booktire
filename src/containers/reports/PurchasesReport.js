@@ -91,16 +91,16 @@ export default function PurchaesReport() {
                     title="Sales Report"
                     columns={[
                         {
-                            title: 'Number', field: 'purchaseNumber', render: rowData => (
+                            title: 'Invoice', field: 'purchaseNumber', render: rowData => (
                                 <Typography
                                     style={{ color: 'blue', cursor: 'pointer' }}
                                     onClick={() => handlePurchasesNumberClick(rowData)}
                                 >
-                                    {rowData.purchaseNumber}
+                                    Inv-{rowData.purchaseNumber}
                                 </Typography>
                             )
                         },
-                        { title: 'products', field: 'products', render: rowData => <p>{rowData?.products?.length}</p> },
+                        // { title: 'products', field: 'products', render: rowData => <p>{rowData?.products?.length}</p> },
                         { title: 'Date', field: 'date', render: rowData => moment(rowData.date).format("YYYY-MM-DD") },
                         { title: 'User', field: 'user', width: "4%" },
                         { title: 'Payment', field: 'paymentType' },

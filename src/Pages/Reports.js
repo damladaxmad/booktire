@@ -9,7 +9,7 @@ import ExpensesReport from "../containers/reports/ExpenseReport";
 import ServicesReport from "../containers/reports/ServicesReport";
 
 export default function Reports() {
-  const [currentTab, setCurrentTab] = useState(0);
+  const [currentTab, setCurrentTab] = useState(2);
 
   const handleTabChange = (tabIndex) => {
     setCurrentTab(tabIndex);
@@ -24,41 +24,8 @@ export default function Reports() {
         marginBottom: '20px',
         gap: "10px",
       }}>
-        <div
-          onClick={() => handleTabChange(0)}
-          style={{
-            padding: '5px 0px',
-            width: "100px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginRight: '10px',
-            cursor: 'pointer',
-            backgroundColor: currentTab === 0 ? constants.pColor : 'transparent',
-            color: currentTab === 0 ? 'white' : 'black',
-            borderRadius: '50px',
-            border: `1px solid ${constants.pColor}`
-          }}>
-          <Typography>Customers</Typography>
-        </div>
-        <div
-          onClick={() => handleTabChange(1)}
-          style={{
-            padding: '5px 0px',
-            width: "100px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginRight: '10px',
-            cursor: 'pointer',
-            backgroundColor: currentTab === 1 ? constants.pColor : 'transparent',
-            color: currentTab === 1 ? 'white' : 'black',
-            borderRadius: '50px',
-            border: `1px solid ${constants.pColor}`
-          }}>
-          Vendors
-        </div>
-        <div
+
+            <div
           onClick={() => handleTabChange(2)}
           style={{
             padding: '5px 0px',
@@ -75,6 +42,7 @@ export default function Reports() {
           }}>
           Products
         </div>
+
         <div
           onClick={() => handleTabChange(3)}
           style={{
@@ -92,6 +60,24 @@ export default function Reports() {
           Sales
         </div>
 
+        <div
+          onClick={() => handleTabChange(6)}
+          style={{
+            padding: '5px 0px',
+            width: "100px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: 'pointer',
+            backgroundColor: currentTab === 6 ? constants.pColor : 'transparent',
+            color: currentTab === 6 ? 'white' : 'black',
+            borderRadius: '50px',
+            border: `1px solid ${constants.pColor}`
+          }}>
+          Services
+        </div>
+
+        
         <div
           onClick={() => handleTabChange(4)}
           style={{
@@ -124,22 +110,7 @@ export default function Reports() {
           }}>
           Expenses
         </div>
-        <div
-          onClick={() => handleTabChange(6)}
-          style={{
-            padding: '5px 0px',
-            width: "100px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: 'pointer',
-            backgroundColor: currentTab === 6 ? constants.pColor : 'transparent',
-            color: currentTab === 6 ? 'white' : 'black',
-            borderRadius: '50px',
-            border: `1px solid ${constants.pColor}`
-          }}>
-          Services
-        </div>
+
         <div
           onClick={() => handleTabChange(7)}
           style={{
@@ -156,6 +127,44 @@ export default function Reports() {
           }}>
           Income
         </div>
+
+        <div
+          onClick={() => handleTabChange(0)}
+          style={{
+            padding: '5px 0px',
+            width: "100px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: '10px',
+            cursor: 'pointer',
+            backgroundColor: currentTab === 0 ? constants.pColor : 'transparent',
+            color: currentTab === 0 ? 'white' : 'black',
+            borderRadius: '50px',
+            border: `1px solid ${constants.pColor}`
+          }}>
+          <Typography>Customers</Typography>
+        </div>
+
+        <div
+          onClick={() => handleTabChange(1)}
+          style={{
+            padding: '5px 0px',
+            width: "100px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: '10px',
+            cursor: 'pointer',
+            backgroundColor: currentTab === 1 ? constants.pColor : 'transparent',
+            color: currentTab === 1 ? 'white' : 'black',
+            borderRadius: '50px',
+            border: `1px solid ${constants.pColor}`
+          }}>
+          Vendors
+        </div>
+  
+  
       </div>
 
       {currentTab == 0 && <PersonalReport name="customers" type="Customers" />}

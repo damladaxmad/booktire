@@ -39,12 +39,19 @@ const StockSummary = (props) => {
         { title: "Quantity", field: "quantity" },
         { title: "Unit Price", field: "unitPrice" },
         { title: "Sale Price", field: "salePrice" },
+        { title: "Sale Price", field: "totalCost" },
         { title: "Total Cost", field: "totalCost" },
     ];
 
     const handlePrint = useReactToPrint({
         content: () => document.querySelector('.printable-table'),
     });
+
+    let totalCost = 0
+    products?.map(product => {
+        totalCost += product?.totalCost
+    })
+
 
 
     return (
@@ -72,7 +79,11 @@ const StockSummary = (props) => {
                     }}> {loading ? 'Loading...' : (products.length > 0 ? `${products.length} products` : 'No data')}</Typography>
                 </div>
               <CustomButton text = "Print" onClick={handlePrint} height="35px" fontSize="14px"/>
-
+            
+              <Typography style = {{
+                    fontWeight: "bold",
+                    fontSize: "20px"
+                }}> ${totalCost.toFixed(2)}</Typography>
             </div>
            
             <StockTable columns = {columns} 

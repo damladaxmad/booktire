@@ -76,6 +76,7 @@ const NewSales = ({loading}) => {
   };
 
   const handleFinishPayment = (data) => {
+    console.log(data?.user)
     setData(data);
     handleAddProduct({
       products: selectedProducts,
@@ -83,7 +84,7 @@ const NewSales = ({loading}) => {
       discount: data?.discount || 0,
       customer: data?.customer,
       date: data.date,
-      user: data.user
+      user: data.user || username
     });
   };
 
@@ -102,7 +103,7 @@ const NewSales = ({loading}) => {
       let sale = res?.data?.data?.createdSale[0];
       dispatch(updateCustomerSocketBalance({ _id: sale?.customer, transaction: sale?.total }));
       selectedProducts.forEach(product => {
-        dispatch(updateProductQuantity({ productId: product._id, quantity: product.qty }));
+        dispatch(updateProductQuantity({ productId: product._id, quantity: product.qty, type: "sale" }));
       });
       notify("Sale created!");
       setIsPrintModalOpen(true);

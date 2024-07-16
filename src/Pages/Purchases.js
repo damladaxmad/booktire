@@ -57,7 +57,7 @@ const Purchases = () => {
       console.log(purchase.vendor, purchase.total)
       dispatch(updateVendorSocketBalance({_id: purchase?.vendor, transaction: purchase?.total}))
       purchase.products.forEach(product => {
-        dispatch(updateProductQuantity({ productId: product.refProduct, quantity: product.quantity }));
+        dispatch(updateProductQuantity({ productId: product.refProduct, quantity: product.quantity, type: "purchase" }));
       });
       alert("Sucessfully created purchase!")
       setProductDataFetched(false)

@@ -19,7 +19,7 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
   const { business } = useSelector(state => state.login.activeUser);
   const [saleType, setSaleType] = useState("cash")
   const [customer, setCustomer] = useState()
-  const [selectedUser, setSelectedUser] = useState(null); // Track selected user
+  const [selectedUser, setSelectedUser] = useState(null); 
   const userUrl = `${constants.baseUrl}/users/get-business-users/${business?._id}`;
   const users = useSelector(state => state.users.users);
 
@@ -215,7 +215,7 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
               variant="contained"
               color="primary"
               onClick={() => {
-                if (!selectedUser) return alert("Fadlan Dooro User")
+                // if (!selectedUser) return alert("Fadlan Dooro User")
                 onFinishPayment({
                   discount: discount, saleType: saleType,
                   date: selectedDate, customer: customer, user: selectedUser?.label, products: selectedProducts
