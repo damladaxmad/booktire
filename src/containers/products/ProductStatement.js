@@ -32,18 +32,20 @@ export default function ProductStatement({ product, goBack }) {
     console.log(data)
 
     const columns = [
-        { title: 'Type', field: 'inQty', render: (data) => {
-            if (data.inQty == 0) return <p>OUT</p>
-            if (data.outQty == 0) return <p>IN</p>
-        } },
-        { title: 'Quantity', field: 'itemName', render: (data) => {
-            if (data.inQty == 0) return <p>{data.outQty}</p>
-            if (data.outQty == 0) return <p>{data.inQty}</p>
-        }  },
+        { title: 'Description', field: 'description'},
         { title: 'Date', field: 'date' , render: (data) => {
             if (data.sale) return <p>{moment(data?.sale?.date).format("YYYY-MM-DD")}</p>
             if (data.purchase) return <p>{moment(data?.purchase?.date).format("YYYY-MM-DD")}</p>
         }   },
+        { title: 'Quantity', field: 'itemName', render: (data) => {
+            if (data.inQty == 0) return <p>{data.outQty}</p>
+            if (data.outQty == 0) return <p>{data.inQty}</p>
+        }  },
+        { title: 'Type', field: 'type', render: (data) => {
+            if (data.sale) return <p>sale</p>
+            if (data.purchase) return <p>purchase</p>
+        }  },
+      
         { title: 'User', field: 'user' , render: (data) => {
             if (data.sale) return <p>{data?.sale?.user}</p>
             if (data.purchase) return <p>{data?.purchase?.user}</p>
@@ -52,11 +54,10 @@ export default function ProductStatement({ product, goBack }) {
             if (data.sale) return <p>{data?.sale?.paymentType}</p>
             if (data.purchase) return <p>{data?.purchase?.paymentType}</p>
         }   },
-        { title: 'Inv-No', field: 'invoiceNumber', render: (data) => {
-            if (data.sale) return <p>{data?.sale?.saleNumber}</p>
-            if (data.purchase) return <p>{data?.purchase?.purchaseNumber}</p>
-        }   },
+        { title: 'Remaining', field: 'balance'},
     ];
+
+    console.log(data)
 
     return (
         <div style={{ padding: '20px', width: '100%', margin: '0 auto' }}>
@@ -79,7 +80,13 @@ export default function ProductStatement({ product, goBack }) {
                     paging: false,
                     showTitle: false,
                     toolbar: false,
-                    headerStyle: {fontWeight: "bold"}
+                    headerStyle: {fontWeight: "bold"},
+                    rowStyle: (rowData) => {
+                        return {
+                            backgroundColor: rowData?.purchase && "#EDD3FF",
+                            borderBottom: "1px solid #A6A6A6",
+                        };
+                    },
                 }}
                 style = {{marginTop: "20px", boxShadow: "none"}}
             />

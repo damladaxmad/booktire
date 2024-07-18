@@ -70,13 +70,9 @@ export default function SalesReport() {
         ? sales.filter(sale => sale?.user === selectedUser?.label)
         : sales;
 
-    console.log(selectedUser)
-
     return (
         <div style={{ width: "97.5%", marginTop: "30px" }}>
-            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'flex-end',
-           
-             }}>
+            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'flex-end' }}>
                 <TextField
                     size="small"
                     variant="outlined"
@@ -104,7 +100,7 @@ export default function SalesReport() {
                 <Select
                     placeholder="Select User"
                     options={users?.map(user => ({ value: user._id, label: user?.username }))}
-                    onChange={selectedOption => setSelectedUser(selectedOption)} // Handle selected user
+                    onChange={selectedOption => setSelectedUser(selectedOption)}
                     isClearable={true}
                     isSearchable={true}
                     style={{ width: '300px' }}
@@ -123,16 +119,29 @@ export default function SalesReport() {
                     title="Sales Report"
                     columns={[
                         {
-                            title: 'Receipt', field: 'salesNumber', render: rowData => (
-                                <Typography
-                                    style={{ color: 'blue', cursor: 'pointer' }}
-                                    onClick={() => handleSalesNumberClick(rowData)}
-                                >
-                                   Receipt-{rowData.salesNumber}
-                                </Typography>
-                            )
+                            title: 'Receipt', field: 'salesNumber', render: rowData => {
+                                if (rowData?.paymentType === "invoice") {
+                                    return (
+                                        <Typography
+                                            style={{ color: 'blue', cursor: 'pointer' }}
+                                            onClick={() => handleSalesNumberClick(rowData)}
+                                        >
+                                             {rowData?.customer.name.substring(0, 15)}
+                                             {rowData?.customer.name.length <= 15 ? null : "..."} Receipt-{rowData.salesNumber}
+                                        </Typography>
+                                    );
+                                }
+                                return (
+                                    <Typography
+                                        style={{ color: 'blue', cursor: 'pointer' }}
+                                        onClick={() => handleSalesNumberClick(rowData)}
+                                    >
+                                        Receipt-{rowData.salesNumber}
+                                    </Typography>
+                                );
+                            }
                         },
-                        // { title: 'products', field: 'products', render: rowData => <p>{rowData?.products?.length}</p> },
+                        // { title: 'Customer', field: 'customer', render: rowData => <p>{rowData?.customer?.name}</p> },
                         { title: 'Date', field: 'date', render: rowData => moment(rowData.date).format("YYYY-MM-DD") },
                         { title: 'User', field: 'user', width: "4%" },
                         { title: 'Payment', field: 'paymentType' },
@@ -140,8 +149,9 @@ export default function SalesReport() {
                         { title: 'Discount', field: 'discount', render: rowData => `$${rowData?.discount}` },
                         { title: 'Total', field: 'total', render: rowData => `$${rowData?.total}` }
                     ]}
-                    data={filteredSales.map((sale, index) => ({
+                    data={filteredSales?.map((sale, index) => ({
                         salesNumber: sale?.saleNumber,
+                        customer: sale?.customer,
                         products: sale?.products,
                         date: sale.date,
                         user: sale.user,
@@ -154,7 +164,13 @@ export default function SalesReport() {
                         search: false,
                         paging: false,
                         toolbar: false,
-                        headerStyle: { fontWeight: "bold" }
+                        headerStyle: { fontWeight: "bold" },
+                        rowStyle: (rowData) => {
+                            return {
+                                backgroundColor: rowData?.customer && "#EDD3FF",
+                                borderBottom: rowData?.customer ? "1px solid grey" : "1px solid #A6A6A6",
+                            };
+                        },
                     }}
                     style={{ marginTop: "20px", boxShadow: "none", width: "100%", zIndex: 0 }}
                 />

@@ -8,6 +8,8 @@ const StockTable = (props) => {
   const [instance, setInstance] = useState("");
   const [way, setWay] = useState(props.way);
 
+  const numberFormatter = new Intl.NumberFormat('en-US');
+
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement>,
     instance
@@ -125,7 +127,7 @@ const StockTable = (props) => {
                     }}
                   >
                     {constants.moneySign}
-                    {props.data?.totalCost?.toFixed(2)}
+                    {numberFormatter.format(props.data?.totalCost?.toFixed(2))}
                   </p>
                   <p
                     style={{

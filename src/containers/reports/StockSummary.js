@@ -15,6 +15,8 @@ const StockSummary = (props) => {
     const [loading, setLoading] = useState(true);
     const [products, setProducts] = useState([]);
 
+    const numberFormatter = new Intl.NumberFormat('en-US');
+
     const imageUrl = `https://firebasestorage.googleapis.com/v0/b/deentire-application.appspot.com/o/LOGO%2Fliibaan.jpeg?alt=media&token=f5b0b3e7-a5e0-4e0d-b3d2-20a920f97fde`;
 
     useEffect(()=> {
@@ -35,12 +37,12 @@ const StockSummary = (props) => {
     console.log(products)
 
     const columns = [
-        { title: "Product Name", field: "name", width: "2%" },
-        { title: "Quantity", field: "quantity" },
-        { title: "Unit Price", field: "unitPrice" },
-        { title: "Sale Price", field: "salePrice" },
-        { title: "Sale Price", field: "totalCost" },
-        { title: "Total Cost", field: "totalCost" },
+        { title: "Product Name", field: "name", width: "2%",  },
+        { title: "Quantity", field: "quantity",   },
+        { title: "Unit Price", field: "unitPrice",   },
+        { title: "Sale Price", field: "salePrice",     },
+   
+        { title: "Total Cost", field: "totalCost", render: rowData => numberFormatter.format(rowData?.totalCost)},
     ];
 
     const handlePrint = useReactToPrint({

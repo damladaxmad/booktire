@@ -108,7 +108,7 @@ export default function Dashboard() {
     .reduce((acc, sale) => acc + sale.total, 0);
 
     const calculateCost = (products) => {
-      return products.reduce((acc, product) => acc + (product.unitPrice || 0), 0);
+      return products.reduce((acc, product) => acc + (product.unitPrice * product?.quantity || 0), 0);
     };
     
     const calculateProfit = (sale) => {
@@ -129,7 +129,7 @@ export default function Dashboard() {
     { title: "products", value: products?.length.toLocaleString() },
     { title: "today sales", value: todaySalesTotal.toLocaleString(), isMoney: true },
     { title: "this month", value: thisMonthSalesTotal.toLocaleString(), isMoney: true },
-    { title: "month profit", value: thisMonthProfit.toLocaleString(), isMoney: true },
+    { title: "month profit", value: thisMonthProfit?.toLocaleString(), isMoney: true },
   ];
 
   return (

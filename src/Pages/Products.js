@@ -172,7 +172,12 @@ export default function Products() {
         onProductStatement = {(data)=> {
           setInstance(data)
           setShowStatement(true)
-        }}/>}
+        }}
+        onClickRow = {(data)=> {
+          setInstance(data)
+          setShowStatement(true)
+        }}
+        />}
       
       {showRegister && <CreateProduct
         instance={toBeUpdatedCustomer}

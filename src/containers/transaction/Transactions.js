@@ -318,8 +318,9 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
                     <Typography style={{
                         fontSize: "20px", fontWeight: "bold"
                     }}>
-                        {constants?.moneySign}{balance ? balance?.toFixed(2) : instance?.balance?.toFixed(2)}
-                    </Typography>
+                        {constants?.moneySign}{balance || balance == 0 ? balance?.toFixed(2) : instance?.balance?.toFixed(2)}
+                        
+                          </Typography>
                 </div>
 
             </div>

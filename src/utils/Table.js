@@ -118,8 +118,8 @@ onGiveAccess, onProductStatement, onClickRow }) => {
           sorting: false,
           showTextRowsSelected: false,
           toolbar: false,
-          pageSizeOptions: [2, 5, 8, 10, 20, 15, 50, 100],
-          pageSize: 15,
+          pageSizeOptions: [5, 10, 20, 50, 100, 200],
+          pageSize: 100,
           draggable: false,
           actionsColumnIndex: -1,
           headerStyle: { background: "#EFF0F6", fontSize: "13px", 
@@ -144,7 +144,7 @@ onGiveAccess, onProductStatement, onClickRow }) => {
         ]}
         style={{ borderRadius: "10px", boxShadow: "none", }}
         onRowClick={(e, rowData) => {
-        (name == "Customer" || name == "Vendor") && onClickRow(rowData)
+        (name == "Customer" || name == "Vendor" || name == "Product") && onClickRow(rowData)
       }}
       />
     </div>
