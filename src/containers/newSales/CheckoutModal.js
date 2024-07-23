@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MdClose } from 'react-icons/md';
-import { Typography, IconButton, } from '@material-ui/core';
+import { Typography, IconButton, TextField } from '@material-ui/core';
 import MaterialTable from 'material-table';
 import CustomButton from '../../reusables/CustomButton';
 import { constants } from '../../Helpers/constantsFile';
@@ -14,11 +14,12 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
   const [discount, setDiscount] = useState("");
   const [total, setTotal] = useState(subtotal);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [value, setValue] = useState(''); // Define value state
+  const [value, setValue] = useState(''); 
+  const [note, setNote] = useState(''); 
   const customers = useSelector(state => state?.customers.customers);
   const { business } = useSelector(state => state.login.activeUser);
-  const [saleType, setSaleType] = useState("cash")
-  const [customer, setCustomer] = useState()
+  const [saleType, setSaleType] = useState("cash");
+  const [customer, setCustomer] = useState();
   const [selectedUser, setSelectedUser] = useState(null); 
   const userUrl = `${constants.baseUrl}/users/get-business-users/${business?._id}`;
   const users = useSelector(state => state.users.users);
@@ -41,10 +42,10 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
 
   const handleCustomerSelect = (selectedOption) => {
     if (selectedOption) {
-      setValue(selectedOption?.value?.name || ''); // Set the value state
+      setValue(selectedOption?.value?.name || ''); 
       setCustomer(selectedOption.value);
     } else {
-      setCustomer(''); // Clear the value state
+      setCustomer(''); 
     }
   };
 
@@ -66,7 +67,7 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
   return (
     <div style={{
       position: 'fixed',
-      top: "50px",
+      top: "30px",
       left: "100px",
       width: '100%',
       height: '100%',
@@ -79,7 +80,7 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
       <div style={{
         width: '60%',
         maxWidth: '800px',
-        height: '70%',
+        height: '80%', // Increased height
         backgroundColor: 'white',
         borderRadius: '10px',
         padding: '20px',
@@ -160,13 +161,11 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
                   })
                 }}
                 value={customer ? { value: customer, label: customer.name } : null}
-                // options={searchCustomers()}
                 options={customers.map(customer => ({ value: customer, label: customer?.name }))}
                 onChange={handleCustomerSelect}
-                isClearable={true} // Make the Select clearable
+                isClearable={true} 
                 isDisabled={saleType === "cash"}
               />
-
             </div>
 
             <div style={{
@@ -199,9 +198,18 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
                 value={discount}
                 onChange={(e) => setDiscount(parseFloat(e.target.value))}
               />
-
             </div>
 
+            <TextField
+              small
+              label="Note"
+              rows={1}
+              variant="outlined"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              fullWidth
+              style={{ marginBottom: "20px" }}
+            />
           </div>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
@@ -215,15 +223,12 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
               variant="contained"
               color="primary"
               onClick={() => {
-                // if (!selectedUser) return alert("Fadlan Dooro User")
                 onFinishPayment({
                   discount: discount, saleType: saleType,
-                  date: selectedDate, customer: customer, user: selectedUser?.label, products: selectedProducts
-                })
-              }
-              }
+                  date: selectedDate, customer: customer, user: selectedUser?.label, products: selectedProducts, note: note // Pass the note to the parent
+                });
+              }}
               style={{ width: "100%", fontSize: "14px" }}
-
             />
           </div>
         </div>

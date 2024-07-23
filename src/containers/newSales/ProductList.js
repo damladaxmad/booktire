@@ -1,11 +1,12 @@
+import React, { useState } from 'react';
 import { Typography, CircularProgress } from '@mui/material';
-import React, { useState, useEffect } from 'react';
 import { MdProductionQuantityLimits } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 import Select from "react-select";
 import { constants } from '../../Helpers/constantsFile';
 import { setCategories, setCategoryDataFetched } from '../category/categorySlice';
 import useReadData from '../../hooks/useReadData';
+import PreItemsPopup from './PreItemsPopup';
 
 const ProductList = ({ addProduct, loading }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,11 +24,24 @@ const ProductList = ({ addProduct, loading }) => {
     "categories"
   );
 
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleProductClick = (product) => {
+    setSelectedProduct(product);
+    setIsPopupOpen(true);
+  };
+
+  const handlePopupClose = () => {
+    setIsPopupOpen(false);
+    setSelectedProduct(null);
+  };
+
+  const handlePopupConfirm = (product) => {
     addProduct(product);
   };
 
@@ -120,6 +134,15 @@ const ProductList = ({ addProduct, loading }) => {
       )}
       {(filteredProducts?.length < 1 && !loading)&& <p style = {{color: "grey", textAlign: "center", 
         marginTop: "20px"}}> No products here...</p>}
+      
+      {selectedProduct && (
+        <PreItemsPopup
+          product={selectedProduct}
+          isOpen={isPopupOpen}
+          onClose={handlePopupClose}
+          onConfirm={handlePopupConfirm}
+        />
+      )}
     </div>
   );
 };

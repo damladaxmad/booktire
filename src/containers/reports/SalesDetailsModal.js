@@ -17,6 +17,7 @@ const SalesDetailsModal = ({ open, handleClose, sale, business, user }) => {
     const subtotal = sale?.products?.reduce((acc, product) => acc + product.salePrice * product.quantity, 0);
     const discount = sale?.discount || 0;
     const total = subtotal - discount;
+    console.log(sale)
 
     return (
         <>
@@ -31,9 +32,14 @@ const SalesDetailsModal = ({ open, handleClose, sale, business, user }) => {
             >
                 <Fade in={open}>
                     <Box style={{ padding: "20px", backgroundColor: "white", borderRadius: "8px", outline: "none", width: "400px", margin: "auto", marginTop: "10%" }}>
-                        <Typography variant="h6" gutterBottom style={{
-                            fontWeight: "bold"
+                        <div style = {{display: "flex", flexDirection: "column"}}>
+                        <Typography style={{
+                            fontWeight: "bold", fontSize: "18px"
                         }}>Transaction Details</Typography>
+                        <Typography style={{
+                          
+                        }}>{sale?.note}</Typography>
+                        </div>
                         {sale ? (
                             sale?.products?.map((product, index) => (
                                 <Box key={index} display="flex" justifyContent="space-between" my={2} style={{ borderBottom: "1px solid lightgray", paddingBottom: "5px" }}>
@@ -41,7 +47,7 @@ const SalesDetailsModal = ({ open, handleClose, sale, business, user }) => {
                                     <Typography style={{ flex: 1, textAlign: "right" }}>{product.quantity}</Typography>
                                     <Typography style={{ flex: 1, textAlign: "right" }}>{sale?.purchaseNumber ? `$${product?.unitPrice}` : 
                                     `$${product?.salePrice}`}</Typography>
-                                    <Typography style={{ flex: 1, textAlign: "right" }}>${product.subtotal}</Typography>
+                                    <Typography style={{ flex: 1, textAlign: "right" }}>${product.subtotal?.toFixed(2)}</Typography>
                                 </Box>
                             ))
                         ) : (

@@ -1,7 +1,7 @@
 import React from "react";
 import Login from "./Login";
 import { makeStyles } from '@material-ui/core/styles';
-import hero from "../assets/images/shop.png"
+import hero from "../assets/images/booktireBackCrop.png"
 import { constants } from "../Helpers/constantsFile";
 import { Typography } from "@material-ui/core";
 
@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   container: {
     display: 'flex',
     width: "100%",
-    minHeight: '100vh',
+    maxHeight: '100vh',
   },
   leftSide: {
     flex: 1,
@@ -33,10 +33,15 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     width: "50%",
   },
+  '@keyframes scaleInOut': {
+    '0%, 100%': { transform: 'scale(1)' },
+    '50%': { transform: 'scale(1.1)' },
+  },
   heroImage: {
     width: '100%',
-    height: 'auto',
+    height: '75%',
     marginBottom: '20px',
+    animation: '$scaleInOut 2s ease-in-out',
   },
   heroText: {
     fontSize: '22px',

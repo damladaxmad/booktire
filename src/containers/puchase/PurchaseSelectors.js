@@ -79,7 +79,7 @@ const PurchaseSelectors = ({ purchaseType, setPurchaseType, vendor, setVendor, d
       <input
         type="text"
         style={{
-          width: "120px",
+          width: "150px",
           height: "36px",
           padding: "10px",
           fontSize: "14px",

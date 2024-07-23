@@ -41,7 +41,7 @@ const NewSales = ({loading}) => {
           p.id === product.id ? { ...p, qty: p.qty + 1 } : p
         );
       }
-      return [...prevProducts, { ...product, qty: 1 }];
+      return [...prevProducts, { ...product, qty: product?.qty }];
     });
   };
 
@@ -84,7 +84,8 @@ const NewSales = ({loading}) => {
       discount: data?.discount || 0,
       customer: data?.customer,
       date: data.date,
-      user: data.user || username
+      user: data.user || username,
+      note: data?.note
     });
   };
 
@@ -115,7 +116,7 @@ const NewSales = ({loading}) => {
     });
   };
 
-  const handleAddProduct = ({ products, discount, total, date, saleType, customer, user }) => {
+  const handleAddProduct = ({ products, discount, total, date, note, saleType, customer, user }) => {
     setDisabled(true);
     const transformedData = {
       products: products.map(product => ({
@@ -131,7 +132,8 @@ const NewSales = ({loading}) => {
       business: business?._id,
       customer: customer?._id,
       date: moment(date).format("YYYY-MM-DD"),
-      user: user
+      user: user,
+      note: note
     };
 
     createSale(transformedData);

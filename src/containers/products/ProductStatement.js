@@ -12,6 +12,8 @@ export default function ProductStatement({ product, goBack }) {
     const token = useSelector(state => state.login.token)
     const { business } = useSelector(state => state.login.activeUser)
 
+    const numberFormatter = new Intl.NumberFormat('en-US');
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -32,14 +34,14 @@ export default function ProductStatement({ product, goBack }) {
     console.log(data)
 
     const columns = [
-        { title: 'Description', field: 'description'},
+        { title: 'Description', field: 'description', width: "4%"},
         { title: 'Date', field: 'date' , render: (data) => {
             if (data.sale) return <p>{moment(data?.sale?.date).format("YYYY-MM-DD")}</p>
             if (data.purchase) return <p>{moment(data?.purchase?.date).format("YYYY-MM-DD")}</p>
         }   },
         { title: 'Quantity', field: 'itemName', render: (data) => {
-            if (data.inQty == 0) return <p>{data.outQty}</p>
-            if (data.outQty == 0) return <p>{data.inQty}</p>
+            if (data.inQty == 0) return <p>{numberFormatter.format(data.outQty)}</p>
+            if (data.outQty == 0) return <p>{numberFormatter.format(data.inQty)}</p>
         }  },
         { title: 'Type', field: 'type', render: (data) => {
             if (data.sale) return <p>sale</p>
@@ -54,7 +56,7 @@ export default function ProductStatement({ product, goBack }) {
             if (data.sale) return <p>{data?.sale?.paymentType}</p>
             if (data.purchase) return <p>{data?.purchase?.paymentType}</p>
         }   },
-        { title: 'Remaining', field: 'balance'},
+        { title: 'Balance', field: 'balance', render: rowData => numberFormatter.format(rowData?.balance)},
     ];
 
     console.log(data)
@@ -64,7 +66,7 @@ export default function ProductStatement({ product, goBack }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <Typography variant="h4">{product.name}</Typography>
-                    <Typography variant="subtitle1">{product.quantity} - {product.unitMeasurment}</Typography>
+                    <Typography variant="subtitle1">{numberFormatter.format(product.quantity)} - {product.unitMeasurment}</Typography>
                 </div>
                 <CustomButton
                     text = "Go Back"

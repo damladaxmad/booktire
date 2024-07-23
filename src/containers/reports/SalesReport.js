@@ -25,6 +25,8 @@ export default function SalesReport() {
     const userUrl = `${constants.baseUrl}/users/get-business-users/${business?._id}`;
     const users = useSelector(state => state.users.users);
 
+    const numberFormatter = new Intl.NumberFormat('en-US');
+
     useReadData(
         userUrl,
         setUsers,
@@ -118,6 +120,10 @@ export default function SalesReport() {
                 <MaterialTable
                     title="Sales Report"
                     columns={[
+                        { title: 'NO.', field: 'no', width: "2%", render: (data) => {
+                            console.log(data)
+                        return <p style = {{margin: "0px", padding: "0px"}}> {data?.tableData?.id + 1}</p>
+                    } },
                         {
                             title: 'Receipt', field: 'salesNumber', render: rowData => {
                                 if (rowData?.paymentType === "invoice") {
@@ -145,9 +151,9 @@ export default function SalesReport() {
                         { title: 'Date', field: 'date', render: rowData => moment(rowData.date).format("YYYY-MM-DD") },
                         { title: 'User', field: 'user', width: "4%" },
                         { title: 'Payment', field: 'paymentType' },
-                        { title: 'Subtotal', field: 'subtotal', render: rowData => `$${rowData?.total + rowData?.discount}` },
+                        { title: 'Subtotal', field: 'subtotal', render: rowData => `$${numberFormatter.format(rowData?.total + rowData?.discount)}` },
                         { title: 'Discount', field: 'discount', render: rowData => `$${rowData?.discount}` },
-                        { title: 'Total', field: 'total', render: rowData => `$${rowData?.total}` }
+                        { title: 'Total', field: 'total', render: rowData => `$${numberFormatter.format(rowData?.total)}` }
                     ]}
                     data={filteredSales?.map((sale, index) => ({
                         salesNumber: sale?.saleNumber,
@@ -183,7 +189,14 @@ export default function SalesReport() {
     );
 }
 
+
 function SalesDashboard({ sales }) {
+    const numberFormatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+    });
+
     let numberOfSales = 0;
     let revenueFromSales = 0;
     let cashOnHand = 0;
@@ -201,16 +214,12 @@ function SalesDashboard({ sales }) {
         });
     });
 
-    const data1 = [
-        { title: "Number Of Sales", value: numberOfSales, isMoney: false },
-        { title: "Cash On Hand", value: cashOnHand, isMoney: true },
-        { title: "Sales Invoice", value: salesInvoice, isMoney: true },
-    ];
-
-    const data2 = [
-        { title: "Revenue From Sales", value: revenueFromSales, isMoney: true },
-        { title: "Cost Of Goods Sold", value: costOfGoodsSold, isMoney: true },
-        { title: "Profit From Sales", value: revenueFromSales - costOfGoodsSold, isMoney: true }
+    const data = [
+        { title: "Cash On Hand", value: numberFormatter.format(cashOnHand), isMoney: true },
+        { title: "Sales Invoice", value: numberFormatter.format(salesInvoice), isMoney: true },
+        { title: "Revenue From Sales", value: numberFormatter.format(revenueFromSales), isMoney: true },
+        { title: "Cost Of Goods Sold", value: numberFormatter.format(costOfGoodsSold), isMoney: true },
+        { title: "Profit From Sales", value: numberFormatter.format(revenueFromSales - costOfGoodsSold), isMoney: true }
     ];
 
     return (
@@ -222,22 +231,22 @@ function SalesDashboard({ sales }) {
             marginLeft: "auto",
             marginRight: "auto"
         }}>
-            {[data1, data2].map((data, index) => (
-                <div key={index} style={{
-                    width: "50%",
-                    borderRadius: "12px",
-                    border: "1px solid lightgray",
-                    padding: "10px 25px",
-                    background: "white"
-                }}>
-                    {data.map((d, index) => (
-                        <div key={index} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: index < data.length - 1 ? "1px solid lightgray" : "none" }}>
-                            <Typography style={{ fontSize: "14px", color: "black" }}>{d.title}</Typography>
-                            <Typography style={{ fontSize: "14px", color: "black" }}>{d.isMoney && "$"}{d.value}</Typography>
-                        </div>
-                    ))}
-                </div>
-            ))}
+            <div style={{
+                width: "50%",
+                borderRadius: "12px",
+                border: "1px solid lightgray",
+                padding: "10px 25px",
+                background: "white"
+            }}>
+                {data.map((d, index) => (
+                    <div key={index} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: index < data.length - 1 ? "1px solid lightgray" : "none" }}>
+                        <Typography style={{ fontSize: "14px", color: "black" }}>{d.title}</Typography>
+                        <Typography style={{ fontSize: "14px", color: d.title === "Cost Of Goods Sold" ? "red" : "black", fontWeight: (d.title === "Profit From Sales" || d.title === "Cost Of Goods Sold") && "bold" }}>
+                            {d.value}
+                        </Typography>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }

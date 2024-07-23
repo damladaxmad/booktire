@@ -1,6 +1,6 @@
 {
-  "short_name": "Jaabir School",
-  "name": "School System",
+  "short_name": "BOOKTIRE",
+  "name": "BOOKTIRE",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,7 +8,7 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "booktireLogo.png",
       "type": "image/png",
       "sizes": "192x192"
     },
