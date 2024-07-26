@@ -66,7 +66,9 @@ hideModal, onUpdate}) => {
       setDisabled(true)
       values.business = business
       values.socketId = mySocketId
+      if (name === "User") values.password = "123"
       if (name === "User") values.passwordConfirm = values.password
+      if (name === "User") values.role = "manager"
 
       if (update){
         axios.patch(`${constants.baseUrl}/${url}/${instance._id}`, values,

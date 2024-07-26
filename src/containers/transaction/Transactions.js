@@ -189,17 +189,17 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
 
     ];
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        const socket = io.connect('https://booktire-api.onrender.com');
-        socket.on('transactionEvent', (data) => {
-            handleTransactionEvent(data)
-        });
+    //     const socket = io.connect('https://booktire-api.onrender.com');
+    //     socket.on('transactionEvent', (data) => {
+    //         handleTransactionEvent(data)
+    //     });
 
-        return () => {
-            socket.disconnect();
-        };
-    }, []);
+    //     return () => {
+    //         socket.disconnect();
+    //     };
+    // }, []);
 
 
     const handleTransactionEvent = (data) => {

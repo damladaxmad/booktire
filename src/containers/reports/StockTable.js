@@ -8,7 +8,12 @@ const StockTable = (props) => {
   const [instance, setInstance] = useState("");
   const [way, setWay] = useState(props.way);
 
-  const numberFormatter = new Intl.NumberFormat('en-US');
+  const numberFormatter = new Intl.NumberFormat('en-US', {
+    // style: 'currency',
+    // currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+});
 
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement>,

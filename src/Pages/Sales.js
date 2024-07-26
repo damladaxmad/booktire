@@ -15,6 +15,7 @@ import NewSales from '../containers/newSales/NewSales';
 import NewServices from '../containers/newServices/NewServices';
 import { setServiceTypeDataFetched, setServiceTypes } from '../containers/serviceType/serviceTypeSlice';
 import ServiceTable from '../containers/sales/ServiceTable';
+import SalesMen from '../containers/sales/SalesMen';
 
 const Sales = () => {
   const [disabled, setDisabled] = useState(false);
@@ -126,6 +127,23 @@ const Sales = () => {
           }}>
           Services
         </div>
+        <div
+          onClick={() => handleTabChange(5)}
+          style={{
+            padding: '5px 0px',
+            width: "120px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: '10px',
+            cursor: 'pointer',
+            backgroundColor: currentTab === 5 ? constants.pColor : 'transparent',
+            color: currentTab === 5 ? 'white' : 'black',
+            borderRadius: '50px',
+            border: `1px solid ${constants.pColor}`
+          }}>
+          Commissions
+        </div>
       </div>
       <div style={{ width: "100%", margin: "auto", borderRadius: "10px", padding: "0px", display: "flex", flexDirection: "column" }}>
         {currentTab === 0 && (
@@ -136,6 +154,7 @@ const Sales = () => {
         {currentTab === 2 && <SalesTable />}
         {currentTab === 3 && <NewServices loading = {serviceLoading} />}
         {currentTab === 4 && <ServiceTable />}
+        {currentTab === 5 && <SalesMen />}
       </div>
     </div>
   );

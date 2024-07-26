@@ -107,19 +107,19 @@ export default function Vendors() {
 
   const { handleEvent } = useEventHandler();
 
-  useEffect(() => {
-    const socket = io.connect('https://booktire-api.onrender.com');
-    socket.on('vendorEvent', (data) => { 
-      handleEvent(data, mySocketId, business?._id, "vendorEvent"); 
-    });
+  // useEffect(() => {
+  //   const socket = io.connect('https://booktire-api.onrender.com');
+  //   socket.on('vendorEvent', (data) => { 
+  //     handleEvent(data, mySocketId, business?._id, "vendorEvent"); 
+  //   });
 
-    socket.on('transactionEvent', (data) => {
-      handleTransactionEvent(data)
-  });
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+  //   socket.on('transactionEvent', (data) => {
+  //     handleTransactionEvent(data)
+  // });
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
 
   const handleTransactionEvent = (data) => {
 

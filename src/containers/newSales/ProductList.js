@@ -77,7 +77,7 @@ const ProductList = ({ addProduct, loading }) => {
         />
 
         <Select
-          placeholder='Select category'
+          placeholder='Select Store'
           styles={{
             control: (styles, { isDisabled }) => ({
               ...styles,

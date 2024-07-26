@@ -71,6 +71,8 @@ const PurchaseItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
     setTotal(0);
   };
 
+  const numberFormatter = new Intl.NumberFormat('en-US');
+
   return (
     <div style={{ width: "100%" }}>
       <form onSubmit={handleSubmit}>
@@ -133,7 +135,7 @@ const PurchaseItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
                 onChange={(event) => handleInputChange(index, event)}
                 placeholder="sale price"
               />
-              <p style={{ flex: "1", minWidth: "0", width: "100px", margin: "0px", display: "flex", alignItems: "center", border: "1px solid lightGrey", padding: "5px 10px", fontWeight: "bold", borderRadius: "5px" }}> ${product?.subtotal}</p>
+              <p style={{ flex: "1", minWidth: "0", width: "100px", margin: "0px", display: "flex", alignItems: "center", border: "1px solid lightGrey", padding: "5px 10px", fontWeight: "bold", borderRadius: "5px" }}> ${product?.subtotal?.toFixed(2)}</p>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "10px", border: "1px solid lightGrey", borderRadius: "50%", cursor: "pointer", background: "white" }} onClick={() => handleRemoveItem(index)}>
                 <MdDelete style={{ color: "black", fontSize: "16px" }} />
               </div>
@@ -159,7 +161,7 @@ const PurchaseItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "0px", alignItems: "flex-end", marginTop: "15px" }}>
             <Typography style={{ fontSize: "14px", color: "#6D6D6D" }}>TOTAL:</Typography>
-            <Typography style={{ fontSize: "18px", fontWeight: "bold" }}>${total}</Typography>
+            <Typography style={{ fontSize: "18px", fontWeight: "bold" }}>${total?.toFixed(2)}</Typography>
           </div>
           <div style={{ display: "flex", flexDirection: "row", gap: "20px", marginTop: "15px" }}>
             <CustomButton

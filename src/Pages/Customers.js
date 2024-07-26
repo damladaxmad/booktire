@@ -107,19 +107,19 @@ export default function Customers() {
 
   const { handleEvent } = useEventHandler();
 
-  useEffect(() => {
-    const socket = io.connect('https://booktire-api.onrender.com');
-    socket.on('customerEvent', (data) => {
-      handleEvent(data, mySocketId, business?._id, "customerEvent");
-    });
+  // useEffect(() => {
+  //   const socket = io.connect('https://booktire-api.onrender.com');
+  //   socket.on('customerEvent', (data) => {
+  //     handleEvent(data, mySocketId, business?._id, "customerEvent");
+  //   });
 
-    socket.on('transactionEvent', (data) => {
-      handleTransactionEvent(data)
-  });
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+  //   socket.on('transactionEvent', (data) => {
+  //     handleTransactionEvent(data)
+  // });
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
 
   const handleTransactionEvent = (data) => {
 

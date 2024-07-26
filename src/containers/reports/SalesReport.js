@@ -25,7 +25,12 @@ export default function SalesReport() {
     const userUrl = `${constants.baseUrl}/users/get-business-users/${business?._id}`;
     const users = useSelector(state => state.users.users);
 
-    const numberFormatter = new Intl.NumberFormat('en-US');
+    const numberFormatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
 
     useReadData(
         userUrl,
@@ -71,6 +76,8 @@ export default function SalesReport() {
     const filteredSales = selectedUser
         ? sales.filter(sale => sale?.user === selectedUser?.label)
         : sales;
+
+    console.log(sales)
 
     return (
         <div style={{ width: "97.5%", marginTop: "30px" }}>
@@ -151,9 +158,10 @@ export default function SalesReport() {
                         { title: 'Date', field: 'date', render: rowData => moment(rowData.date).format("YYYY-MM-DD") },
                         { title: 'User', field: 'user', width: "4%" },
                         { title: 'Payment', field: 'paymentType' },
-                        { title: 'Subtotal', field: 'subtotal', render: rowData => `$${numberFormatter.format(rowData?.total + rowData?.discount)}` },
+                        { title: 'Subtotal', field: 'subtotal', render: rowData => `${numberFormatter.format(rowData?.total + rowData?.discount)}` },
                         { title: 'Discount', field: 'discount', render: rowData => `$${rowData?.discount}` },
-                        { title: 'Total', field: 'total', render: rowData => `$${numberFormatter.format(rowData?.total)}` }
+                        { title: 'Profit', field: 'discount', render: rowData => `${numberFormatter.format(rowData?.total - rowData?.cogs)}` },
+                        { title: 'Total', field: 'total', render: rowData => `${numberFormatter.format(rowData?.total)}` }
                     ]}
                     data={filteredSales?.map((sale, index) => ({
                         salesNumber: sale?.saleNumber,
@@ -164,7 +172,9 @@ export default function SalesReport() {
                         paymentType: sale?.paymentType,
                         subtotal: sale.subtotal,
                         discount: sale.discount,
-                        total: sale.total
+                        total: sale.total,
+                        note: sale?.note,
+                        cogs: sale?.cogs,
                     }))}
                     options={{
                         search: false,
@@ -229,14 +239,16 @@ function SalesDashboard({ sales }) {
             gap: "20px",
             marginTop: "25px",
             marginLeft: "auto",
-            marginRight: "auto"
+            // marginRight: "auto"
         }}>
             <div style={{
                 width: "50%",
                 borderRadius: "12px",
                 border: "1px solid lightgray",
                 padding: "10px 25px",
-                background: "white"
+                background: "white",
+            marginLeft: "auto",
+                
             }}>
                 {data.map((d, index) => (
                     <div key={index} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: index < data.length - 1 ? "1px solid lightgray" : "none" }}>
