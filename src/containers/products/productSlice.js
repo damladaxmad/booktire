@@ -36,6 +36,15 @@ export const productSlice = createSlice({
         product.quantity += quantity; 
       }
     },
+    updateProductUnitPriceAndSalePrice: (state, action) => {
+      const { productId, unitPrice, salePrice, type } = action.payload;
+      const product = state.products.find(product => product._id === productId);
+      if (!product) return
+      if (type == "purchase") {
+        product.unitPrice = unitPrice
+        product.salePrice = salePrice; 
+      }
+    },
     setProductDataFetched: (state, action) => {
       state.isProductsDataFetched = action.payload;
     },
@@ -48,6 +57,6 @@ export const productSlice = createSlice({
   },
 });
 
-export const { setProducts, addProduct, deleteProduct, updateProduct, updateProductQuantity, setProductDataFetched, logoutProducts } = productSlice.actions;
+export const { setProducts, addProduct, deleteProduct, updateProduct, updateProductQuantity, updateProductUnitPriceAndSalePrice, setProductDataFetched, logoutProducts } = productSlice.actions;
 
 export default productSlice.reducer;

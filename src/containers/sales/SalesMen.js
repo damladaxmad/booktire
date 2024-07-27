@@ -46,21 +46,34 @@ export default function SalesMen() {
     const calculateProfits = (salesData) => {
         const userProfits = salesData.reduce((acc, sale) => {
             const profit = sale.total - sale.cogs;
-            if (acc[sale.user]) {
-                acc[sale.user] += profit;
-            } else {
-                acc[sale.user] = profit;
+            const user = sale.user;
+            
+            // Only process if user is defined
+            if (user !== undefined && user !== null) {
+                if (acc[user]) {
+                    acc[user] += profit;
+                } else {
+                    acc[user] = profit;
+                }
             }
+            
             return acc;
         }, {});
-
-        const profitsArray = Object.keys(userProfits).map(user => ({
-            user,
-            profit: userProfits[user],
-        }));
-
+    
+        // Create an array of user profits, filtering out any `undefined` users
+        const profitsArray = Object.keys(userProfits)
+            .filter(user => user !== undefined && user !== null) // Filter out undefined and null keys
+            .map(user => ({
+                user,
+                profit: userProfits[user],
+            }));
+    
+        // Sort the profits array by profit in descending order
+        profitsArray.sort((a, b) => b.profit - a.profit);
+    
         setProfits(profitsArray);
     };
+    
 
     const handleViewClick = () => {
         fetchSales();

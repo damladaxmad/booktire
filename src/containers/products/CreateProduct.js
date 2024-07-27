@@ -47,6 +47,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
     initialValues: {
       name: update ? instance?.name : "",
       quantity: update ? instance?.quantity : "",
+      itemGroup: update ? instance?.itemGroup : "",
       unitPrice: update ? instance?.unitPrice : "",
       salePrice: update ? instance?.salePrice : "",
       unitMeasurment: update ? instance?.unitMeasurment : "",
@@ -103,7 +104,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
 
 
   return (
-    <Modal onClose={hideModal} pwidth="500px" left="37.5%" top="24%">
+    <Modal onClose={hideModal} pwidth="500px" left="37.5%" top="22%">
       {showCategory && <Register
         update={false}
         name="Category"
@@ -138,8 +139,9 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
             flexWrap: "wrap",
           }}
         >
-          {fields?.map((a, index) => (
-            <div key={index} style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+          {fields?.map((a, index) => {
+            if (!update && a.title == "Item Group") return
+            return <div key={index} style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
              
               <input
                 placeholder={a.label}
@@ -160,7 +162,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
                 <div style={{ color: "red" }}>{formik.errors[a.name]}</div>
               ) : null}
             </div>
-          ))}
+})}
 
           <div style={{ width: "300px"}}>
             <Select

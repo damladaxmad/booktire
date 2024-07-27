@@ -208,7 +208,7 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
               value={note}
               onChange={(e) => setNote(e.target.value)}
               fullWidth
-              style={{ marginBottom: "20px" }}
+              style={{ marginBottom: "20px", zIndex: 0 }}
             />
           </div>
           <div>

@@ -7,6 +7,7 @@ import SalesReport from "../containers/reports/SalesReport"; // Import SalesRepo
 import PurchaesReport from "../containers/reports/PurchasesReport";
 import ExpensesReport from "../containers/reports/ExpenseReport";
 import ServicesReport from "../containers/reports/ServicesReport";
+import SalesSummary from "../containers/reports/SalesSummary";
 
 export default function Reports() {
   const [currentTab, setCurrentTab] = useState(2);
@@ -16,7 +17,9 @@ export default function Reports() {
   };
 
   return (
-    <div style={{ width: "95%", margin: "auto" }}>
+    <div style={{ width: "95%", margin: "auto", display: "flex", flexDirection: "column",
+      gap: "5px"
+     }}>
       {/* <h2> Reports</h2> */}
 
       <div style={{
@@ -125,7 +128,7 @@ export default function Reports() {
             borderRadius: '50px',
             border: `1px solid ${constants.pColor}`
           }}>
-          Income
+          Summary
         </div>
 
         <div
@@ -174,6 +177,7 @@ export default function Reports() {
       {currentTab == 4 && <PurchaesReport />} 
       {currentTab == 5 && <ExpensesReport />} 
       {currentTab == 6 && <ServicesReport />} 
+      {currentTab == 7 && <SalesSummary />} 
     </div>
   );
 }

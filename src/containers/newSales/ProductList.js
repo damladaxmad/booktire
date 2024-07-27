@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Typography, CircularProgress } from '@mui/material';
 import { MdProductionQuantityLimits } from 'react-icons/md';
 import { useSelector } from 'react-redux';
@@ -7,11 +7,13 @@ import { constants } from '../../Helpers/constantsFile';
 import { setCategories, setCategoryDataFetched } from '../category/categorySlice';
 import useReadData from '../../hooks/useReadData';
 import PreItemsPopup from './PreItemsPopup';
+import PreGroupPopup from './PreGroupPopup';
 
 const ProductList = ({ addProduct, loading }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const products = useSelector(state => state?.products.products);
   const [category, setCategory] = useState(null);
+  const [saleType, setSaleType] = useState("items");
   const { business } = useSelector(state => state.login.activeUser);
   const categories = JSON.parse(JSON.stringify(useSelector(state => state.categories?.categories || [])));
   const url2 = `${constants.baseUrl}/product-categories/get-business-product-categories/${business?._id}`;
@@ -26,6 +28,8 @@ const ProductList = ({ addProduct, loading }) => {
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [isGroupOpen, setIsGroupOpen] = useState(false);
 
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -35,15 +39,39 @@ const ProductList = ({ addProduct, loading }) => {
     setSelectedProduct(product);
     setIsPopupOpen(true);
   };
+  const handleGroupClick = (product) => {
+    setSelectedGroup(product);
+    setIsGroupOpen(true);
+  };
 
   const handlePopupClose = () => {
     setIsPopupOpen(false);
     setSelectedProduct(null);
   };
+  const handleGroupClose = () => {
+    setIsGroupOpen(false);
+    setSelectedGroup(null);
+  };
 
   const handlePopupConfirm = (product) => {
     addProduct(product);
   };
+  const handleGroupConfirm = (products, price) => {
+    console.log(price)
+    // Calculate the total salePrice of all products
+    const totalSalePrice = products.reduce((sum, product) => sum + product.unitPrice, 0);
+  
+    // Calculate the adjustment to be made to each product's salePrice
+    const adjustment = (price - totalSalePrice) / products.length;
+  
+    // Update each product with the new salePrice
+    products?.forEach(element => {
+      const newSalePrice = element.unitPrice + adjustment;
+      console.log(newSalePrice)
+      addProduct({...element, qty: 1, salePrice: newSalePrice});
+    });
+  };
+  
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -53,9 +81,40 @@ const ProductList = ({ addProduct, loading }) => {
     if (selectedOption) {
       setCategory(selectedOption.value);
     } else {
-      setCategory(null); // Clear the category state
+      setCategory(null); 
     }
   };
+
+  const [groupedProducts, setGroupedProducts] = useState([]);
+
+  useEffect(() => {
+    const groupByItemGroup = products.reduce((acc, product) => {
+      if (product.itemGroup) { // Ensure the itemGroup is not undefined
+        if (!acc[product.itemGroup]) {
+          acc[product.itemGroup] = [];
+        }
+        acc[product.itemGroup].push(product);
+      }
+      return acc;
+    }, {});
+  
+    const groupedArray = Object.keys(groupByItemGroup)
+      .filter(itemGroup => groupByItemGroup[itemGroup].length > 0) // Remove empty groups
+      .map(itemGroup => ({
+        label: itemGroup,
+        value: groupByItemGroup[itemGroup],
+      }));
+  
+    setGroupedProducts(groupedArray);
+  }, [products]);
+  
+
+  const saleTypeOptions = [
+    { value: 'items', label: 'Items' },
+    { value: 'group', label: 'Group' }
+  ];
+
+  console.log(groupedProducts)
 
   return (
     <div style={{ width: "63%" }}>
@@ -64,7 +123,7 @@ const ProductList = ({ addProduct, loading }) => {
           type="text"
           placeholder="Search products..."
           style={{
-            width: "47%",
+            width: "36%",
             height: "40px",
             fontSize: "14px",
             borderRadius: "5px",
@@ -84,7 +143,7 @@ const ProductList = ({ addProduct, loading }) => {
               border: "1px solid lightGrey",
               height: "40px",
               borderRadius: "5px",
-              width: "280px",
+              width: "200px",
               minHeight: "28px",
               ...(isDisabled && { cursor: "not-allowed" }),
             }),
@@ -118,20 +177,50 @@ const ProductList = ({ addProduct, loading }) => {
           onChange={handleCategorySelect}
           isClearable={true}
         />
+
+        
+<Select
+  styles={{
+    control: (styles, { isDisabled }) => ({
+      ...styles,
+      border: "1px solid lightGrey",
+      height: "40px",
+      borderRadius: "5px",
+      width: "120px",
+      minHeight: "28px",
+      ...(isDisabled && { cursor: "not-allowed" }),
+    }),
+    menu: (provided, state) => ({
+      ...provided,
+      zIndex: 9999
+    })}}
+                value={saleTypeOptions.find(option => option.value === saleType)}
+                options={saleTypeOptions}
+                onChange={(selectedOption) => setSaleType(selectedOption.value)}
+                // styles={{width: "100px"}}
+              />
       </div>
 
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
           <CircularProgress />
         </div>
-      ) : (
+      ) : saleType == "group" ? (
+        <div style={{ display: "flex", gap: "20px", marginTop: "20px", width: "100%", flexWrap: "wrap", maxHeight: "62vh", overflowY: "scroll"}}>
+          {groupedProducts.map((product) => {
+            return <GroupCard key={product.id} product={product} handleGroupClick={handleGroupClick} />
+          })}
+        </div>
+      )
+      : (
         <div style={{ display: "flex", gap: "20px", marginTop: "20px", width: "100%", flexWrap: "wrap", maxHeight: "62vh", overflowY: "scroll"}}>
           {filteredProducts.map((product) => {
             if (category && product.category !== category?.categoryName) return null;
+            if (saleType == "group") return null;
             return <ProductCard key={product.id} product={product} handleProductClick={handleProductClick} />
           })}
         </div>
-      )}
+      ) }
       {(filteredProducts?.length < 1 && !loading)&& <p style = {{color: "grey", textAlign: "center", 
         marginTop: "20px"}}> No products here...</p>}
       
@@ -141,6 +230,16 @@ const ProductList = ({ addProduct, loading }) => {
           isOpen={isPopupOpen}
           onClose={handlePopupClose}
           onConfirm={handlePopupConfirm}
+        />
+      )}
+      {selectedGroup && (
+        <PreGroupPopup
+          product={selectedGroup}
+          isOpen={isGroupOpen}
+          onClose={handleGroupClose}
+          onConfirm={(products, price)=> {
+            handleGroupConfirm(products, price)
+          }}
         />
       )}
     </div>
@@ -189,6 +288,53 @@ function ProductCard({ product, handleProductClick }) {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#3E3E3E", color: "white", borderRadius: "5px", padding: "5px" }}>
         <Typography> {product.name.substring(0, 15)}
           {product.name.length <= 16 ? null : "..."} </Typography>
+      </div>
+    </div>
+  );
+}
+function GroupCard({ product, handleGroupClick }) {
+  console.log(product)
+  return (
+    <div
+      style={{
+        background: "white",
+        borderRadius: "10px",
+        padding: "15px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "10px",
+        cursor: "pointer",
+        width: "30%",
+        maxHeight: "200px" 
+      }}
+      onClick={() => handleGroupClick(product)}
+    >
+      <div style={{ display: "flex", gap: "5px", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+        <MdProductionQuantityLimits style={{ color: "#6A03B6", fontSize: "50px" }} />
+        <div style={{ display: "flex", gap: "5px", flexDirection: "column" }}>
+          <div style={{
+            display: "flex",
+            background: "#E9E9E9",
+            borderRadius: "5px",
+            padding: "5px 10px",
+            border: "1px solid #B8B8B8"
+          }}>
+            <Typography> QTY: 1 </Typography>
+          </div>
+          <div style={{
+            display: "flex",
+            background: "#E9E9E9",
+            borderRadius: "5px",
+            padding: "5px 10px",
+            border: "1px solid #B8B8B8"
+          }}>
+            <Typography> $0 </Typography>
+          </div>
+        </div>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "#3E3E3E", color: "white", borderRadius: "5px", padding: "5px" }}>
+        <Typography> {product.label?.substring(0, 15)}
+          {product.label?.length <= 16 ? null : "..."} </Typography>
       </div>
     </div>
   );

@@ -172,7 +172,7 @@ const StockTable = (props) => {
                       textAlign: "end",
                     }}
                   >
-                    Category
+                    Store
                   </p>
                   <p
                     style={{

@@ -6,6 +6,7 @@ import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { constants } from '../../Helpers/constantsFile';
 import CustomButton from '../../reusables/CustomButton';
+import swal from 'sweetalert';
 
 export default function SalesTable() {
     const [sales, setSales] = useState([]);
@@ -39,16 +40,28 @@ export default function SalesTable() {
     };
 
     const handleCancelSale = (saleId) => {
-        axios.post(`${constants.baseUrl}/sales/cancel-business-sale/${business._id}/${saleId}`, {}, {
-            headers: {
-                "authorization": token
+        swal({
+            title: "Ma hubtaa?",
+            text: "Ma hubtaa inaa Cancel gareyso sale kaan?",
+            icon: "warning",
+            buttons: {
+                cancel: 'No',
+                confirm: { text: 'Yes', className: 'sweet-warning' },
             }
-        }).then(res => {
-            alert("Successfully Canceled Sale!")
-            fetchSales()
-        }).catch(err => {
-            alert(err?.response?.data?.message)
-        })
+        }).then((response) => {
+            if (response) {
+                axios.post(`${constants.baseUrl}/sales/cancel-business-sale/${business._id}/${saleId}`, {}, {
+                    headers: {
+                        "authorization": token
+                    }
+                }).then(res => {
+                    swal({ text: "Successfully Canceled Sale!", icon: "success", timer: 2000 });
+                    fetchSales();
+                }).catch(err => {
+                    swal({ text: err?.response?.data?.message, icon: "error", timer: 2000 });
+                });
+            }
+        });
     };
 
     const columns = [
@@ -93,7 +106,7 @@ export default function SalesTable() {
                     }}
                     style={{ marginRight: '20px' }}
                 />
-                 <CustomButton text = "View" height = "37px" width = "100px" fontSize='14px'
+                 <CustomButton text="View" height="37px" width="100px" fontSize='14px'
                  onClick={handleViewClick} />
             </div>
             {loading ? (
@@ -111,10 +124,9 @@ export default function SalesTable() {
                         search: false,
                         paging: false,
                         toolbar: false,
-                        headerStyle: {fontWeight:"bold"}
+                        headerStyle: { fontWeight: "bold" }
                     }}
-
-                    style = {{boxShadow: "none", border: "1px solid lightgray"}}
+                    style={{ boxShadow: "none", border: "1px solid lightgray" }}
                 />
             )}
         </div>

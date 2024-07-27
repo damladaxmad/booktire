@@ -6,7 +6,7 @@ import { constants } from '../Helpers/constantsFile';
 import { useDispatch, useSelector } from 'react-redux';
 import useReadData from '../hooks/useReadData';
 import { Typography } from '@material-ui/core';
-import { setProductDataFetched, setProducts, updateProductQuantity } from '../containers/products/productSlice';
+import { setProductDataFetched, setProducts, updateProductQuantity, updateProductUnitPriceAndSalePrice } from '../containers/products/productSlice';
 import { setVendorDataFetched, setVendors, updateVendorSocketBalance } from '../containers/vendor/vendorSlice';
 import moment from 'moment';
 import PurchasesTable from '../containers/puchase/PurchaseTable';
@@ -30,7 +30,7 @@ const Purchases = () => {
     urlProduct,
     setProducts,
     setProductDataFetched,
-    state => state.products.isProductsDataFetched,
+    state => state.products.isProducsDataFetched,
     "products"
   );
 
@@ -58,6 +58,8 @@ const Purchases = () => {
       dispatch(updateVendorSocketBalance({_id: purchase?.vendor, transaction: purchase?.total}))
       purchase.products.forEach(product => {
         dispatch(updateProductQuantity({ productId: product.refProduct, quantity: product.quantity, type: "purchase" }));
+        dispatch(updateProductUnitPriceAndSalePrice({ productId: product.refProduct, unitPrice: product.unitPrice, 
+          salePrice: product.salePrice,  type: "purchase" }));
       });
       alert("Sucessfully created purchase!")
       setProductDataFetched(false)

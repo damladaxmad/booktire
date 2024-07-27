@@ -8,6 +8,7 @@ const EditProductModal = ({ open, handleClose, product, updateProductDetails }) 
   const [salePrice, setSalePrice] = useState(product.salePrice);
 
   const handleSave = () => {
+    if (!qty || !salePrice) return alert("Fadlan Geli Tirada iyo Qiimaha")
     updateProductDetails(product.id, qty, salePrice);
     handleClose();
   };
@@ -34,7 +35,7 @@ const EditProductModal = ({ open, handleClose, product, updateProductDetails }) 
           fullWidth
           variant='outlined'
           margin="normal"
-          label="Quantity"
+          label="Tirada"
           type="number"
           value={qty}
           onChange={(e) => setQty(parseInt(e.target.value, 10))}
@@ -43,7 +44,7 @@ const EditProductModal = ({ open, handleClose, product, updateProductDetails }) 
           fullWidth
           margin="normal"
           variant='outlined'
-          label="Price"
+          label="Qiimaha"
           type="number"
           value={salePrice}
           onChange={(e) => setSalePrice(parseFloat(e.target.value))}

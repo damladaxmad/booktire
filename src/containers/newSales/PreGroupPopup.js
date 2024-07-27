@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { Modal, Box, Typography, TextField, Button } from '@material-ui/core';
 import { constants } from '../../Helpers/constantsFile';
 
-const PreItemsPopup = ({ product, isOpen, onClose, onConfirm }) => {
+const PreGroupPopup = ({ product, isOpen, onClose, onConfirm }) => {
   const [quantity, setQuantity] = useState(1);
   const [price, setPrice] = useState(product.salePrice);
 
+  console.log(product)
   const handleConfirm = () => {
     if (!price || !quantity) return alert("Fadlan Geli Qiimaha iyo Tirada!")
-    onConfirm({ ...product, qty: quantity, salePrice: price });
+    // onConfirm({ ...product, qty: quantity, salePrice: price });
+    onConfirm(product?.value, price);
     onClose();
   };
 
@@ -34,7 +36,7 @@ const PreItemsPopup = ({ product, isOpen, onClose, onConfirm }) => {
         }}
       >
         <Typography variant="h6" style={{ fontWeight: "bold" }} gutterBottom>
-          {product.name}
+          {product?.label}
         </Typography>
         <TextField
           fullWidth
@@ -70,4 +72,4 @@ const PreItemsPopup = ({ product, isOpen, onClose, onConfirm }) => {
   );
 };
 
-export default PreItemsPopup;
+export default PreGroupPopup;

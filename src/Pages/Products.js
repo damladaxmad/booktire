@@ -66,6 +66,7 @@ export default function Products() {
   const columns = [
     { title: "Full Name", field: "name", width: "24%" },
     { title: "Category", field: "category" },
+    { title: "Group", field: "itemGroup" },
     { title: "Quantity", field: "quantity" },
     { title: "Unit Price", field: "unitPrice", render: rowData => <p> {rowData?.unitPrice?.toFixed(2)}</p> },
     { title: "Sale Price", field: "salePrice", ender: rowData => <p> {rowData?.salePrice?.toFixed(2)}</p> },
