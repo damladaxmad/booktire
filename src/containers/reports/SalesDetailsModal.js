@@ -17,7 +17,6 @@ const SalesDetailsModal = ({ open, handleClose, sale, business, user }) => {
     const subtotal = sale?.products?.reduce((acc, product) => acc + product.salePrice * product.quantity, 0);
     const discount = sale?.discount || 0;
     const total = subtotal - discount;
-    console.log(sale)
 
     return (
         <>
@@ -43,10 +42,10 @@ const SalesDetailsModal = ({ open, handleClose, sale, business, user }) => {
                         {sale ? (
                             sale?.products?.map((product, index) => (
                                 <Box key={index} display="flex" justifyContent="space-between" my={2} style={{ borderBottom: "1px solid lightgray", paddingBottom: "5px" }}>
-                                    <Typography style={{ flex: 1.8 }}>{product.name}</Typography>
+                                    <Typography style={{ flex: 1.5 }}>{product.name}</Typography>
                                     <Typography style={{ flex: 1, textAlign: "right" }}>{product.quantity}</Typography>
-                                    <Typography style={{ flex: 1, textAlign: "right" }}>{sale?.purchaseNumber ? `$${product?.unitPrice}` : 
-                                    `$${product?.salePrice}`}</Typography>
+                                    <Typography style={{ flex: 1, textAlign: "right" }}>{sale?.purchaseNumber ? `$${product?.unitPrice?.toFixed(2)}` : 
+                                    `$${product?.salePrice?.toFixed(2)}`}</Typography>
                                     <Typography style={{ flex: 1, textAlign: "right" }}>${product.subtotal?.toFixed(2)}</Typography>
                                 </Box>
                             ))

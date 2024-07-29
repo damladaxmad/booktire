@@ -3,12 +3,13 @@ import { useFormik } from "formik";
 import axios from "axios";
 import Modal from "../Modal/Modal";
 import { constants } from "../Helpers/constantsFile";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CustomButton from "../reusables/CustomButton";
 import useReadData from "../hooks/useReadData";
 import Select from "react-select"
-import { setExpenseTypes, setExpenseTypesDataFetched } from "../containers/expenseTypes/expenseTypesSlice";
+import { addExpenseType, setExpenseTypes, setExpenseTypesDataFetched } from "../containers/expenseTypes/expenseTypesSlice";
 import moment from "moment";
+import { expenseTypeFields } from "../containers/expenseTypes/expenseTypeModal";
 
 const Register = ({instance, store, name, fields, update, url, business,
 hideModal, onUpdate}) => {
@@ -16,6 +17,7 @@ hideModal, onUpdate}) => {
   const filteredFields = fields.filter(field => !(update && name === "User" && field.name === "password"));
   const [disabled, setDisabled] = useState(false)
   const token = useSelector(state => state.login.token)
+  const [showExpenseType, setShowExpenseType] = useState(false)
   const mySocketId = useSelector(state => state?.login?.mySocketId)
   const { business: business2 } = useSelector(state => state.login.activeUser)
   const expenseTypes = JSON.parse(JSON.stringify(useSelector(state => state.expenseTypes?.expenseTypes || [])))
@@ -34,14 +36,14 @@ hideModal, onUpdate}) => {
   const validate = (values) => {
     const errors = {};
 
-     if ( (name !== "Category" && !values.name && name !== "Qarashaad")) {
+     if ( (name !== "Category" &&  !values.name && name !== "Qarashaad")) {
        errors.name = "Field is Required";
      }
 
-     if ( name == "Category" && !values.categoryName) {
+     if ( name == "Category" && name !== "Type" && !values.categoryName) {
        errors.categoryName = "Field is Required";
      }
-     if ( (name !== "User" && name !== "Category" && name !== "Service Category" && name !== "Service Type" && name !== "Qarashaad") && (!values.phone)) {
+     if ( (name !== "User" && name !== "Category" && name !== "Type" && name !== "Service Category" && name !== "Service Type" && name !== "Qarashaad") && (!values.phone)) {
        errors.phone = "Field is Required";
      }
   
@@ -104,10 +106,25 @@ hideModal, onUpdate}) => {
     },
   });
 
+  const dispatch = useDispatch()
+
  
   return (
     <Modal onClose = {hideModal} pwidth = {"450px"}
     left = {name == "Expense" ? "32%" : "38%"} top = "22%">
+      {showExpenseType && <Register
+        update={false}
+        name="Type"
+        fields={expenseTypeFields}
+        url="expenses-types"
+        business={business}
+        hideModal={() => { setShowExpenseType(false) }}
+        store={(data) => {
+          console.log(data)
+          // notify("Expense Added Successfully!")
+          dispatch(addExpenseType(data?.createdExpenseType))
+        }}
+      />}
        <div
         style={{
           display: "flex",
@@ -149,7 +166,9 @@ hideModal, onUpdate}) => {
           </div>
         ))}
 
-{(name ==  "Qarashaad" ) && <Select
+{(name ==  "Qarashaad" ) && 
+          <div style={{ display: "flex", gap: "15px", width: "290px",  }}>
+          <Select
             placeholder='Select type'
             styles={{
               control: (styles, { isDisabled }) => ({
@@ -157,7 +176,7 @@ hideModal, onUpdate}) => {
                 border: "1px solid lightGrey",
                 height: "40px",
                 borderRadius: "5px",
-                width: "290px",
+                width: "215px",
                 minHeight: "28px",
                 ...(isDisabled && { cursor: "not-allowed" }),
               }),
@@ -192,7 +211,11 @@ hideModal, onUpdate}) => {
             onChange={(selectedOption) => formik.setFieldValue("expenseType", selectedOption ? selectedOption.value : null)}
             isClearable={true} 
             isDisabled={disabled}
-          />}
+          />
+          <CustomButton text="ADD" style={{ fontSize: "14px" }} width="55px" bgColor="black"
+              onClick={() => setShowExpenseType(true)} />
+              </div>
+          }
 
        <CustomButton 
        disabled={disabled}

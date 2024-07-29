@@ -7,7 +7,7 @@ const PreItemsPopup = ({ product, isOpen, onClose, onConfirm }) => {
   const [price, setPrice] = useState(product.salePrice);
 
   const handleConfirm = () => {
-    if (!price || !quantity) return alert("Fadlan Geli Qiimaha iyo Tirada!")
+    if ((!price && price != 0)|| !quantity) return alert("Fadlan Geli Qiimaha iyo Tirada!")
     onConfirm({ ...product, qty: quantity, salePrice: price });
     onClose();
   };

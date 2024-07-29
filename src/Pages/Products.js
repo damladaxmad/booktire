@@ -43,6 +43,12 @@ export default function Products() {
     setCurrentTab(tabIndex);
   };
 
+  let totalItems = 0
+  products?.map(p => {
+    if (p.quantity < 0) return
+    totalItems += p.quantity
+  })
+
   const dispatch = useDispatch()
 
   const { showRegister, update, toBeUpdatedCustomer,
@@ -152,7 +158,7 @@ export default function Products() {
         btnName="Create Products" onClick={handleShowRegister} />}
 
       {(!showStatement && currentTab == 0 ) && <CustomRibbon query={query}
-        setQuery={handleSearchChange} />}
+        setQuery={handleSearchChange} > {totalItems} items</CustomRibbon>}
 
 
       {(!showStatement && currentTab == 0 ) && <Table

@@ -1,6 +1,6 @@
 // In NewSales.js
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ProductList from './ProductList';
 import ItemsList from './ItemsList';
 import CheckoutModal from './CheckoutModal';
@@ -13,7 +13,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import PrintSaleModal from './PrintSaleModal';
 import moment from 'moment';
 
-const NewSales = ({loading}) => {
+const NewSales = ({ loading, editedSale }) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
@@ -21,6 +21,9 @@ const NewSales = ({loading}) => {
   const token = useSelector(state => state?.login?.token);
   const { business, username } = useSelector(state => state.login.activeUser);
   const [data, setData] = useState();
+  const [group, setGroup] = useState("")
+
+  console.log(editedSale)
 
   const notify = (message) => toast(message, {
     autoClose: 2700,
@@ -29,15 +32,30 @@ const NewSales = ({loading}) => {
     position: "top-right",
     style: {
       backgroundColor: 'green',
-      color: 'white'  
+      color: 'white'
     }
   });
 
-  const addProduct = (product) => {
+  useEffect(() => {
+    if (editedSale) {
+      const updatedProducts = editedSale.products.map(product => ({
+        ...product,
+        qty: product.quantity,
+        _id: product?.refProduct
+      }));
+      setSelectedProducts(updatedProducts);
+    }
+  }, [editedSale]);
+
+  const addGroup = (group) => {
+    setGroup((prevGroup) => prevGroup + ` ${group}`);
+    console.log(group)
+  }
+  const addProduct = (product, group) => {
     setSelectedProducts((prevProducts) => {
       const existingProduct = prevProducts.find(p => p.id === product.id);
       if (existingProduct) {
-        return prevProducts.map(p => 
+        return prevProducts.map(p =>
           p.id === product.id ? { ...p, qty: p.qty + 1 } : p
         );
       }
@@ -46,23 +64,23 @@ const NewSales = ({loading}) => {
   };
 
   const updateProductQty = (productId, qty) => {
-    setSelectedProducts((prevProducts) => 
-      prevProducts.map(p => 
+    setSelectedProducts((prevProducts) =>
+      prevProducts.map(p =>
         p.id === productId ? { ...p, qty } : p
       )
     );
   };
 
   const updateProductDetails = (productId, qty, salePrice) => {
-    setSelectedProducts((prevProducts) => 
-      prevProducts.map(p => 
+    setSelectedProducts((prevProducts) =>
+      prevProducts.map(p =>
         p.id === productId ? { ...p, qty, salePrice } : p
       )
     );
   };
 
   const removeProduct = (productId) => {
-    setSelectedProducts((prevProducts) => 
+    setSelectedProducts((prevProducts) =>
       prevProducts.filter(p => p.id !== productId)
     );
   };
@@ -94,27 +112,41 @@ const NewSales = ({loading}) => {
   const dispatch = useDispatch();
 
   const createSale = (data) => {
-    axios.post(`${constants.baseUrl}/sales`, data, {
+    const url = editedSale ? `${constants.baseUrl}/sales/${editedSale?._id}` : `${constants.baseUrl}/sales`;
+    const method = editedSale ? 'patch' : 'post';
+
+    axios({
+      method: method,
+      url: url,
+      data: data,
       headers: {
         authorization: token
       }
     }).then((res) => {
       setDisabled(false);
       setProductDataFetched(false);
-      let sale = res?.data?.data?.createdSale[0];
+      let sale;
+      if (res?.data?.data?.createdSale && res.data.data.createdSale.length > 0) {
+        sale = res.data.data.createdSale[0]; // Assign the first item from createdSale
+      } else if (res?.data?.data?.updatedSale) {
+        sale = res.data.data.updatedSale[0]; // Assign updatedSale
+      }
       dispatch(updateCustomerSocketBalance({ _id: sale?.customer, transaction: sale?.total }));
       selectedProducts.forEach(product => {
         dispatch(updateProductQuantity({ productId: product._id, quantity: product.qty, type: "sale" }));
       });
-      notify("Sale created!");
+      
+      notify(res?.data?.data?.createdSale ? "Sale Created" : "Sale Updated");
       setIsPrintModalOpen(true);
       setIsModalOpen(false);
       setSelectedProducts([]);
     }).catch((err) => {
+      console.log(err)
       setDisabled(false);
       alert(err.response?.data?.message);
     });
   };
+
 
   const handleAddProduct = ({ products, discount, total, date, note, saleType, customer, user }) => {
     setDisabled(true);
@@ -133,7 +165,8 @@ const NewSales = ({loading}) => {
       customer: customer?._id,
       date: moment(date).format("YYYY-MM-DD"),
       user: user,
-      note: note
+      note: note,
+      group: editedSale ? editedSale?.group : group
     };
 
     createSale(transformedData);
@@ -141,16 +174,16 @@ const NewSales = ({loading}) => {
 
   return (
     <div style={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-      <ProductList addProduct={addProduct} loading = {loading}/>
-      <ItemsList 
-        selectedProducts={selectedProducts} 
+      <ProductList addProduct={addProduct} addGroup={addGroup} loading={loading} />
+      <ItemsList
+        selectedProducts={selectedProducts}
         updateProductQty={updateProductQty}
         updateProductDetails={updateProductDetails}
         handlePayment={handlePayment}
         removeProduct={removeProduct}
       />
       {isModalOpen && (
-        <CheckoutModal 
+        <CheckoutModal
           disabled={disabled}
           selectedProducts={selectedProducts}
           subtotal={subtotal}

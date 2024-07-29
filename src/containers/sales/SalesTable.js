@@ -7,12 +7,16 @@ import { useSelector } from 'react-redux';
 import { constants } from '../../Helpers/constantsFile';
 import CustomButton from '../../reusables/CustomButton';
 import swal from 'sweetalert';
+import SalesDetailsModal from '../reports/SalesDetailsModal';
 
-export default function SalesTable() {
+export default function SalesTable({editSale}) {
     const [sales, setSales] = useState([]);
     const [loading, setLoading] = useState(false);
     const token = useSelector(state => state?.login?.token);
+    const user = useSelector(state => state.login.activeUser);
     const { business } = useSelector(state => state.login.activeUser);
+    const [selectedSale, setSelectedSale] = useState()
+    const [modalOpen, setModalOpen] = useState(false)
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
 
@@ -22,7 +26,7 @@ export default function SalesTable() {
 
     const fetchSales = () => {
         setLoading(true);
-        axios.get(`https://booktire-api.onrender.com/api/client/v1/sales/get-business-sales/${business?._id}?startDate=${startDate}&endDate=${endDate}`, {
+        axios.get(`${constants.baseUrl}/sales/get-business-sales/${business?._id}?startDate=${startDate}&endDate=${endDate}`, {
             headers: {
                 "authorization": token
             }
@@ -64,9 +68,23 @@ export default function SalesTable() {
         });
     };
 
+    const handleSalesNumberClick = (sale) => {
+        setSelectedSale(sale);
+        setModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setModalOpen(false);
+        setSelectedSale(null);
+    };
+
     const columns = [
-        { title: 'Payment Type', field: 'paymentType' },
-        { title: 'User Name', field: 'user' },
+        {title: "Receipt", field: "saleNumber", render: rowData => <p style = {{color: "blue", cursor: "pointer" }}
+        onClick={()=> handleSalesNumberClick(rowData)}>
+            Receipt-{rowData?.saleNumber}
+        </p>},
+        { title: 'Payment', field: 'paymentType' },
+        { title: 'User', field: 'user' },
         { title: 'Date', field: 'date', render: rowData => moment(rowData.date).format('YYYY-MM-DD') },
         { title: 'Discount', field: 'discount' },
         { title: 'Total', field: 'total' },
@@ -74,7 +92,13 @@ export default function SalesTable() {
         {
             title: 'Action',
             render: rowData => (
-                <button onClick={() => handleCancelSale(rowData._id)}>Cancel Sale</button>
+                <div style = {{display: "flex", flexDirection: "row", gap: "5px"}}>
+                <button onClick={() => handleCancelSale(rowData._id)}>Cancel</button>
+                <button onClick={() => {
+                    editSale(rowData)
+                }}
+                    >Edit</button>
+                </div>
             )
         }
     ];
@@ -129,6 +153,9 @@ export default function SalesTable() {
                     style={{ boxShadow: "none", border: "1px solid lightgray" }}
                 />
             )}
+
+<SalesDetailsModal open={modalOpen} handleClose={handleCloseModal} sale={selectedSale} business={business} user={user} />
+
         </div>
     );
 }

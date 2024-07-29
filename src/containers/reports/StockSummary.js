@@ -64,9 +64,12 @@ const StockSummary = (props) => {
     });
 
     let totalCost = 0;
+    let totalQuantity = 0
     products?.map(product => {
         if (selectedCategory && product.category !== selectedCategory?.label) return
         totalCost += product?.totalCost;
+        if (product?.quantity < 0) return
+        totalQuantity += product.quantity
     });
 
     return (
@@ -91,7 +94,7 @@ const StockSummary = (props) => {
                     <Typography style={{
                         fontSize: "18px",
                         color: "#6C6C6C"
-                    }}> {loading ? 'Loading...' : (products.length > 0 ? `${products.length} products` : 'No data')}</Typography>
+                    }}> {loading ? 'Loading...' : (products.length > 0 ? `${products.length} products - ${totalQuantity} items` : 'No data')}</Typography>
                 </div>
                 <CustomButton text="Print" onClick={handlePrint} height="35px" fontSize="14px" />
 

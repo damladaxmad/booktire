@@ -9,10 +9,11 @@ import useReadData from '../../hooks/useReadData';
 import PreItemsPopup from './PreItemsPopup';
 import PreGroupPopup from './PreGroupPopup';
 
-const ProductList = ({ addProduct, loading }) => {
+const ProductList = ({ addProduct, addGroup, loading }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const products = useSelector(state => state?.products.products);
   const [category, setCategory] = useState(null);
+  const [group, setGroup] = useState()
   const [saleType, setSaleType] = useState("items");
   const { business } = useSelector(state => state.login.activeUser);
   const categories = JSON.parse(JSON.stringify(useSelector(state => state.categories?.categories || [])));
@@ -39,8 +40,9 @@ const ProductList = ({ addProduct, loading }) => {
     setSelectedProduct(product);
     setIsPopupOpen(true);
   };
-  const handleGroupClick = (product) => {
+  const handleGroupClick = (product, group) => {
     setSelectedGroup(product);
+    setGroup(group)
     setIsGroupOpen(true);
   };
 
@@ -56,21 +58,22 @@ const ProductList = ({ addProduct, loading }) => {
   const handlePopupConfirm = (product) => {
     addProduct(product);
   };
+
   const handleGroupConfirm = (products, price) => {
-    console.log(price)
-    // Calculate the total salePrice of all products
-    const totalSalePrice = products.reduce((sum, product) => sum + product.unitPrice, 0);
-  
-    // Calculate the adjustment to be made to each product's salePrice
-    const adjustment = (price - totalSalePrice) / products.length;
-  
-    // Update each product with the new salePrice
-    products?.forEach(element => {
-      const newSalePrice = element.unitPrice + adjustment;
-      console.log(newSalePrice)
-      addProduct({...element, qty: 1, salePrice: newSalePrice});
-    });
-  };
+
+  addGroup(group)
+
+  if (products.length > 0) {
+    // Update the first product with the specified price
+    addProduct({ ...products[0], qty: 1, salePrice: price });
+
+    // Update the remaining products with salePrice set to zero
+    for (let i = 1; i < products.length; i++) {
+      addProduct({ ...products[i], qty: 1, salePrice: 0 });
+    }
+  }
+};
+
   
 
   const handleSearchChange = (event) => {
@@ -90,10 +93,13 @@ const ProductList = ({ addProduct, loading }) => {
   useEffect(() => {
     const groupByItemGroup = products.reduce((acc, product) => {
       if (product.itemGroup) { // Ensure the itemGroup is not undefined
-        if (!acc[product.itemGroup]) {
-          acc[product.itemGroup] = [];
-        }
-        acc[product.itemGroup].push(product);
+        const groups = product.itemGroup.split(',').map(group => group.trim());
+        groups.forEach(group => {
+          if (!acc[group]) {
+            acc[group] = [];
+          }
+          acc[group].push(product);
+        });
       }
       return acc;
     }, {});
@@ -307,7 +313,7 @@ function GroupCard({ product, handleGroupClick }) {
         width: "30%",
         maxHeight: "200px" 
       }}
-      onClick={() => handleGroupClick(product)}
+      onClick={() => handleGroupClick(product, product?.label)}
     >
       <div style={{ display: "flex", gap: "5px", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <MdProductionQuantityLimits style={{ color: "#6A03B6", fontSize: "50px" }} />

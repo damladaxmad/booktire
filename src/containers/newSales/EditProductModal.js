@@ -8,7 +8,7 @@ const EditProductModal = ({ open, handleClose, product, updateProductDetails }) 
   const [salePrice, setSalePrice] = useState(product.salePrice);
 
   const handleSave = () => {
-    if (!qty || !salePrice) return alert("Fadlan Geli Tirada iyo Qiimaha")
+    if (!qty || (!salePrice && salePrice != 0)) return alert("Fadlan Geli Tirada iyo Qiimaha")
     updateProductDetails(product.id, qty, salePrice);
     handleClose();
   };

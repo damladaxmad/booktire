@@ -5,6 +5,13 @@ import { constants } from "../Helpers/constantsFile";
 
 const MyTable = (props) => {
 
+  const numberFormatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+});
+
   const columns = props.columns;
 
   let topValues = props.data?.sort((a,b) => b.balance-a.balance).slice(0,props.data?.length);
@@ -54,7 +61,7 @@ const MyTable = (props) => {
                   { props.data.district}
                 </p>
                 <p style={{ margin: "0px", width: "21%", textAlign: "end" }}>
-                  {constants.moneySign}{props.data.balance?.toFixed(2)}
+                 {numberFormatter.format(props.data?.balance)}
                 </p>
               </div>
             );

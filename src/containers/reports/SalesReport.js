@@ -133,14 +133,14 @@ export default function SalesReport() {
                     } },
                         {
                             title: 'Receipt', field: 'salesNumber', render: rowData => {
-                                if (rowData?.paymentType === "invoice") {
+                                if (rowData?.paymentType) {
                                     return (
                                         <Typography
                                             style={{ color: 'blue', cursor: 'pointer' }}
                                             onClick={() => handleSalesNumberClick(rowData)}
-                                        >
-                                             {rowData?.customer.name.substring(0, 15)}
-                                             {rowData?.customer.name.length <= 15 ? null : "..."} Receipt-{rowData.salesNumber}
+                                        > {rowData?.group ? `${rowData?.group}-` : null}
+                                             {rowData?.customer?.name.substring(0, 15)}
+                                             {rowData?.customer ? (rowData.customer.name.length > 15 ? "..." : "-") : null}Receipt-{rowData.salesNumber}
                                         </Typography>
                                     );
                                 }
@@ -175,6 +175,7 @@ export default function SalesReport() {
                         total: sale.total,
                         note: sale?.note,
                         cogs: sale?.cogs,
+                        group: sale.group
                     }))}
                     options={{
                         search: false,

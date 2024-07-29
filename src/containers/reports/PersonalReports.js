@@ -16,6 +16,13 @@ const PersonalReport = ({name, type}) => {
     const imageUrl = `https://firebasestorage.googleapis.com/v0/b/deentire-application.appspot.com/o/LOGO%2Fliibaan.jpeg?alt=media&token=f5b0b3e7-a5e0-4e0d-b3d2-20a920f97fde`;
     const urlCustomer = `${constants.baseUrl}/customers/get-business-customers/${business?._id}`;
 
+    const numberFormatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
     useReadData(
       urlCustomer,
       setCustomers,
@@ -59,7 +66,7 @@ const PersonalReport = ({name, type}) => {
         { title: "Full Name", field: "name", width: "4%" },
         { title: "Phone Number", field: "phone" },
         { title: "Address", field: "district" },
-        { title: "Balance", field: "balance" },
+        { title: "Balance", field: "balance", render: rowData => <p> {numberFormatter.format(rowData?.balance)}</p> },
     ]
 
     const handlePrint = useReactToPrint({
@@ -79,6 +86,10 @@ const PersonalReport = ({name, type}) => {
 
             <PrintableTableComponent columns={columns} data={type == "Customers" ? realCustomers : realVendors} imageUrl={imageUrl} 
             reportTitle = {`${type} Report`}> 
+               <div style = {{marginTop: "10px"}}>  
+                <Typography style = {{ fontSize: "16px"}}>  TOTAL: 
+                <span  style = {{fontWeight: "bold", fontSize: "18px"}}> {numberFormatter.format(decideTotal())} </span></Typography>
+            </div>
             </PrintableTableComponent>
             <div style = {{display: "flex", justifyContent: "space-between"}}>
             <div>
@@ -97,7 +108,7 @@ const PersonalReport = ({name, type}) => {
             <Typography style = {{
                     fontWeight: "bold",
                     fontSize: "20px"
-                }}> ${decideTotal().toFixed(2)}</Typography>
+                }}> {numberFormatter.format(decideTotal())}</Typography>
             </div>
            
            {name == "customers" && <MyTable columns = {columns} data = {realCustomers}

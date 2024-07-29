@@ -1,7 +1,7 @@
 // Search.js
 import React from 'react';
 
-const CustomRibbon = ({ query, setQuery }) => {
+const CustomRibbon = ({ query, setQuery, children }) => {
     return (
         <div
             style={{
@@ -32,6 +32,7 @@ const CustomRibbon = ({ query, setQuery }) => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
             />
+            {children}
         </div>
     );
 };

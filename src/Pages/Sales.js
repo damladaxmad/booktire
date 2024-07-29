@@ -21,6 +21,7 @@ const Sales = () => {
   const [disabled, setDisabled] = useState(false);
   const [currentTab, setCurrentTab] = useState(0); // Track current tab index
   const token = useSelector(state => state?.login?.token);
+  const [editedSale, setEditedSale] = useState()
   const { business, name } = useSelector(state => state.login.activeUser);
   const urlCustomer = `${constants.baseUrl}/customers/get-business-customers/${business?._id}`;
   const urlProduct = `${constants.baseUrl}/products/get-business-products/${business?._id}`;
@@ -53,6 +54,11 @@ const Sales = () => {
   const handleTabChange = (tabIndex) => {
     setCurrentTab(tabIndex);
   };
+
+  const handleEditSale = (data) => {
+    setCurrentTab(0)
+    setEditedSale(data)
+  }
 
 
   return (
@@ -147,11 +153,11 @@ const Sales = () => {
       </div>
       <div style={{ width: "100%", margin: "auto", borderRadius: "10px", padding: "0px", display: "flex", flexDirection: "column" }}>
         {currentTab === 0 && (
-          <NewSales loading = {loading}
+          <NewSales loading = {loading} editedSale = {editedSale}
             // handleAddProduct={handleAddProduct}
           />
         )}
-        {currentTab === 2 && <SalesTable />}
+        {currentTab === 2 && <SalesTable editSale = {(editedSale)=> handleEditSale(editedSale)}/>}
         {currentTab === 3 && <NewServices loading = {serviceLoading} />}
         {currentTab === 4 && <ServiceTable />}
         {currentTab === 5 && <SalesMen />}

@@ -6,14 +6,26 @@ import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { constants } from '../../Helpers/constantsFile';
 import CustomButton from '../../reusables/CustomButton';
+import swal from 'sweetalert';
+import SalesDetailsModal from '../reports/SalesDetailsModal';
 
 export default function PurchaseTable() {
     const [purchases, setPurchases] = useState([]);
     const [loading, setLoading] = useState(false);
     const token = useSelector(state => state?.login?.token);
+    const user = useSelector(state => state.login.activeUser);
     const { business } = useSelector(state => state.login.activeUser);
+    const [selectedPurchase, setSelectedPurchase] = useState();
+    const [modalOpen, setModalOpen] = useState(false);
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
+
+    const numberFormatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
 
     useEffect(() => {
         fetchPurchases();
@@ -39,29 +51,55 @@ export default function PurchaseTable() {
     };
 
     const handleCancelPurchase = (purchaseId) => {
-        axios.post(`${constants.baseUrl}/purchases/cancel-business-purchase/${business._id}/${purchaseId}`, {}, {
-            headers: {
-                "authorization": token
+        swal({
+            title: "Ma Hubtaa?",
+            text: "Are you sure you want to cancel this purchase?",
+            icon: "warning",
+            buttons: {
+                cancel: 'No',
+                confirm: { text: 'Yes', className: 'sweet-warning' },
             }
-        }).then(res => {
-            alert("Successfully Canceled Purchase!")
-            fetchPurchases()
-        }).catch(err => {
-            alert(err?.response?.data?.message)
-        })
+        }).then((response) => {
+            if (response) {
+                axios.post(`${constants.baseUrl}/purchases/cancel-business-purchase/${business._id}/${purchaseId}`, {}, {
+                    headers: {
+                        "authorization": token
+                    }
+                }).then(res => {
+                    swal({ text: "Successfully Canceled Purchase!", icon: "success", timer: 2000 });
+                    fetchPurchases();
+                }).catch(err => {
+                    swal({ text: err?.response?.data?.message, icon: "error", timer: 2000 });
+                });
+            }
+        });
+    };
+
+    const handlePurchaseNumberClick = (purchase) => {
+        setSelectedPurchase(purchase);
+        setModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setModalOpen(false);
+        setSelectedPurchase(null);
     };
 
     const columns = [
+        {title: "Receipt", field: "purchaseNumber", render: rowData => <p style = {{color: "blue", cursor: "pointer" }}
+        onClick={()=> handlePurchaseNumberClick(rowData)}>
+            Inv-{rowData?.purchaseNumber}
+        </p>},
         { title: 'Payment Type', field: 'paymentType' },
-        { title: 'User Name', field: 'user' },
+        { title: 'User', field: 'user' },
         { title: 'Date', field: 'date', render: rowData => moment(rowData.date).format('YYYY-MM-DD') },
         { title: 'Discount', field: 'discount' },
-        { title: 'Total', field: 'total' },
+        { title: 'Total', field: 'total', render: rowData => <p>{numberFormatter.format(rowData?.total)}</p> },
         { title: 'Status', field: 'status' },
         {
             title: 'Action',
             render: rowData => (
-                <button onClick={() => handleCancelPurchase(rowData._id)}>Cancel Purchase</button>
+                <button onClick={() => handleCancelPurchase(rowData._id)}>Cancel</button>
             )
         }
     ];
@@ -93,7 +131,7 @@ export default function PurchaseTable() {
                     }}
                     style={{ marginRight: '20px' }}
                 />
-                 <CustomButton text = "View" height = "37px" width = "100px" fontSize='14px'
+                <CustomButton text="View" height="37px" width="100px" fontSize='14px'
                  onClick={handleViewClick} />
             </div>
             {loading ? (
@@ -111,12 +149,13 @@ export default function PurchaseTable() {
                         search: false,
                         paging: false,
                         toolbar: false,
-                        headerStyle: {fontWeight:"bold"}
+                        headerStyle: { fontWeight: "bold" }
                     }}
-
-                    style = {{boxShadow: "none", border: "1px solid lightgray"}}
+                    style={{ boxShadow: "none", border: "1px solid lightgray" }}
                 />
             )}
+
+            <SalesDetailsModal open={modalOpen} handleClose={handleCloseModal} sale={selectedPurchase} business={business} user = {user} />
         </div>
     );
 }

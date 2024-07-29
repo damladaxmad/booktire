@@ -69,7 +69,7 @@ const ItemsList = ({ selectedProducts, updateProductQty, handlePayment, removePr
                   <AddIcon style={{ background: "black", borderRadius:"50px", color: "white", fontSize: "16px" }} />
                 </IconButton>
               </Box>
-              <Typography variant="body1" style={{ flex: 1, textAlign: 'center' }}>${product.salePrice * product.qty}</Typography>
+              <Typography variant="body1" style={{ flex: 1.2, textAlign: 'center' }}>${(product.salePrice * product.qty)?.toFixed(1)}</Typography>
               <IconButton size="small" onClick={() => handleRemoveProduct(product.id)} style={{ flex: 0 }}>
                 <DeleteIcon />
               </IconButton>

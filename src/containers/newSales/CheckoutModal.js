@@ -24,6 +24,8 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
   const userUrl = `${constants.baseUrl}/users/get-business-users/${business?._id}`;
   const users = useSelector(state => state.users.users);
 
+  console.log(selectedProducts)
+
   useReadData(
     userUrl,
     setUsers,
@@ -139,15 +141,6 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
               />
 
               <Select
-                placeholder="Select User"
-                options={users?.map(user => ({ value: user._id, label: user?.username }))}
-                onChange={selectedOption => setSelectedUser(selectedOption)} // Handle selected user
-                isClearable={true}
-                isSearchable={true}
-                style={{ width: '30%' }}
-              />
-
-              <Select
                 placeholder='Select customer'
                 styles={{
                   control: (styles, { isDisabled }) => ({
@@ -165,6 +158,14 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
                 onChange={handleCustomerSelect}
                 isClearable={true} 
                 isDisabled={saleType === "cash"}
+              />
+                  <Select
+                placeholder="Select User"
+                options={users?.map(user => ({ value: user._id, label: user?.username }))}
+                onChange={selectedOption => setSelectedUser(selectedOption)} // Handle selected user
+                isClearable={true}
+                isSearchable={true}
+                style={{ width: '30%' }}
               />
             </div>
 

@@ -6,10 +6,17 @@ import { constants } from '../../Helpers/constantsFile';
 import { MdAdd, MdDelete } from 'react-icons/md';
 import { Typography } from '@material-ui/core';
 import Select from "react-select"
+import swal from 'sweetalert';
 
 const PurchaseItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
   const initialProductState = { product: '', quantity: '', unitPrice: '', salePrice: '', subtotal: 0 };
   const headers = ["Name", "Qty", "Unit Price", "Sale Price", "Amount"]; // Updated headers
+
+  
+  const numberFormatter = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 2,
+});
 
   const [products, setProducts] = useState([initialProductState]);
   const [discount, setDiscount] = useState(0);
@@ -56,22 +63,55 @@ const PurchaseItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
     setProducts(updatedProducts);
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+const handleSubmit = (event) => {
+  event.preventDefault();
+  let logString = '';
+  let unitPriceChanged = false;
 
-    const isAnyFieldEmpty = products.some(product => !product.product || !product.quantity || !product.unitPrice);
-    if (isAnyFieldEmpty) {
-      alert('Please fill in all fields before finishing.');
-      return;
+  products.forEach(product => {
+    const initialProduct = sliceProducts.find(p => p.name === product.product.name);
+    const initialUnitPrice = initialProduct ? initialProduct.unitPrice : 'N/A';
+    const newUnitPrice = product.unitPrice;
+
+    if (initialUnitPrice !== newUnitPrice && initialUnitPrice !== 'N/A' && initialUnitPrice !== 0) {
+      unitPriceChanged = true;
+      logString += `${product.product.name}, `;
     }
+  });
 
-    handleAddProduct({ products, discount, total });
-    setProducts([initialProductState]);
-    setDiscount(0);
-    setTotal(0);
-  };
+  if (logString) {
+    logString = logString.slice(0, -2); // Remove the trailing comma and space
+    logString += ': unit price-ka is beddeli doono.'; // Append the message
+  }
 
-  const numberFormatter = new Intl.NumberFormat('en-US');
+  const swalTitle = unitPriceChanged ? "New product unitPrice!" : "Good to go!";
+  const swalText = unitPriceChanged ? logString : "Ma hubtaa inaa purchase sameyso?";
+
+  swal({
+    title: swalTitle,
+    text: swalText,
+    icon: "warning",
+    buttons: {
+      cancel: 'No',
+      confirm: { text: 'Yes', className: 'sweet-warning' },
+    }
+  }).then((response) => {
+    if (response) {
+      const isAnyFieldEmpty = products.some(product => !product.product || !product.quantity || !product.unitPrice);
+      if (isAnyFieldEmpty) {
+        alert('Please fill in all fields before finishing.');
+        return;
+      }
+
+      handleAddProduct({ products, discount, total });
+      setProducts([initialProductState]);
+      setDiscount(0);
+      setTotal(0);
+    }
+  });
+};
+
+  
 
   return (
     <div style={{ width: "100%" }}>
@@ -105,8 +145,8 @@ const PurchaseItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
                   updatedProducts[index].selectedProduct = e;
                   handleInputChange(index, { target: { name: 'product', value: e.value } })
                   handleInputChange(index, { target: { name: 'quantity', value: 1 } });
-                  handleInputChange(index, { target: { name: 'salePrice', value: e.value.salePrice } });
-                  handleInputChange(index, { target: { name: 'unitPrice', value: e.value.unitPrice } });
+                  handleInputChange(index, { target: { name: 'salePrice', value: e.value.salePrice?.toFixed(2) } });
+                  handleInputChange(index, { target: { name: 'unitPrice', value: e.value.unitPrice?.toFixed(2) } });
                   setProducts(updatedProducts);
                 }}
                 
@@ -189,6 +229,6 @@ const PurchaseItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
       </form>
     </div>
   );
-};
+}
 
 export default PurchaseItemsForm;
