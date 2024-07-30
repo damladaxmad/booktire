@@ -54,23 +54,23 @@ const ItemsList = ({ selectedProducts, updateProductQty, handlePayment, removePr
         {selectedProducts?.length < 1 && <p style = {{color: "grey", textAlign: "center", 
         marginTop: "20px"}}> Please select some products...</p>}
         {selectedProducts.map((product, index) => (
-          <React.Fragment key={product.id}>
+          <React.Fragment key={product._id}>
             <div className="selected-product" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: "4px" }}>
             {/* <MdEdit style={{ flex: 0.5, fontSize: "16px", cursor: "pointer", color: "grey" }} onClick={() => handleOpenModal(product)} /> */}
               <MdKeyboardArrowDown style={{ flex: 0.5, fontSize: "18px", cursor: "pointer" }} onClick={() => handleOpenModal(product)} />
               <Typography variant="body1" style={{ flex: 2 }}>{product.name.substring(0, 15)}
               {product.name.length <= 16 ? null : "..."}</Typography>
               <Box display="flex" alignItems="center" style={{ flex: 1, justifyContent: 'center' }}>
-                <IconButton size="small" onClick={() => handleQtyChange(product.id, product.qty - 1)}>
+                <IconButton size="small" onClick={() => handleQtyChange(product._id, product.qty - 1)}>
                   <RemoveIcon style={{ background: "black", borderRadius:"50px", color: "white", fontSize: "16px" }} />
                 </IconButton>
                 <Typography variant="body1" align="center" style={{ margin: '0 8px' }}>{product.qty}</Typography>
-                <IconButton size="small" onClick={() => handleQtyChange(product.id, product.qty + 1)}>
+                <IconButton size="small" onClick={() => handleQtyChange(product._id, product.qty + 1)}>
                   <AddIcon style={{ background: "black", borderRadius:"50px", color: "white", fontSize: "16px" }} />
                 </IconButton>
               </Box>
               <Typography variant="body1" style={{ flex: 1.2, textAlign: 'center' }}>${(product.salePrice * product.qty)?.toFixed(1)}</Typography>
-              <IconButton size="small" onClick={() => handleRemoveProduct(product.id)} style={{ flex: 0 }}>
+              <IconButton size="small" onClick={() => handleRemoveProduct(product._id)} style={{ flex: 0 }}>
                 <DeleteIcon />
               </IconButton>
             </div>

@@ -37,7 +37,7 @@ export const customerSlice = createSlice({
 
     updateCustomerSocketBalance: (state, action) => {
       const { _id, transaction } = action.payload;
-      console.log(transaction)
+      console.log(transaction, _id)
       const index = state.customers.findIndex(customer => customer._id === _id);
       if (index !== -1) {
         state.customers[index].balance += transaction;

@@ -1,7 +1,7 @@
 import React from 'react';
 import MaterialTable from 'material-table';
 import { Typography } from '@material-ui/core';
-import profile from "../../assets/images/blueProfile.webp";
+import profile from "../../assets/images/booktireLogo.png";
 import { MdKeyboardArrowRight } from 'react-icons/md';
 import "./PrintableTable.css"
 import { useSelector } from 'react-redux';
@@ -21,7 +21,7 @@ const PrintableTableComponent = ({reportTitle, columns, data, imageUrl, children
 
                 <div style={{ width: "100px", height: "100px", background: "transparent" }}>
                     <img
-                        src={imageUrl || profile}
+                        src={profile}
                         style={{
                             width: "100%",
                             height: "100%",

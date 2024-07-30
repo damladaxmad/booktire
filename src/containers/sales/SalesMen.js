@@ -6,6 +6,8 @@ import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { constants } from '../../Helpers/constantsFile';
 import CustomButton from '../../reusables/CustomButton';
+import PrintableTableComponent from "../reports/PintableTableComponent"
+import { useReactToPrint } from 'react-to-print';
 
 export default function SalesMen() {
     const [sales, setSales] = useState([]);
@@ -15,6 +17,8 @@ export default function SalesMen() {
     const { business } = useSelector(state => state.login.activeUser);
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
     const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
+
+    const imageUrl = `https://firebasestorage.googleapis.com/v0/b/deentire-application.appspot.com/o/LOGO%2Fliibaan.jpeg?alt=media&token=f5b0b3e7-a5e0-4e0d-b3d2-20a920f97fde`;
 
     const numberFormatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -27,9 +31,13 @@ export default function SalesMen() {
         fetchSales();
     }, []);
 
+    const handlePrint = useReactToPrint({
+        content: () => document.querySelector('.printable-table'),
+    });
+
     const fetchSales = () => {
         setLoading(true);
-        axios.get(`https://booktire-api.onrender.com/api/client/v1/sales/get-business-sales/${business?._id}?startDate=${startDate}&endDate=${endDate}`, {
+        axios.get(`${constants.baseUrl}/sales/get-business-sales/${business?._id}?startDate=${startDate}&endDate=${endDate}`, {
             headers: {
                 "authorization": token
             }
@@ -94,16 +102,27 @@ export default function SalesMen() {
 
     const columns = [
         { title: 'User Name', field: 'user' },
-        { title: 'Date', field: 'date', render: rowData => moment(rowData.date).format('YYYY-MM-DD') },
-        { title: 'Profit', field: 'profit',
-            render: rowData => <p>{numberFormatter.format(rowData?.total - rowData?.cogs)}</p>
+       { title: 'Profit', field: 'profit',
+            render: rowData => <p>{numberFormatter.format(rowData?.profit)}</p>
          },
        
     ];
 
+    let totalProfits = 0
+    profits?.map(profit => {
+        totalProfits += profit?.profit
+    })
+
     return (
         <div>
-            <div style={{ marginBottom: '20px', marginTop: "20px" }}>
+            <div style={{ marginBottom: '20px', marginTop: "20px", }}>
+            <PrintableTableComponent columns={columns} data={profits} imageUrl={imageUrl} 
+                reportTitle= {`Salesman Profits (${moment(startDate).format("YYYY-MM-DD")} - ${moment(endDate).format("YYYY-MM-DD")})`}>
+                    <div style = {{marginTop: "10px"}}>  
+                <Typography style = {{ fontSize: "16px"}}>  TOTAL: 
+                <span  style = {{fontWeight: "bold", fontSize: "18px"}}> {numberFormatter.format(totalProfits)} </span></Typography>
+            </div>
+            </PrintableTableComponent>
                 <TextField
                     size="small"
                     variant="outlined"
@@ -130,6 +149,8 @@ export default function SalesMen() {
                 />
                  <CustomButton text = "View" height = "37px" width = "100px" fontSize='14px'
                  onClick={handleViewClick} />
+                 <CustomButton text="Print" onClick={handlePrint} height="37px" fontSize="14px" 
+                 style = {{width: '100px', marginLeft: "50px", background: "white", color: "black"}}/>
             </div>
             {loading ? (
                 <div style={{ textAlign: 'center' }}>

@@ -9,7 +9,7 @@ import CustomButton from '../../reusables/CustomButton';
 import swal from 'sweetalert';
 import SalesDetailsModal from '../reports/SalesDetailsModal';
 
-export default function PurchaseTable() {
+export default function PurchaseTable({editPurchase}) {
     const [purchases, setPurchases] = useState([]);
     const [loading, setLoading] = useState(false);
     const token = useSelector(state => state?.login?.token);
@@ -33,7 +33,7 @@ export default function PurchaseTable() {
 
     const fetchPurchases = () => {
         setLoading(true);
-        axios.get(`https://booktire-api.onrender.com/api/client/v1/purchases/get-business-purchases/${business?._id}?startDate=${startDate}&endDate=${endDate}`, {
+        axios.get(`${constants.baseUrl}/purchases/get-business-purchases/${business?._id}?startDate=${startDate}&endDate=${endDate}`, {
             headers: {
                 "authorization": token
             }
@@ -99,7 +99,10 @@ export default function PurchaseTable() {
         {
             title: 'Action',
             render: rowData => (
+                <div style = {{display: "flex", flexDirection: "row", gap: "5px"}}>
                 <button onClick={() => handleCancelPurchase(rowData._id)}>Cancel</button>
+                <button onClick={() => editPurchase(rowData)}>Edit</button>
+                </div>
             )
         }
     ];

@@ -65,7 +65,7 @@ export default function Customers() {
       title: "Balance",
       field: "balance",
       editable: "never",
-      render: (data) => <p> {data?.balance.toFixed(2)}</p>,
+      render: (data) => <p> {data?.balance?.toFixed(2)}</p>,
     },
   ];
 

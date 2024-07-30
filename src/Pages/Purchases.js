@@ -12,6 +12,8 @@ import moment from 'moment';
 import PurchasesTable from '../containers/puchase/PurchaseTable';
 
 const Purchases = () => {
+
+  const [editedPurchase, setEditedPurchase] = useState()
   const [disabled, setDisabled] = useState(false)
   const [purchaseType, setPurchaseType] = useState('cash');
   const [vendor, setVendor] = useState('');
@@ -23,6 +25,23 @@ const Purchases = () => {
   const { business, username: name } = useSelector(state => state.login.activeUser)
   const urlProduct = `${constants.baseUrl}/products/get-business-products/${business?._id}`
   const urlVendor = `${constants.baseUrl}/vendors/get-business-vendors/${business?._id}`
+
+  const handleEditPurchase = (data) => {
+    setCurrentTab(0)
+    setEditedPurchase(data)
+    // setPurchaseType(data?.paymentType)
+    // setVendor(data?.vendor && data?.vendor)
+    setDate(moment(data.date).format("YYYY-MM-DD"))
+    setRefNumber(data.refNumber)
+  }
+
+  const resetData = () => {
+    setEditedPurchase()
+    setPurchaseType("cash")
+    setVendor('')
+    setDate(moment(today).format("YYYY-MM-DD"))
+    setRefNumber('')
+  }
 
   const dispatch = useDispatch()
 
@@ -47,25 +66,41 @@ const Purchases = () => {
   };
 
   const createPurchase = (data) => {
-    axios.post(`${constants.baseUrl}/purchases`, data, {
+    console.log(data)
+    const url = editedPurchase ? `${constants.baseUrl}/purchases/${editedPurchase?._id}`: `${constants.baseUrl}/purchases`;
+    const method = editedPurchase ? 'patch' : 'post';
+  
+    axios({
+      method,
+      url,
+      data,
       headers: {
         "authorization": token
       }
-    }).then((res) => {
+    })
+    .then((res) => {
       setDisabled(false)
-      let purchase = res?.data?.data?.createdPurchase[0]
-      console.log(purchase.vendor, purchase.total)
+      let purchase;
+      if (res?.data?.data?.createdPurchase && res.data.data.createdPurchase.length > 0) {
+        purchase = res.data.data.createdPurchase[0]; // Assign the first item from createdSale
+      } else if (res?.data?.data?.updatedPurchase) {
+        purchase = res.data.data.updatedPurchase?.updatedPurchase; // Assign updatedSale
+      }
+
       dispatch(updateVendorSocketBalance({_id: purchase?.vendor, transaction: purchase?.total}))
-      purchase.products.forEach(product => {
+      purchase?.products?.forEach(product => {
         dispatch(updateProductQuantity({ productId: product.refProduct, quantity: product.quantity, type: "purchase" }));
         dispatch(updateProductUnitPriceAndSalePrice({ productId: product.refProduct, unitPrice: product.unitPrice, 
           salePrice: product.salePrice,  type: "purchase" }));
       });
-      alert("Sucessfully created purchase!")
-      setProductDataFetched(false)
+
+      editedPurchase ? alert("Sucessfully updated purchase!") : alert("Sucessfully created purchase!")
+      resetData()
+      dispatch(setProductDataFetched(false)); 
+      setEditedPurchase()
     }).catch((err) => {
       setDisabled(false)
-      console.log(data)
+      console.log(err)
       alert(err.response?.data?.message);
     });
   };
@@ -138,6 +173,7 @@ const Purchases = () => {
               purchaseType={purchaseType}
               setPurchaseType={setPurchaseType}
               vendor={vendor}
+              editedPurchase = {editedPurchase}
               setVendor={setVendor}
               date={date}
               setDate={setDate}
@@ -145,11 +181,11 @@ const Purchases = () => {
               setRefNumber={setRefNumber}
             />
             <PurchaseItemsForm handleAddProduct={handleAddProduct} handleFinish={handleFinish}
-              disabled={disabled} />
+              disabled={disabled} editedPurchase = {editedPurchase} />
           </>
         )}
         {currentTab === 1 && (
-          <PurchasesTable />
+          <PurchasesTable editPurchase = {(editedPurchase)=> handleEditPurchase(editedPurchase)}/>
         )}
       </div>
     </div>

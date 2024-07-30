@@ -14,7 +14,7 @@ export default function LatestTransactions() {
     const today = new Date()
 
     const fetchSales = () => {
-        axios.get(`https://booktire-api.onrender.com/api/client/v1/sales/get-business-sales/${business?._id}?startDate=2024-02-01&endDate=${moment(today).format("YYYY-MM-DD")}`, {
+        axios.get(`${constants.baseUrl}/sales/get-business-sales/${business?._id}?startDate=2024-02-01&endDate=${moment(today).format("YYYY-MM-DD")}`, {
             headers: {
                 "authorization": token
             }

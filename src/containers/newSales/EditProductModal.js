@@ -9,7 +9,7 @@ const EditProductModal = ({ open, handleClose, product, updateProductDetails }) 
 
   const handleSave = () => {
     if (!qty || (!salePrice && salePrice != 0)) return alert("Fadlan Geli Tirada iyo Qiimaha")
-    updateProductDetails(product.id, qty, salePrice);
+    updateProductDetails(product._id, qty, salePrice);
     handleClose();
   };
 

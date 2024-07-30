@@ -153,7 +153,9 @@ const Sales = () => {
       </div>
       <div style={{ width: "100%", margin: "auto", borderRadius: "10px", padding: "0px", display: "flex", flexDirection: "column" }}>
         {currentTab === 0 && (
-          <NewSales loading = {loading} editedSale = {editedSale}
+          <NewSales loading = {loading} editedSale = {editedSale} setEditedSale={() => {
+            setEditedSale()
+          }}
             // handleAddProduct={handleAddProduct}
           />
         )}

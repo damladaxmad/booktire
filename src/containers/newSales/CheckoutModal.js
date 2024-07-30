@@ -6,25 +6,34 @@ import CustomButton from '../../reusables/CustomButton';
 import { constants } from '../../Helpers/constantsFile';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
-import Select from "react-select"
+import Select from "react-select";
 import useReadData from '../../hooks/useReadData';
 import { setUserDataFetched, setUsers } from '../user/userSlice';
 
-const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, disabled }) => {
+const CheckoutModal = ({ selectedProducts, subtotal, editedSale, onClose, onFinishPayment, disabled }) => {
   const [discount, setDiscount] = useState("");
   const [total, setTotal] = useState(subtotal);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(editedSale ? moment(editedSale.date).format("YYYY-MM-DD") : new Date());
   const [value, setValue] = useState(''); 
-  const [note, setNote] = useState(''); 
+  const [note, setNote] = useState(editedSale ? editedSale?.note : ""); 
   const customers = useSelector(state => state?.customers.customers);
   const { business } = useSelector(state => state.login.activeUser);
-  const [saleType, setSaleType] = useState("cash");
-  const [customer, setCustomer] = useState();
-  const [selectedUser, setSelectedUser] = useState(null); 
+  const [saleType, setSaleType] = useState(editedSale ? editedSale?.paymentType : "cash");
+  const [customer, setCustomer] = useState(editedSale ? editedSale?.customer : null);
+  const [selectedUser, setSelectedUser] = useState(
+    editedSale ? { value: editedSale.user, label: editedSale.user } : null
+  ); 
   const userUrl = `${constants.baseUrl}/users/get-business-users/${business?._id}`;
   const users = useSelector(state => state.users.users);
 
-  console.log(selectedProducts)
+  // Modify selectedProducts to include prevQty
+  const updatedProducts = selectedProducts.map(product => {
+    const prevProduct = editedSale?.products.find(p => p.refProduct === product.refProduct);
+    return {
+      ...product,
+      prevQty: prevProduct ? prevProduct.quantity : 0
+    };
+  });
 
   useReadData(
     userUrl,
@@ -119,7 +128,7 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
             style={{ boxShadow: "none", width: "100%" }}
           />
         </div>
-
+  
         <div style={{ width: "1px", background: "lightGrey", height: "100%", marginRight: "20px" }}></div>
         <div style={{ width: '45%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
@@ -129,7 +138,7 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
                 <MdClose style={{ fontSize: "20px", color: constants.pColor }} />
               </IconButton>
             </div>
-
+  
             <div style={{
               width: "100%", display: "flex", gap: "10px", flexDirection: "column",
               marginBottom: "15px"
@@ -139,7 +148,7 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
                 options={saleTypeOptions}
                 onChange={(selectedOption) => setSaleType(selectedOption.value)}
               />
-
+  
               <Select
                 placeholder='Select customer'
                 styles={{
@@ -162,13 +171,14 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
                   <Select
                 placeholder="Select User"
                 options={users?.map(user => ({ value: user._id, label: user?.username }))}
+                value={selectedUser} // Correctly formatted selected user
                 onChange={selectedOption => setSelectedUser(selectedOption)} // Handle selected user
                 isClearable={true}
                 isSearchable={true}
                 style={{ width: '30%' }}
               />
             </div>
-
+  
             <div style={{
               marginBottom: '20px', display: "flex", flexDirection: "row", width: "100%",
               justifyContent: "space-between"
@@ -187,7 +197,7 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
                 value={moment(selectedDate).format("YYYY-MM-DD")}
                 onChange={handleDateChange}
               />
-
+  
               <input
                 style={{
                   width: "47%", border: "1px solid lightGrey", borderRadius: "5px",
@@ -200,7 +210,7 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
                 onChange={(e) => setDiscount(parseFloat(e.target.value))}
               />
             </div>
-
+  
             <TextField
               small
               label="Note"
@@ -226,7 +236,7 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
               onClick={() => {
                 onFinishPayment({
                   discount: discount, saleType: saleType,
-                  date: selectedDate, customer: customer, user: selectedUser?.label, products: selectedProducts, note: note // Pass the note to the parent
+                  date: selectedDate, customer: customer, user: selectedUser?.label, products: updatedProducts, note: note // Pass the note to the parent
                 });
               }}
               style={{ width: "100%", fontSize: "14px" }}
@@ -236,6 +246,33 @@ const CheckoutModal = ({ selectedProducts, subtotal, onClose, onFinishPayment, d
       </div>
     </div>
   );
+  
+
 };
 
 export default CheckoutModal;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

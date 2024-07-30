@@ -13,7 +13,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import PrintSaleModal from './PrintSaleModal';
 import moment from 'moment';
 
-const NewSales = ({ loading, editedSale }) => {
+const NewSales = ({ loading, editedSale, setEditedSale }) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
@@ -53,10 +53,10 @@ const NewSales = ({ loading, editedSale }) => {
   }
   const addProduct = (product, group) => {
     setSelectedProducts((prevProducts) => {
-      const existingProduct = prevProducts.find(p => p.id === product.id);
+      const existingProduct = prevProducts.find(p => p._id === product._id);
       if (existingProduct) {
         return prevProducts.map(p =>
-          p.id === product.id ? { ...p, qty: p.qty + 1 } : p
+          p._id === product._id ? { ...p, qty: p.qty + 1 } : p
         );
       }
       return [...prevProducts, { ...product, qty: product?.qty }];
@@ -66,7 +66,7 @@ const NewSales = ({ loading, editedSale }) => {
   const updateProductQty = (productId, qty) => {
     setSelectedProducts((prevProducts) =>
       prevProducts.map(p =>
-        p.id === productId ? { ...p, qty } : p
+        p._id === productId ? { ...p, qty } : p
       )
     );
   };
@@ -74,14 +74,14 @@ const NewSales = ({ loading, editedSale }) => {
   const updateProductDetails = (productId, qty, salePrice) => {
     setSelectedProducts((prevProducts) =>
       prevProducts.map(p =>
-        p.id === productId ? { ...p, qty, salePrice } : p
+        p._id === productId ? { ...p, qty, salePrice } : p
       )
     );
   };
 
   const removeProduct = (productId) => {
     setSelectedProducts((prevProducts) =>
-      prevProducts.filter(p => p.id !== productId)
+      prevProducts.filter(p => p._id !== productId)
     );
   };
 
@@ -128,18 +128,29 @@ const NewSales = ({ loading, editedSale }) => {
       let sale;
       if (res?.data?.data?.createdSale && res.data.data.createdSale.length > 0) {
         sale = res.data.data.createdSale[0]; // Assign the first item from createdSale
-      } else if (res?.data?.data?.updatedSale) {
-        sale = res.data.data.updatedSale[0]; // Assign updatedSale
+      } else if (res?.data?.data?.sale) {
+        sale = res.data.data?.sale; // Assign updatedSale
       }
-      dispatch(updateCustomerSocketBalance({ _id: sale?.customer, transaction: sale?.total }));
-      selectedProducts.forEach(product => {
-        dispatch(updateProductQuantity({ productId: product._id, quantity: product.qty, type: "sale" }));
-      });
-      
+    
+      const balanceChange = editedSale ? sale?.total - editedSale?.total : sale?.total;
+      dispatch(updateCustomerSocketBalance({ _id: sale?.customer, transaction: balanceChange }));
+
+      if (res?.data?.data?.createdSale && res.data.data.createdSale.length > 0) {
+        selectedProducts.forEach(product => {
+          dispatch(updateProductQuantity({ productId: product._id, quantity: product.qty, type: "sale" }));
+        });
+      } else if (res?.data?.data?.sale) {
+        selectedProducts.forEach(product => {
+          console.log(product)
+          dispatch(updateProductQuantity({ productId: product._id, quantity: product.qty - product?.quantity, type: "sale" }));
+        });
+      }
+     
       notify(res?.data?.data?.createdSale ? "Sale Created" : "Sale Updated");
       setIsPrintModalOpen(true);
       setIsModalOpen(false);
       setSelectedProducts([]);
+      setEditedSale()
     }).catch((err) => {
       console.log(err)
       setDisabled(false);
@@ -184,6 +195,7 @@ const NewSales = ({ loading, editedSale }) => {
       />
       {isModalOpen && (
         <CheckoutModal
+          editedSale = {editedSale}
           disabled={disabled}
           selectedProducts={selectedProducts}
           subtotal={subtotal}

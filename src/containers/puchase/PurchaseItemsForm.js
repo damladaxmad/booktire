@@ -8,11 +8,10 @@ import { Typography } from '@material-ui/core';
 import Select from "react-select"
 import swal from 'sweetalert';
 
-const PurchaseItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
+const PurchaseItemsForm = ({ disabled, editedPurchase, handleAddProduct, handleFinish }) => {
   const initialProductState = { product: '', quantity: '', unitPrice: '', salePrice: '', subtotal: 0 };
   const headers = ["Name", "Qty", "Unit Price", "Sale Price", "Amount"]; // Updated headers
 
-  
   const numberFormatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 1,
     maximumFractionDigits: 2,
@@ -30,6 +29,22 @@ const PurchaseItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
     setTotal(newTotal - discount);
   }, [products, discount]);
 
+  useEffect(() => {
+    if (editedPurchase?.products?.length > 0) {
+      const updatedProducts = editedPurchase.products.map(product => {
+        const matchingProduct = sliceProducts.find(p => p._id === product.refProduct);
+        return {
+          ...product,
+          product: matchingProduct,
+          selectedProduct: matchingProduct ? { value: matchingProduct, label: matchingProduct.name } : null,
+        };
+      });
+      setProducts(updatedProducts);
+    }
+  }, [editedPurchase, sliceProducts]);
+  
+
+  
   const searchProducts = (event) => {
     const query = event.query;
     const filteredProducts = sliceProducts?.filter(product =>
@@ -63,54 +78,76 @@ const PurchaseItemsForm = ({ disabled, handleAddProduct, handleFinish }) => {
     setProducts(updatedProducts);
   };
 
-const handleSubmit = (event) => {
-  event.preventDefault();
-  let logString = '';
-  let unitPriceChanged = false;
-
-  products.forEach(product => {
-    const initialProduct = sliceProducts.find(p => p.name === product.product.name);
-    const initialUnitPrice = initialProduct ? initialProduct.unitPrice : 'N/A';
-    const newUnitPrice = product.unitPrice;
-
-    if (initialUnitPrice !== newUnitPrice && initialUnitPrice !== 'N/A' && initialUnitPrice !== 0) {
-      unitPriceChanged = true;
-      logString += `${product.product.name}, `;
-    }
-  });
-
-  if (logString) {
-    logString = logString.slice(0, -2); // Remove the trailing comma and space
-    logString += ': unit price-ka is beddeli doono.'; // Append the message
-  }
-
-  const swalTitle = unitPriceChanged ? "New product unitPrice!" : "Good to go!";
-  const swalText = unitPriceChanged ? logString : "Ma hubtaa inaa purchase sameyso?";
-
-  swal({
-    title: swalTitle,
-    text: swalText,
-    icon: "warning",
-    buttons: {
-      cancel: 'No',
-      confirm: { text: 'Yes', className: 'sweet-warning' },
-    }
-  }).then((response) => {
-    if (response) {
-      const isAnyFieldEmpty = products.some(product => !product.product || !product.quantity || !product.unitPrice);
-      if (isAnyFieldEmpty) {
-        alert('Please fill in all fields before finishing.');
-        return;
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    let logString = '';
+    let unitPriceChanged = false;
+  
+    products.forEach(product => {
+      if (product.product) {
+        const initialProduct = sliceProducts.find(p => p._id === product.product._id);
+        const initialUnitPrice = initialProduct ? initialProduct.unitPrice : 'N/A';
+        const newUnitPrice = product.unitPrice;
+  
+        if (parseFloat(initialUnitPrice)?.toFixed(2) != parseFloat(newUnitPrice)?.toFixed(2) && initialUnitPrice != 'N/A' && initialUnitPrice != 0) {
+          unitPriceChanged = true;
+          logString += `${product.product.name}, `;
+        }
       }
-
-      handleAddProduct({ products, discount, total });
-      setProducts([initialProductState]);
-      setDiscount(0);
-      setTotal(0);
+    });
+  
+    if (logString) {
+      logString = logString.slice(0, -2); // Remove the trailing comma and space
+      logString += ': unit price-ka is beddeli doono.'; // Append the message
     }
-  });
-};
+  
+    const swalTitle = unitPriceChanged ? "New product unitPrice!" : "Good to go!";
+    const swalText = unitPriceChanged ? logString : editedPurchase ? "Ma hubtaa inaa purchase update gareyso" : "Ma hubtaa inaa purchase sameyso?";
+  
+    swal({
+      title: swalTitle,
+      text: swalText,
+      icon: "warning",
+      buttons: {
+        cancel: 'No',
+        confirm: { text: 'Yes', className: 'sweet-warning' },
+      }
+    }).then(async(response)  => {
+      if (response) {
+        const isAnyFieldEmpty = products.some(product => {
+          console.log(product)
+          return !product.product || 
+                 !product.product._id || 
+                 !product.quantity || 
+                 isNaN(parseFloat(product.quantity)) || 
+                 !product.unitPrice || 
+                 isNaN(parseFloat(product.unitPrice)) || 
+                 !product.salePrice || 
+                 isNaN(parseFloat(product.salePrice));
+        });
+  
+        if (isAnyFieldEmpty) {
+          alert('Please fill in all fields before finishing.');
+          return;
+        }
 
+        const updatedProducts = products.map(product => {
+          const prevProduct = editedPurchase?.products.find(p => p.refProduct === product.refProduct);
+          return {
+            ...product,
+            prevQty: prevProduct ? prevProduct.quantity : 0
+          };
+        });
+
+        console.log(updatedProducts, products)
+  
+        await handleAddProduct({ products, discount, total });
+        setProducts([initialProductState].map(() => ({ ...initialProductState, selectedProduct: null }))); // Reset select
+        setDiscount(0);
+        setTotal(0);
+      }
+    });
+  };
   
 
   return (
@@ -126,31 +163,31 @@ const handleSubmit = (event) => {
           {products.map((product, index) => (
             <div key={index} style={{ display: "flex", width: "100%", gap: "20px" }}>
             <Select
-                placeholder='Select product'
-                styles={{
-                  control: (styles, { isDisabled }) => ({
-                    ...styles,
-                    border: "1px solid lightGrey",
-                    height: "36px",
-                    borderRadius: "5px",
-                    width: "170px",
-                    minHeight: "28px",
-                    ...(isDisabled && { cursor: "not-allowed" }),
-                  })
-                }}
-                value={product.selectedProduct}
-                options={sliceProducts.map(product => ({ value: product, label: product.name }))}
-                onChange={(e) => {
-                  const updatedProducts = [...products];
-                  updatedProducts[index].selectedProduct = e;
-                  handleInputChange(index, { target: { name: 'product', value: e.value } })
-                  handleInputChange(index, { target: { name: 'quantity', value: 1 } });
-                  handleInputChange(index, { target: { name: 'salePrice', value: e.value.salePrice?.toFixed(2) } });
-                  handleInputChange(index, { target: { name: 'unitPrice', value: e.value.unitPrice?.toFixed(2) } });
-                  setProducts(updatedProducts);
-                }}
-                
-              />
+  placeholder='Select product'
+  styles={{
+    control: (styles, { isDisabled }) => ({
+      ...styles,
+      border: "1px solid lightGrey",
+      height: "36px",
+      borderRadius: "5px",
+      width: "170px",
+      minHeight: "28px",
+      ...(isDisabled && { cursor: "not-allowed" }),
+    })
+  }}
+  value={product.selectedProduct}
+  options={sliceProducts.map(product => ({ value: product, label: product.name }))}
+  onChange={(e) => {
+    const updatedProducts = [...products];
+    updatedProducts[index].selectedProduct = e;
+    handleInputChange(index, { target: { name: 'product', value: e.value } });
+    handleInputChange(index, { target: { name: 'quantity', value: 1 } });
+    handleInputChange(index, { target: { name: 'salePrice', value: e.value.salePrice?.toFixed(2) } });
+    handleInputChange(index, { target: { name: 'unitPrice', value: e.value.unitPrice?.toFixed(2) } });
+    setProducts(updatedProducts);
+  }}
+/>
+
               <input
                 style={{ flex: "1", minWidth: "0", width: "100px", border: "1px solid lightGrey", borderRadius: "5px", padding: "5px 10px" }}
                 type="number"
@@ -211,7 +248,7 @@ const handleSubmit = (event) => {
               bgColor="white"
               height="38px" fontSize="15px"
               onClick={() => {
-                setProducts([initialProductState]);
+                setProducts([initialProductState].map(() => ({ ...initialProductState, selectedProduct: null }))); // Reset select
                 setDiscount(0);
                 setTotal(0);
               }}

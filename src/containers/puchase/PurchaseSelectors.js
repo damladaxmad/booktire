@@ -3,8 +3,8 @@ import { useSelector } from 'react-redux';
 import moment from 'moment';
 import Select from 'react-select';
 
-const PurchaseSelectors = ({ purchaseType, setPurchaseType, vendor, setVendor, date, setDate, setRefNumber }) => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+const PurchaseSelectors = ({ purchaseType, editedPurchase, refNumber, setPurchaseType, vendor, setVendor, date, setDate, setRefNumber }) => {
+  const [selectedDate, setSelectedDate] = useState(date);
   const vendors = useSelector(state => state?.vendors.vendors);
 
   const handleDateChange = (e) => {
@@ -13,6 +13,7 @@ const PurchaseSelectors = ({ purchaseType, setPurchaseType, vendor, setVendor, d
   };
 
   const handleVendorSelect = (selectedOption) => {
+    console.log(selectedOption.value)
     setVendor(selectedOption?.value);
   };
 
@@ -78,6 +79,7 @@ const PurchaseSelectors = ({ purchaseType, setPurchaseType, vendor, setVendor, d
 
       <input
         type="text"
+        value = {refNumber}
         style={{
           width: "150px",
           height: "36px",
