@@ -21,7 +21,7 @@ const PrintableTableComponent = ({reportTitle, columns, data, imageUrl, children
 
                 <div style={{ width: "100px", height: "100px", background: "transparent" }}>
                     <img
-                        src={profile}
+                        src={business?.logoUrl || profile}
                         style={{
                             width: "100%",
                             height: "100%",

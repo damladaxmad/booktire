@@ -104,9 +104,9 @@ export default function PurchaesReport() {
                         { title: 'Date', field: 'date', render: rowData => moment(rowData.date).format("YYYY-MM-DD") },
                         { title: 'User', field: 'user', width: "4%" },
                         { title: 'Payment', field: 'paymentType' },
-                        { title: 'Subtotal', field: 'subtotal', render: rowData => `$${rowData?.total + rowData?.discount}` },
+                        { title: 'Subtotal', field: 'subtotal', render: rowData => `$${(rowData?.total + rowData?.discount)?.toFixed(2)}` },
                         { title: 'Discount', field: 'discount', render: rowData => `$${rowData?.discount}` },
-                        { title: 'Total', field: 'total', render: rowData => `$${rowData?.total}` }
+                        { title: 'Total', field: 'total', render: rowData => `$${rowData?.total?.toFixed(2)}` }
                     ]}
                     data={purchases?.map((sale, index) => ({
                         purchaseNumber: sale?.purchaseNumber,

@@ -101,7 +101,7 @@ const PurchaseItemsForm = ({ disabled, editedPurchase, handleAddProduct, handleF
       logString += ': unit price-ka is beddeli doono.'; // Append the message
     }
   
-    const swalTitle = unitPriceChanged ? "New product unitPrice!" : "Good to go!";
+    const swalTitle = "Ma hubtaa?";
     const swalText = unitPriceChanged ? logString : editedPurchase ? "Ma hubtaa inaa purchase update gareyso" : "Ma hubtaa inaa purchase sameyso?";
   
     swal({

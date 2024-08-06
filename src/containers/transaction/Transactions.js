@@ -47,7 +47,7 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
                 balance += transaction.debit - transaction.credit;
             }
         });
-        return balance;
+        return balance?.toFixed(2);
     };
 
     const dispatch = useDispatch()
@@ -167,7 +167,7 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
         },
         { title: "User", field: "user", cellStyle: { border: "none" }, width: "20%" },
         {
-            title: "Debit", field: "debit",
+            title: "Debit", field: "debit", render: rowData => <p> {rowData?.debit?.toFixed(2)}</p>,
             editable: rowData => rowData.debit == 0 && "never",
             cellStyle: { border: "none" }
         },

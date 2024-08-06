@@ -29,8 +29,8 @@ const Purchases = () => {
   const handleEditPurchase = (data) => {
     setCurrentTab(0)
     setEditedPurchase(data)
-    // setPurchaseType(data?.paymentType)
-    // setVendor(data?.vendor && data?.vendor)
+    setPurchaseType(data?.paymentType)
+    setVendor(data?.vendor && data?.vendor)
     setDate(moment(data.date).format("YYYY-MM-DD"))
     setRefNumber(data.refNumber)
   }
@@ -66,7 +66,6 @@ const Purchases = () => {
   };
 
   const createPurchase = (data) => {
-    console.log(data)
     const url = editedPurchase ? `${constants.baseUrl}/purchases/${editedPurchase?._id}`: `${constants.baseUrl}/purchases`;
     const method = editedPurchase ? 'patch' : 'post';
   
@@ -84,10 +83,11 @@ const Purchases = () => {
       if (res?.data?.data?.createdPurchase && res.data.data.createdPurchase.length > 0) {
         purchase = res.data.data.createdPurchase[0]; // Assign the first item from createdSale
       } else if (res?.data?.data?.updatedPurchase) {
-        purchase = res.data.data.updatedPurchase?.updatedPurchase; // Assign updatedSale
+        purchase = res.data.data.updatedPurchase; // Assign updatedSale
       }
-
-      dispatch(updateVendorSocketBalance({_id: purchase?.vendor, transaction: purchase?.total}))
+      console.log(res?.data?.data, purchase)
+      const balanceChange = editedPurchase ? purchase?.total - editedPurchase?.total : purchase?.total;
+      dispatch(updateVendorSocketBalance({_id: purchase?.vendor, transaction: balanceChange}))
       purchase?.products?.forEach(product => {
         dispatch(updateProductQuantity({ productId: product.refProduct, quantity: product.quantity, type: "purchase" }));
         dispatch(updateProductUnitPriceAndSalePrice({ productId: product.refProduct, unitPrice: product.unitPrice, 
@@ -108,7 +108,7 @@ const Purchases = () => {
   const handleAddProduct = ({ products, discount, total }) => {
     setDisabled(true)
 
-    console.log('Submitted data:', { products, discount, total });
+    // console.log('Submitted data:', { products, discount, total });
 
     const transformedData = {
       products: products.map(product => ({

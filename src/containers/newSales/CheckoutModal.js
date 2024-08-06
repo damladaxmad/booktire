@@ -10,7 +10,7 @@ import Select from "react-select";
 import useReadData from '../../hooks/useReadData';
 import { setUserDataFetched, setUsers } from '../user/userSlice';
 
-const CheckoutModal = ({ selectedProducts, subtotal, editedSale, onClose, onFinishPayment, disabled }) => {
+const CheckoutModal = ({ selectedProducts, subtotal, saleGroup, editedSale, onClose, onFinishPayment, disabled }) => {
   const [discount, setDiscount] = useState("");
   const [total, setTotal] = useState(subtotal);
   const [selectedDate, setSelectedDate] = useState(editedSale ? moment(editedSale.date).format("YYYY-MM-DD") : new Date());
@@ -19,6 +19,7 @@ const CheckoutModal = ({ selectedProducts, subtotal, editedSale, onClose, onFini
   const customers = useSelector(state => state?.customers.customers);
   const { business } = useSelector(state => state.login.activeUser);
   const [saleType, setSaleType] = useState(editedSale ? editedSale?.paymentType : "cash");
+  const [group, setGroup] = useState(saleGroup ? saleGroup : null);
   const [customer, setCustomer] = useState(editedSale ? editedSale?.customer : null);
   const [selectedUser, setSelectedUser] = useState(
     editedSale ? { value: editedSale.user, label: editedSale.user } : null
@@ -64,6 +65,10 @@ const CheckoutModal = ({ selectedProducts, subtotal, editedSale, onClose, onFini
     { value: 'cash', label: 'Cash' },
     { value: 'invoice', label: 'Invoice' }
   ];
+  const groups = [
+    { value: '2 shey', label: '2 shey' },
+    { value: '3 shey', label: '3 shey' }
+  ];
 
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
@@ -74,6 +79,8 @@ const CheckoutModal = ({ selectedProducts, subtotal, editedSale, onClose, onFini
     const calculatedTotal = isNaN(discountValue) ? subtotal : subtotal - discountValue;
     setTotal(calculatedTotal);
   }, [discount, subtotal]);
+
+  console.log(group)
 
   return (
     <div style={{
@@ -140,8 +147,8 @@ const CheckoutModal = ({ selectedProducts, subtotal, editedSale, onClose, onFini
             </div>
   
             <div style={{
-              width: "100%", display: "flex", gap: "10px", flexDirection: "column",
-              marginBottom: "15px"
+              width: "100%", display: "flex", gap: "15px", flexDirection: "column",
+              marginBottom: "30px"
             }}>
               <Select
                 value={saleTypeOptions.find(option => option.value === saleType)}
@@ -149,7 +156,7 @@ const CheckoutModal = ({ selectedProducts, subtotal, editedSale, onClose, onFini
                 onChange={(selectedOption) => setSaleType(selectedOption.value)}
               />
   
-              <Select
+             {saleType == "invoice" && <Select
                 placeholder='Select customer'
                 styles={{
                   control: (styles, { isDisabled }) => ({
@@ -167,7 +174,7 @@ const CheckoutModal = ({ selectedProducts, subtotal, editedSale, onClose, onFini
                 onChange={handleCustomerSelect}
                 isClearable={true} 
                 isDisabled={saleType === "cash"}
-              />
+              />}
                   <Select
                 placeholder="Select User"
                 options={users?.map(user => ({ value: user._id, label: user?.username }))}
@@ -180,8 +187,8 @@ const CheckoutModal = ({ selectedProducts, subtotal, editedSale, onClose, onFini
             </div>
   
             <div style={{
-              marginBottom: '20px', display: "flex", flexDirection: "row", width: "100%",
-              justifyContent: "space-between"
+              marginBottom: '15px', display: "flex", flexDirection: "row", width: "100%",
+              justifyContent: "space-between", 
             }}>
               <input
                 type="date"
@@ -204,24 +211,52 @@ const CheckoutModal = ({ selectedProducts, subtotal, editedSale, onClose, onFini
                   padding: "7px 10px", height: "40px"
                 }}
                 type="number"
-                placeholder='Discount'
+                placeholder='discount'
                 name="price"
                 value={discount}
                 onChange={(e) => setDiscount(parseFloat(e.target.value))}
               />
+
             </div>
   
-            <TextField
-              small
-              label="Note"
-              rows={1}
-              variant="outlined"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              fullWidth
-              style={{ marginBottom: "20px", zIndex: 0 }}
-            />
+            <div style={{
+              marginBottom: '20px', display: "flex", flexDirection: "row", width: "100%",
+              justifyContent: "space-between"
+            }}>
+  
+              <input
+                style={{
+                  width: "47%", border: "1px solid lightGrey", borderRadius: "5px",
+                  padding: "7px 10px", height: "40px"
+                }}
+                type="text"
+                placeholder='Note'
+                name="price"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+              />
+
+              <Select
+              placeholder = "group"
+                  styles={{
+                    control: (styles, { isDisabled }) => ({
+                      ...styles,
+                      border: "1px solid lightGrey",
+                      height: "40px",
+                      width: "142px",
+                      minHeight: "28px",
+                      ...(isDisabled && { cursor: "not-allowed" }),
+                    })
+                  }}
+                isClearable={true}
+                value={groups?.find(option => option.value === group)}
+                options={groups}
+                onChange={(selectedOption) => setGroup(selectedOption ? selectedOption.value : null)}
+              />
+            </div>
+
           </div>
+
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
               <Typography variant="body1">TOTAL:</Typography>
@@ -236,7 +271,8 @@ const CheckoutModal = ({ selectedProducts, subtotal, editedSale, onClose, onFini
               onClick={() => {
                 onFinishPayment({
                   discount: discount, saleType: saleType,
-                  date: selectedDate, customer: customer, user: selectedUser?.label, products: updatedProducts, note: note // Pass the note to the parent
+                  date: selectedDate, customer: customer, user: selectedUser?.label, products: updatedProducts, note: note,
+                  group: group// Pass the note to the parent
                 });
               }}
               style={{ width: "100%", fontSize: "14px" }}

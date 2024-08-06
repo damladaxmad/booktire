@@ -8,6 +8,7 @@ import PurchaesReport from "../containers/reports/PurchasesReport";
 import ExpensesReport from "../containers/reports/ExpenseReport";
 import ServicesReport from "../containers/reports/ServicesReport";
 import SalesSummary from "../containers/reports/SalesSummary";
+import IncomeStatement from "../containers/reports/IncomeStatement";
 
 export default function Reports() {
   const [currentTab, setCurrentTab] = useState(2);
@@ -166,6 +167,24 @@ export default function Reports() {
           }}>
           Vendors
         </div>
+
+        <div
+          onClick={() => handleTabChange(8)}
+          style={{
+            padding: '5px 0px',
+            width: "100px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: '10px',
+            cursor: 'pointer',
+            backgroundColor: currentTab === 8 ? constants.pColor : 'transparent',
+            color: currentTab === 8 ? 'white' : 'black',
+            borderRadius: '50px',
+            border: `1px solid ${constants.pColor}`
+          }}>
+          Income
+        </div>
   
   
       </div>
@@ -178,6 +197,7 @@ export default function Reports() {
       {currentTab == 5 && <ExpensesReport />} 
       {currentTab == 6 && <ServicesReport />} 
       {currentTab == 7 && <SalesSummary />} 
+      {currentTab == 8 && <IncomeStatement />} 
     </div>
   );
 }

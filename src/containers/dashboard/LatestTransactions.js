@@ -77,7 +77,7 @@ function Transaction({ data, index }) {
                 <Typography style={{ fontSize: "14px", color: index === 0 ? constants.colorSubText : "#B4B4B4" }}> {moment(data.date).format("YYYY-MM-DD")}</Typography>
             </div>
             <Typography style={{ fontSize: "15px" }}> {data.paymentType}</Typography>
-            <Typography style={{ fontSize: "15px" }}> ${data.total}</Typography>
+            <Typography style={{ fontSize: "15px" }}> ${data.total?.toFixed(2)}</Typography>
         </div>
     )
 }

@@ -155,7 +155,7 @@ export default function SalesReport() {
                             }
                         },
                         // { title: 'Customer', field: 'customer', render: rowData => <p>{rowData?.customer?.name}</p> },
-                        { title: 'Date', field: 'date', render: rowData => moment(rowData.date).format("YYYY-MM-DD") },
+                        { title: 'Date', field: 'date', render: rowData => moment(rowData.date).format('DD MMM')},
                         { title: 'User', field: 'user', width: "4%" },
                         { title: 'Payment', field: 'paymentType' },
                         { title: 'Subtotal', field: 'subtotal', render: rowData => `${numberFormatter.format(rowData?.total + rowData?.discount)}` },

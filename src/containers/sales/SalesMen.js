@@ -6,7 +6,7 @@ import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { constants } from '../../Helpers/constantsFile';
 import CustomButton from '../../reusables/CustomButton';
-import PrintableTableComponent from "../reports/PintableTableComponent"
+import PrintableTableComponent from "../reports/PintableTableComponent";
 import { useReactToPrint } from 'react-to-print';
 
 export default function SalesMen() {
@@ -29,7 +29,7 @@ export default function SalesMen() {
 
     useEffect(() => {
         fetchSales();
-    }, []);
+    }, [startDate, endDate]);
 
     const handlePrint = useReactToPrint({
         content: () => document.querySelector('.printable-table'),
@@ -43,7 +43,7 @@ export default function SalesMen() {
             }
         }).then(res => {
             setSales(res?.data?.data?.sales);
-            calculateProfits(res?.data?.data?.sales);
+            calculateProfitsAndSalesCount(res?.data?.data?.sales);
         }).catch(error => {
             console.error("Error fetching sales:", error);
         }).finally(() => {
@@ -51,37 +51,33 @@ export default function SalesMen() {
         });
     };
 
-    const calculateProfits = (salesData) => {
-        const userProfits = salesData.reduce((acc, sale) => {
+    const calculateProfitsAndSalesCount = (salesData) => {
+        const userProfitsAndSalesCount = salesData.reduce((acc, sale) => {
             const profit = sale.total - sale.cogs;
             const user = sale.user;
-            
-            // Only process if user is defined
-            if (user !== undefined && user !== null) {
+
+            if (user) {
                 if (acc[user]) {
-                    acc[user] += profit;
+                    acc[user].profit += profit;
+                    acc[user].salesCount += 1;
                 } else {
-                    acc[user] = profit;
+                    acc[user] = { profit, salesCount: 1 };
                 }
             }
-            
+
             return acc;
         }, {});
-    
-        // Create an array of user profits, filtering out any `undefined` users
-        const profitsArray = Object.keys(userProfits)
-            .filter(user => user !== undefined && user !== null) // Filter out undefined and null keys
-            .map(user => ({
-                user,
-                profit: userProfits[user],
-            }));
-    
-        // Sort the profits array by profit in descending order
+
+        const profitsArray = Object.keys(userProfitsAndSalesCount).map(user => ({
+            user,
+            profit: userProfitsAndSalesCount[user].profit,
+            salesCount: userProfitsAndSalesCount[user].salesCount
+        }));
+
         profitsArray.sort((a, b) => b.profit - a.profit);
-    
+
         setProfits(profitsArray);
     };
-    
 
     const handleViewClick = () => {
         fetchSales();
@@ -97,32 +93,32 @@ export default function SalesMen() {
             fetchSales()
         }).catch(err => {
             alert(err?.response?.data?.message)
-        })
+        });
     };
 
     const columns = [
-        { title: 'User Name', field: 'user' },
-       { title: 'Profit', field: 'profit',
-            render: rowData => <p>{numberFormatter.format(rowData?.profit)}</p>
-         },
-       
+        {title: "No", field: "no", render: (rowData, index) => <p>{rowData?.tableData?.id + 1}</p>},
+        { title: 'Name', field: 'user' },
+        { title: 'Profit', field: 'profit', render: rowData => <p>{numberFormatter.format(rowData?.profit)}</p> },
+        { title: 'No. Sales', field: 'salesCount' }
     ];
 
-    let totalProfits = 0
+    let totalProfits = 0;
     profits?.map(profit => {
-        totalProfits += profit?.profit
-    })
+        totalProfits += profit?.profit;
+    });
 
     return (
         <div>
-            <div style={{ marginBottom: '20px', marginTop: "20px", }}>
-            <PrintableTableComponent columns={columns} data={profits} imageUrl={imageUrl} 
-                reportTitle= {`Salesman Profits (${moment(startDate).format("YYYY-MM-DD")} - ${moment(endDate).format("YYYY-MM-DD")})`}>
-                    <div style = {{marginTop: "10px"}}>  
-                <Typography style = {{ fontSize: "16px"}}>  TOTAL: 
-                <span  style = {{fontWeight: "bold", fontSize: "18px"}}> {numberFormatter.format(totalProfits)} </span></Typography>
-            </div>
-            </PrintableTableComponent>
+            <div style={{ marginBottom: '20px', marginTop: "20px" }}>
+                <PrintableTableComponent columns={columns} data={profits} imageUrl={imageUrl}
+                    reportTitle={`Salesman Profits (${moment(startDate).format("YYYY-MM-DD")} - ${moment(endDate).format("YYYY-MM-DD")})`}>
+                    <div style={{ marginTop: "10px" }}>
+                        <Typography style={{ fontSize: "16px" }}> TOTAL:
+                            <span style={{ fontWeight: "bold", fontSize: "18px" }}> {numberFormatter.format(totalProfits)} </span>
+                        </Typography>
+                    </div>
+                </PrintableTableComponent>
                 <TextField
                     size="small"
                     variant="outlined"
@@ -147,29 +143,32 @@ export default function SalesMen() {
                     }}
                     style={{ marginRight: '20px' }}
                 />
-                 <CustomButton text = "View" height = "37px" width = "100px" fontSize='14px'
-                 onClick={handleViewClick} />
-                 <CustomButton text="Print" onClick={handlePrint} height="37px" fontSize="14px" 
-                 style = {{width: '100px', marginLeft: "50px", background: "white", color: "black"}}/>
+                <CustomButton text="View" height="37px" width="100px" fontSize='14px'
+                    onClick={handleViewClick} />
+                <CustomButton text="Print" onClick={handlePrint} height="37px" fontSize="14px"
+                    style={{ width: '100px', marginLeft: "50px", background: "white", color: "black" }} />
             </div>
             {loading ? (
                 <div style={{ textAlign: 'center' }}>
                     <CircularProgress />
                 </div>
             ) : (
-               <div style = {{ display: "flex", gap: "10px", flexDirection: "column",
-                width: "60%", 
-               }}>
-                   {profits.map((userProfit, index) => (
-                       <div key={index} style={{background: "white", display: "flex",
-                        flexDirection: "row", padding: "10px 20px", borderRadius: "10px", gap: "10px",
-                        
-                        justifyContent: "space-between",  }}>
-                           <Typography variant="body1">{userProfit.user}</Typography>
-                           <Typography variant="body1">{numberFormatter.format(userProfit.profit)}</Typography>
-                       </div>
-                   ))}
-               </div>  
+                <div style={{
+                    display: "flex", gap: "10px", flexDirection: "column",
+                    width: "60%",
+                }}>
+                    {profits.map((userProfit, index) => (
+                        <div key={index} style={{
+                            background: "white", display: "flex",
+                            flexDirection: "row", padding: "10px 20px", borderRadius: "10px", gap: "10px",
+                            justifyContent: "space-between",
+                        }}>
+                            <Typography variant="body1" style = {{flex: 2}}>{userProfit.user}</Typography>
+                            <Typography variant="body1" style = {{flex: 1.5}}>{numberFormatter.format(userProfit.profit)}</Typography>
+                            <Typography variant="body1" style = {{flex: 0.2}}>{userProfit.salesCount}</Typography>
+                        </div>
+                    ))}
+                </div>
             )}
         </div>
     );

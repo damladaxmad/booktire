@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import PrintSaleModal from './PrintSaleModal';
 import moment from 'moment';
+import { ExposureZero } from '@material-ui/icons';
 
 const NewSales = ({ loading, editedSale, setEditedSale }) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -22,8 +23,6 @@ const NewSales = ({ loading, editedSale, setEditedSale }) => {
   const { business, username } = useSelector(state => state.login.activeUser);
   const [data, setData] = useState();
   const [group, setGroup] = useState("")
-
-  console.log(editedSale)
 
   const notify = (message) => toast(message, {
     autoClose: 2700,
@@ -48,7 +47,7 @@ const NewSales = ({ loading, editedSale, setEditedSale }) => {
   }, [editedSale]);
 
   const addGroup = (group) => {
-    setGroup((prevGroup) => prevGroup + ` ${group}`);
+    setGroup(group);
     console.log(group)
   }
   const addProduct = (product, group) => {
@@ -103,7 +102,8 @@ const NewSales = ({ loading, editedSale, setEditedSale }) => {
       customer: data?.customer,
       date: data.date,
       user: data.user || username,
-      note: data?.note
+      note: data?.note,
+      saleGroup: data?.group
     });
   };
 
@@ -159,8 +159,11 @@ const NewSales = ({ loading, editedSale, setEditedSale }) => {
   };
 
 
-  const handleAddProduct = ({ products, discount, total, date, note, saleType, customer, user }) => {
+  const handleAddProduct = ({ products, discount, saleGroup, total, date, note, saleType, customer, user }) => {
     setDisabled(true);
+
+   const hasZeroSalePriceProduct = products.some(product => product.salePrice === 0)
+
     const transformedData = {
       products: products.map(product => ({
         refProduct: product?._id,
@@ -177,11 +180,16 @@ const NewSales = ({ loading, editedSale, setEditedSale }) => {
       date: moment(date).format("YYYY-MM-DD"),
       user: user,
       note: note,
-      group: editedSale ? editedSale?.group : group
+      // group: editedSale ? editedSale?.group : hasZeroSalePriceProduct ? group : null
+      group: saleGroup ? saleGroup : hasZeroSalePriceProduct ? saleGroup : null
     };
 
     createSale(transformedData);
   };
+
+  useEffect(() => {
+    console.log('group state changed:', group);
+  }, [group]);
 
   return (
     <div style={{ width: "100%", display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
@@ -196,6 +204,7 @@ const NewSales = ({ loading, editedSale, setEditedSale }) => {
       {isModalOpen && (
         <CheckoutModal
           editedSale = {editedSale}
+          saleGroup = {group}
           disabled={disabled}
           selectedProducts={selectedProducts}
           subtotal={subtotal}
