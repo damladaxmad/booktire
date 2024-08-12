@@ -12,7 +12,7 @@ export default function Privileges({ user, hide }) {
     const token = useSelector(state => state.login?.token);
 
     // List of tab names
-    const tabNames = ['Dashboard', 'Customers', 'Vendors', 'Products', 'Sales', 'Purchases', 'Reports', "Expenses", 'Adminstration'];
+    const tabNames = ['Dashboard', 'Customers', 'Vendors', 'Products', 'Sales', 'Purchases', 'Reports', "Expenses", "Employees", 'Adminstration'];
 
     // Function to handle tab selection
     const handleTabSelect = (tabName) => {

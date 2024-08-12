@@ -61,6 +61,11 @@ export const SidebarData = [
     path: "/adminstration",
   },
   {
+    text: "Employees",
+    icon: <MdOutlineAdminPanelSettings  style={{fontSize: "20px",}} />,
+    path: "/employees",
+  },
+  {
     text: 'Import Data',
     path: '/import',
     icon: <MdOutlineFileDownload   style={{fontSize: "20px", }} />

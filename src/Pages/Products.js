@@ -43,12 +43,6 @@ export default function Products() {
     setCurrentTab(tabIndex);
   };
 
-  let totalItems = 0
-  products?.map(p => {
-    if (p.quantity < 0) return
-    totalItems += p.quantity
-  })
-
   const dispatch = useDispatch()
 
   const { showRegister, update, toBeUpdatedCustomer,
@@ -102,6 +96,12 @@ export default function Products() {
   const handleSearchChange = (value) => {
     setQuery(value);
   };
+
+  let totalItems = 0
+  handler(products)?.map(p => {
+    if (p.quantity < 0) return
+    totalItems += p.quantity
+  })
 
   return (
     <div style={parentDivStyle}>

@@ -56,6 +56,7 @@ const CreateProduct = ({ instance, store, name, fields, update, url, business, h
     },
     validate,
     onSubmit: (values) => {
+      if (!values.category) return alert("Fadlan Dooro Category!")
       setDisabled(true);
       values.business = business;
       values.socketId = mySocketId;

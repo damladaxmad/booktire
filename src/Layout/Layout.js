@@ -221,7 +221,7 @@ export default function NewLayout({ children, props }) {
           </div>
         </DrawerHeader>
       
-        <div style={{ overflowY: "auto", height: "calc(100% - 120px)" }}> 
+        <div style={{ overflowY: "auto", height: "calc(100% - 140px)" }}> 
         <List>
           {SidebarData.map((item, index) => {
             if (activeUser?.privileges?.includes(item.text) || activeUser?.username == "abc")
