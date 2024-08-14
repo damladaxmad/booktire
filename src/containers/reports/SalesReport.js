@@ -22,8 +22,8 @@ export default function SalesReport() {
     const [selectedSale, setSelectedSale] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null); // Track selected user
-    const userUrl = `${constants.baseUrl}/users/get-business-users/${business?._id}`;
-    const users = useSelector(state => state.users.users);
+    const userUrl = `${constants.baseUrl}/employees/get-business-employees/${business?._id}`;
+    const users = useSelector(state => state.employees.employees);
 
     const numberFormatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -108,7 +108,7 @@ export default function SalesReport() {
                 />
                 <Select
                     placeholder="Select User"
-                    options={users?.map(user => ({ value: user._id, label: user?.username }))}
+                    options={users?.map(user => ({ value: user._id, label: user?.name }))}
                     onChange={selectedOption => setSelectedUser(selectedOption)}
                     isClearable={true}
                     isSearchable={true}

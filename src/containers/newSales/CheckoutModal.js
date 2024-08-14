@@ -24,8 +24,8 @@ const CheckoutModal = ({ selectedProducts, subtotal, saleGroup, editedSale, onCl
   const [selectedUser, setSelectedUser] = useState(
     editedSale ? { value: editedSale.user, label: editedSale.user } : null
   ); 
-  const userUrl = `${constants.baseUrl}/users/get-business-users/${business?._id}`;
-  const users = useSelector(state => state.users.users);
+  const userUrl = `${constants.baseUrl}/employees/get-business-employees/${business?._id}`;
+  const users = useSelector(state => state.employees.employees);
 
   // Modify selectedProducts to include prevQty
   const updatedProducts = selectedProducts.map(product => {
@@ -177,7 +177,7 @@ const CheckoutModal = ({ selectedProducts, subtotal, saleGroup, editedSale, onCl
               />}
                   <Select
                 placeholder="Select User"
-                options={users?.map(user => ({ value: user._id, label: user?.username }))}
+                options={users?.map(user => ({ value: user._id, label: user?.name }))}
                 value={selectedUser} // Correctly formatted selected user
                 onChange={selectedOption => setSelectedUser(selectedOption)} // Handle selected user
                 isClearable={true}

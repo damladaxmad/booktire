@@ -11,6 +11,7 @@ import Import from "./Pages/Import";
 import YourComponent from "./Pages/PrintableTableComponent";
 import Qarashaad from "./Pages/Qarashaad";
 import Employees from "./Pages/Employees";
+import Accounts from "./Pages/Accounts";
 
 export const pages = [
         <Route path="/dashboard" element={<Dashboard />} />,
@@ -21,6 +22,7 @@ export const pages = [
         <Route path="/reports" element={<Reports />} />,
         <Route path="/adminstration" element={<Adminstration />} />,
         <Route path="/employees" element={<Employees />} />,
+        <Route path="/accounts" element={<Accounts />} />,
         <Route path="/products" element={<Products />} />,
         <Route path="/import" element={<Import />} />,
         <Route path="/expenses" element={<Qarashaad />} />,

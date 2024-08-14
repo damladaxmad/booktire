@@ -36,14 +36,14 @@ hideModal, onUpdate}) => {
   const validate = (values) => {
     const errors = {};
 
-     if ( (name !== "Category" &&  !values.name && name !== "Qarashaad")) {
+     if ( (name !== "Category" &&  name !== "Account" && !values.name && name !== "Qarashaad")) {
        errors.name = "Field is Required";
      }
 
      if ( name == "Category" && name !== "Type" && !values.categoryName) {
        errors.categoryName = "Field is Required";
      }
-     if ( (name !== "User" && name !== "Category" && name !== "Type" && name !== "Service Category" && name !== "Service Type" && name !== "Qarashaad") && (!values.phone)) {
+     if ( (name !== "User" && name !== "Category" && name !== "Account" && name !== "Type" && name !== "Service Category" && name !== "Service Type" && name !== "Qarashaad") && (!values.phone)) {
        errors.phone = "Field is Required";
      }
   
@@ -68,9 +68,7 @@ hideModal, onUpdate}) => {
       setDisabled(true)
       values.business = business
       values.socketId = mySocketId
-      if (name === "User") values.password = "123"
       if (name === "User") values.passwordConfirm = values.password
-      if (name === "User") values.role = "manager"
 
       if (update){
         axios.patch(`${constants.baseUrl}/${url}/${instance._id}`, values,

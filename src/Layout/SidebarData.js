@@ -3,7 +3,7 @@ import * as RiIcons from 'react-icons/ri';
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import GroupIcon from "@material-ui/icons/Group";
 import { VscPerson } from "react-icons/vsc";
-import { MdOutlineAdminPanelSettings, MdOutlineFileDownload, MdPointOfSale, MdProductionQuantityLimits } from 'react-icons/md';
+import { MdAccountBalance, MdOutlineAdminPanelSettings, MdOutlineFileDownload, MdPointOfSale, MdProductionQuantityLimits } from 'react-icons/md';
 import { BiPurchaseTagAlt, BiWallet } from "react-icons/bi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 
@@ -64,6 +64,11 @@ export const SidebarData = [
     text: "Employees",
     icon: <MdOutlineAdminPanelSettings  style={{fontSize: "20px",}} />,
     path: "/employees",
+  },
+  {
+    text: "Accounts",
+    icon: <MdAccountBalance  style={{fontSize: "20px",}} />,
+    path: "/accounts",
   },
   {
     text: 'Import Data',

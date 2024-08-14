@@ -105,7 +105,7 @@ const SignupAndLogin = (props) => {
           }}> CONTACT US:</Typography>
           <Typography style = {{ fontSize: "15px"
            
-          }}> 0616549198 / 0615753832</Typography>
+          }}> 0615753832 / 0616549198 </Typography>
       </div>
     </div>
   );

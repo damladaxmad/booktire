@@ -134,7 +134,7 @@ export default function IncomeStatement() {
                     <Typography style={{ fontWeight: 'bold', fontSize: "18px" }}>
                         Net Income
                     </Typography>
-                    <Typography style={{ fontWeight: 'bold', fontSize: "18px" }}>
+                    <Typography style={{ fontWeight: 'bold', fontSize: "18px", color: statement?.netIncome < 0 && "red" }}>
                         {numberFormatter.format(statement.netIncome) || 0}
                     </Typography>
                 </div>
