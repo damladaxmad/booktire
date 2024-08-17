@@ -35,8 +35,7 @@ export default function Customers() {
   const token = useSelector(state => state.login.token)
   const url = `${constants.baseUrl}/customers/get-business-customers/${business?._id}`
   const customers = JSON.parse(JSON.stringify(useSelector(state => state.customers?.customers || [])))
-  const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions)))
-
+ 
   const dispatch = useDispatch()
   
   const { showRegister, update, toBeUpdatedCustomer,

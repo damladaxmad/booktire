@@ -14,7 +14,9 @@ import { handleAddCustomerBalance, handleDeleteCustomerBalance, handleUpdateCust
 import { handleAddVendorBalance, handleDeleteVendorBalance, handleUpdateVendorBalance } from "../vendor/vendorUtils";
 import { updateVendorBalance } from "../vendor/vendorSlice";
 
-const TransactionForm = ({ type, update, instance, transaction, client, hideModal }) => {
+const TransactionForm = ({ type, update, instance, transaction, client, hideModal, 
+    endPoint = "transactions"
+ }) => {
 
     const [disabled, setDisabled] = useState(false)
     const token = useSelector(state => state.login.token)
@@ -51,7 +53,7 @@ const TransactionForm = ({ type, update, instance, transaction, client, hideModa
             true,
             `Delete Transaction`,
             transaction?.description,
-            `${constants.baseUrl}/transactions/${transaction?._id}`,
+            `${constants.baseUrl}/${endPoint}/${transaction?._id}`,
             token,
             async (res) => {
                 if (client == "customer") {
@@ -109,15 +111,16 @@ const TransactionForm = ({ type, update, instance, transaction, client, hideModa
             setDisabled(true)
 
             if (update) {
-                const res = await axios.patch(`${constants.baseUrl}/transactions/${transaction?._id}`, values,
+                const res = await axios.patch(`${constants.baseUrl}/${endPoint}/${transaction?._id}`, values,
                     {
                         headers: {
                             "authorization": token
                         }
                     }).then((res) => {
+                        transaction = res?.data?.data?.transaction || res?.data?.data?.accountTransaction
                         dispatch(updateTransaction({
                             id: transaction._id,
-                            updatedTransaction: res?.data?.data?.transaction
+                            updatedTransaction: transaction
                         }));
                         let response = res?.data?.data?.transaction
                         client == "customer" && handleUpdateCustomerBalance(dispatch, transactions, calculateBalance, response);
@@ -132,14 +135,15 @@ const TransactionForm = ({ type, update, instance, transaction, client, hideModa
             }
 
             else {
-                const res = await axios.post(`${constants.baseUrl}/transactions`, values,
+                const res = await axios.post(`${constants.baseUrl}/${endPoint}`, values,
                     {
                         headers: {
                             "authorization": token
                         }
                     }).then((res) => {
                         setDisabled(false);
-                        dispatch(addTransaction(res?.data?.data?.transaction));
+                        transaction = res?.data?.data?.transaction || res?.data?.data?.accountAccountTransaction
+                        dispatch(addTransaction(transaction));
                         let response = res?.data?.data?.transaction
                         client == "customer" && handleAddCustomerBalance(dispatch, transactions, calculateBalance, response);
                         client == "vendor" && handleAddVendorBalance(dispatch, transactions, calculateBalance, response);

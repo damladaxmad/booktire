@@ -15,7 +15,7 @@ import { Edit } from '@material-ui/icons';
 import PrintableTableComponent from "../reports/PintableTableComponent";
 import { useReactToPrint } from "react-to-print";
 
-const Transactions = ({ instance, client, url, hideTransactions, }) => {
+const Transactions = ({ instance, client, url, hideTransactions, endPoint }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [type, setType] = useState(null)
@@ -25,7 +25,7 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
     const token = useSelector(state => state.login.token)
     const { business, user } = useSelector(state => state?.login?.activeUser)
     const mySocketId = useSelector(state => state?.login?.mySocketId)
-    const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions)))
+    const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions || [])));
     const [selectedSale, setSelectedSale] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -70,7 +70,11 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
                     cancelToken: source.token
                 });
                 setLoading(false);
-                dispatch(setTransactions(response?.data?.data?.transactions))
+                if (client == "account") {
+                    dispatch(setTransactions(response?.data?.data?.accountTransactions))
+                } else {
+                    dispatch(setTransactions(response?.data?.data?.transactions))
+                }
             } catch (error) {
                 if (!axios.isCancel(error)) {
                     setError("Error getting the data");
@@ -231,7 +235,7 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
         <>
 
             {showForm && <TransactionForm type={type} instance={instance}
-             client={client}
+             client={client} endPoint = {endPoint}
                 update={update} transaction={transaction}
                 hideModal={() => {
                     setShowForm(false)
@@ -298,13 +302,13 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
                     <Typography style={{
                         fontSize: "18px", fontWeight: "bold"
                     }}>
-                        {instance.name}
+                         {instance.name || instance.accountName}
                     </Typography>
                     <Typography style={{
                         color: "#7F7F7F",
                         fontSize: "18px"
                     }}>
-                        {instance.phone}
+                        {instance.phone || instance.description}
                     </Typography>
 
                    
@@ -331,7 +335,7 @@ const Transactions = ({ instance, client, url, hideTransactions, }) => {
                     }}/>
 
             <PrintableTableComponent columns={newColumns} data={transactions} imageUrl={business?.logoUrl} 
-            reportTitle = {`${instance?.name} (${instance?.phone})`}> 
+            reportTitle = {`${instance?.name || instance?.accountName } (${instance?.phone || instance?.description})`}> 
             </PrintableTableComponent>
 
             <MaterialTable

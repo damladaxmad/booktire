@@ -7,26 +7,26 @@ import moment from "moment";
 
 export default function LastTransactions() {
 
-    const defaultArray = [
-        {description: "From Expense", credit: 100, account: {accountName: "Premier Bank"}, date: "2024/08/14"},
-        {description: "From Sales", debit: 100, account: {accountName: "Premier Bank"}, date: "2024/08/14"},
-        {description: "From Expense", credit: 100, account: {accountName: "Premier Bank"}, date: "2024/08/14"}
-    ]
+    // const defaultArray = [
+    //     {description: "From Expense", credit: 100, account: {accountName: "Premier Bank"}, date: "2024/08/14"},
+    //     {description: "From Sales", debit: 100, account: {accountName: "Premier Bank"}, date: "2024/08/14"},
+    //     {description: "From Expense", credit: 100, account: {accountName: "Premier Bank"}, date: "2024/08/14"}
+    // ]
 
-    const [transactions, setTransactions] = useState(defaultArray);
+    const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true); // State for loading indicator
     const { business } = useSelector(state => state.login?.activeUser);
     const token = useSelector(state => state.login?.token);
     const today = new Date()
 
     const fetchTransactions = () => {
-        axios.get(`${constants.baseUrl}/account-transactions/get-business-account-transactions/${business?._id}`, {
+        axios.get(`${constants.baseUrl}/account-transactions/get-business-account-transactions/${business?._id}?startDate=2024-02-01&endDate=${moment(today).format("YYYY-MM-DD")}`, {
             headers: {
                 "authorization": token
             }
         }).then(res => {
             console.log(res?.data?.data)
-            setTransactions(res?.data?.data?.accountAccountTransactions || defaultArray);
+            setTransactions(res?.data?.data?.accountTransactions || []);
         }).catch(error => {
             console.error("Error fetching transactions:", error);
         }).finally(() => {
@@ -80,8 +80,11 @@ function Transaction({ data, index }) {
             }}></div>
 
             <div style={{ display: "flex", flexDirection: "column", }}>
-                <Typography style={{ fontSize: "15px", fontWeight: "bold" }}>Premier Bank</Typography>
-                <Typography style={{ fontSize: "14px", color: data?.credit ? constants.colorSubText : "#B4B4B4" }}> {moment(data.date).format("YYYY-MM-DD")} - {data?.description}</Typography>
+                <Typography style={{ fontSize: "15px", fontWeight: "normal" }}>{data?.account.accountName}</Typography>
+                <Typography style={{ fontSize: "14px", color: data?.credit ? constants.colorSubText : "#B4B4B4" }}>
+    {moment(data.date).format("YYYY-MM-DD")} - {data?.description?.length > 12 ? `${data.description.substring(0, 12)}...` : data.description}
+</Typography>
+
             </div>
             <Typography style={{ fontSize: "15px" }}> ${data.debit ? data.debit.toFixed(2) : data.credit.toFixed(2)}</Typography>
         </div>
