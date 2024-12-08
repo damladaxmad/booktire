@@ -137,7 +137,7 @@ export default function ExpensesReport() {
                 marginTop: "15px"
             }}>
                 <Typography style={{ fontSize: "16px", textAlign: "right" }}> TOTAL:</Typography>
-                <Typography style={{ fontSize: "16px", fontWeight: "bold", textAlign: "right" }}> ${total}</Typography>
+                <Typography style={{ fontSize: "16px", fontWeight: "bold", textAlign: "right" }}> ${total?.toFixed(2)}</Typography>
             </div>
 
 

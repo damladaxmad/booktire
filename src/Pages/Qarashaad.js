@@ -64,15 +64,17 @@ export default function Qarashaad() {
   ];
 
   const handler = (data) => {
-    if (data?.length > 0) {
+    const sortedData = data.sort((a, b) => new Date(moment(a.updated_at).format("YYYY-MM-DD")) - new Date(moment(b.updated_at).format("YYYY-MM-DD")));
+
+    if (sortedData?.length > 0) {
       if (query == "") {
-        return data
+        return sortedData
           .filter((instance) => {
             if (instance?.status == "closed") return
               return instance
           })
       } else {
-        return data?.filter(
+        return sortedData?.filter(
           (instance) => {
             if (instance?.status == "closed") return
               return instance?.description.toLowerCase().includes(query.toLocaleLowerCase())

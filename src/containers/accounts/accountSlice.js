@@ -27,7 +27,8 @@ export const accountSlice = createSlice({
     },
     updateAccountBalance: (state, action) => { // Changed function name and state property
       const { _id, newBalance } = action.payload;
-      const index = state.accounts.findIndex(account => account._id === _id);
+      const index = state.accounts.findIndex(account => account._id == _id);
+      console.log(state.accounts, _id)
       if (index !== -1) {
         state.accounts[index].balance = newBalance;
       }

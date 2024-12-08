@@ -28,6 +28,8 @@ const Transactions = ({ instance, client, url, hideTransactions, endPoint }) => 
     const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions || [])));
     const [selectedSale, setSelectedSale] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
+    const sortedData = transactions.sort((a, b) => new Date(moment(a.date).format("YYYY-MM-DD")) - new Date(moment(b.date).format("YYYY-MM-DD")));
+    console.log(transactions);
 
     const handleSalesDescriptionClick = (sale) => {
         console.log(sale?.products)
@@ -53,6 +55,7 @@ const Transactions = ({ instance, client, url, hideTransactions, endPoint }) => 
     const dispatch = useDispatch()
 
     const handleRowEdit = (rowData) => {
+     
         setTransaction(rowData);
         setUpdate(true);
         setShowForm(true);
@@ -101,6 +104,9 @@ const Transactions = ({ instance, client, url, hideTransactions, endPoint }) => 
           icon: Edit,
           tooltip: 'Edit User',
           onClick: (event, rowData) => {
+            console.log(rowData)
+            if (rowData?.credit == 0) setType("deen")
+            if (rowData?.debit == 0) setType("bixin")
            handleRowEdit(rowData)
           },
         }
@@ -340,7 +346,7 @@ const Transactions = ({ instance, client, url, hideTransactions, endPoint }) => 
 
             <MaterialTable
                 columns={columns}
-                data={transactions}
+                data={sortedData}
                 localization={{
                     body: {
                         emptyDataSourceMessage: loading ? "loading.." : error ? error : "no data to display",

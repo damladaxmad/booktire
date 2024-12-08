@@ -158,6 +158,7 @@ export default function SalesReport() {
                         { title: 'Date', field: 'date', render: rowData => moment(rowData.date).format('DD MMM')},
                         { title: 'User', field: 'user', width: "4%" },
                         { title: 'Payment', field: 'paymentType' },
+                        { title: 'Status', field: 'status', width: "4%" },
                         { title: 'Subtotal', field: 'subtotal', render: rowData => `${numberFormatter.format(rowData?.total + rowData?.discount)}` },
                         { title: 'Discount', field: 'discount', render: rowData => `$${rowData?.discount}` },
                         { title: 'Profit', field: 'discount', render: rowData => `${numberFormatter.format(rowData?.total - rowData?.cogs)}` },
@@ -175,7 +176,8 @@ export default function SalesReport() {
                         total: sale.total,
                         note: sale?.note,
                         cogs: sale?.cogs,
-                        group: sale.group
+                        group: sale.group,
+                        status: sale.status
                     }))}
                     options={{
                         search: false,

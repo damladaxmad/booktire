@@ -8,7 +8,6 @@ import { constants } from "../../Helpers/constantsFile";
 
 const SalesDetailsModal = ({ open, handleClose, sale, business, user }) => {
     const printRef = useRef();
-    console.log(sale)
 
     const handlePrint = useReactToPrint({
         content: () => printRef.current,

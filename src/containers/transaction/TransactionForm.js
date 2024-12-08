@@ -13,6 +13,8 @@ import { updateCustomerBalance } from "../customer/customerSlice";
 import { handleAddCustomerBalance, handleDeleteCustomerBalance, handleUpdateCustomerBalance } from "../customer/customerUtils";
 import { handleAddVendorBalance, handleDeleteVendorBalance, handleUpdateVendorBalance } from "../vendor/vendorUtils";
 import { updateVendorBalance } from "../vendor/vendorSlice";
+import { handleAddAccountBalance, handleUpdateAccountBalance } from "../accounts/accountUtils";
+import { updateAccountBalance } from "../accounts/accountSlice";
 
 const TransactionForm = ({ type, update, instance, transaction, client, hideModal, 
     endPoint = "transactions"
@@ -25,6 +27,7 @@ const TransactionForm = ({ type, update, instance, transaction, client, hideModa
     const today = new Date();
     const transactions = JSON.parse(JSON.stringify(useSelector(state => state.transactions.transactions)))
     const dispatch = useDispatch()
+    console.log(transaction)
 
     const calculateBalance = (transactions) => {
         console.log(transactions)
@@ -61,6 +64,12 @@ const TransactionForm = ({ type, update, instance, transaction, client, hideModa
                     const newBalance = await calculateBalance(updatedTransactions);
                     const customerId = res?.customer;
                     await dispatch(updateCustomerBalance({ _id: customerId, newBalance }));
+                }
+                if (client == "account") {
+                    const updatedTransactions = transactions.filter(tran => tran?._id !== transaction?._id);
+                    const newBalance = await calculateBalance(updatedTransactions);
+                    const accountId = instance?._id;
+                    await dispatch(updateAccountBalance({ _id: accountId, newBalance }));
                 }
                 if (client == "vendor") {
                     const updatedTransactions = transactions.filter(transaction => transaction?._id !== res?._id);
@@ -123,6 +132,8 @@ const TransactionForm = ({ type, update, instance, transaction, client, hideModa
                             updatedTransaction: transaction
                         }));
                         let response = res?.data?.data?.transaction
+                        console.log(transaction)
+                        client == "account" && handleUpdateAccountBalance(dispatch, transactions, calculateBalance, transaction);
                         client == "customer" && handleUpdateCustomerBalance(dispatch, transactions, calculateBalance, response);
                         client == "vendor" && handleUpdateVendorBalance(dispatch, transactions, calculateBalance, response);
                         hideModal();
@@ -145,6 +156,7 @@ const TransactionForm = ({ type, update, instance, transaction, client, hideModa
                         transaction = res?.data?.data?.transaction || res?.data?.data?.accountAccountTransaction
                         dispatch(addTransaction(transaction));
                         let response = res?.data?.data?.transaction
+                        client == "account" && handleAddAccountBalance(dispatch, transactions, calculateBalance, transaction);
                         client == "customer" && handleAddCustomerBalance(dispatch, transactions, calculateBalance, response);
                         client == "vendor" && handleAddVendorBalance(dispatch, transactions, calculateBalance, response);
                         hideModal();
